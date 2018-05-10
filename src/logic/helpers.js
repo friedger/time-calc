@@ -1,37 +1,14 @@
 import store from 'store/dist/store.modern'
 import Moment from 'moment'
 import 'moment-duration-format'
-import fetch from 'isomorphic-fetch'
 import json2csv from 'json2csv'
 
 export class CalculationHelper {
   static fetchCalculation (form) {
-    if (navigator.onLine) {
-      return CalculationHelper.calculateRemote(form)
-    }
-
     // eslint-disable-next-line no-undef
     return new Promise((resolve) => {
       resolve(CalculationHelper.calculateLocal(form))
     })
-  }
-
-  static calculateRemote (form) {
-    let timeSet = {}
-
-    Object.keys(form.value).forEach((k) => {
-      if (Object.keys(form.schema.properties).includes(k) && form.value[k] !== '') {
-        timeSet[k] = form.value[k]
-      }
-    })
-
-    const query = Object.keys(timeSet).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(timeSet[k])}`).join('&')
-
-    return fetch((process.env.REACT_APP_SERVER || '/') + 'calculate?' + query)
-            .then(response => response.json())
-            .catch(() => {
-              return CalculationHelper.calculateLocal(form)
-            })
   }
 
   static calculateLocal (form) {
