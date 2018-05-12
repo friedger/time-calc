@@ -4,6 +4,7 @@ import 'material-design-lite/src/mdlComponentHandler'
 
 import './App.css'
 
+import UserProfile  from '../UserProfile/UserProfile'
 import Form from '../Form/Form'
 import TimeList from '../TimeList/TimeList'
 
@@ -19,6 +20,7 @@ const App = () => {
             <div className='mdl-layout-title'>Time - Calculator</div>
             <div className='mdl-layout-spacer' />
           </div>
+          <UserProfile/>
         </header>
         <main className='mdl-layout__content'>
           <Form />

@@ -30,6 +30,8 @@
     "why-did-you-update": "^0.1.0"
   },
   "dependencies": {
+    "blockstack": "^0.17.2",
+    "blockstack-signin-btn": "^1.0.3",
     "dialog-polyfill": "^0.4.7",
     "draggabilly": "digitalkaoz/draggabilly#patch-1",
     "get-size": "digitalkaoz/get-size#patch-1",
@@ -58,7 +60,7 @@
     "build-css": "node-sass src/ -o src/",
     "watch-css": "npm run build-css && node-sass src/ -o src/ --watch",
     "dev": "concurrently \"npm run client:start\" \"npm run watch-css\"",
-    "start": "npm run client:build && npm run server:build && npm start --prefix server",
+    "start": "npm run client:build && npm start --prefix build",
     "critical": "cat ./build/index.html | critical --base=./build --folder=./build --inline --minify > ./build/index_critical.html && mv ./build/index_critical.html ./build/index.html",
     "postinstall": "cd node_modules/react-forms && npm i && make build && cd - && rm -rf node_modules/draggabilly/node_modules && rm -rf node_modules/unidragger/node_modules",
     "client:start": "react-scripts start",

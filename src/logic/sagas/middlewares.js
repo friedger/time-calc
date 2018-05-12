@@ -1,6 +1,8 @@
 import { takeLatest, takeEvery, call, put } from 'redux-saga/effects'
-import {CalculationHelper, TimeHelper, StoreHelper} from '../helpers'
-import {CALCULATE, CLEAR_TIMES, LOAD_TIMES, ADD_TIME, DELETE_TIME, DOWNLOAD_TIMES, timesCleaned, calculationFetched, timesLoaded} from '../actions/actions'
+import {CalculationHelper, TimeHelper, StoreHelper, UserHelper} from '../helpers'
+import {CALCULATE, CLEAR_TIMES, LOAD_TIMES, ADD_TIME, DELETE_TIME, DOWNLOAD_TIMES,
+  USER_SIGN_IN, USER_SIGN_OUT,
+  timesCleaned, calculationFetched, timesLoaded} from '../actions/actions'
 
 function * calculations (action) {
   const calc = yield call(CalculationHelper.fetchCalculation, action.form)
@@ -46,6 +48,14 @@ function * downloadTimes () {
   yield TimeHelper.downloadTimes(times)
 }
 
+function * userSignIn() {
+  yield call(UserHelper.signIn)
+}
+
+function * userSignOut() {
+  yield call(UserHelper.signOut)
+}
+
 export default function * rootSaga () {
   yield takeLatest(CALCULATE, calculations)
   yield takeEvery(CLEAR_TIMES, clearTimes)
@@ -53,4 +63,6 @@ export default function * rootSaga () {
   yield takeEvery(ADD_TIME, addTime)
   yield takeEvery(DELETE_TIME, deleteTime)
   yield takeEvery(DOWNLOAD_TIMES, downloadTimes)
+  yield takeLatest(USER_SIGN_IN, userSignIn)
+  yield takeLatest(USER_SIGN_OUT, userSignOut)
 }

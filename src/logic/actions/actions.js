@@ -9,6 +9,14 @@ export const EDIT_TIME = 'EDIT_TIME'
 export const CALCULATION_FETCHED = 'CALCULATION_FETCHED'
 export const TIMES_CLEANED = 'TIMES_CLEANED'
 export const TIMES_LOADED = 'TIMES_LOADED'
+export const USER_SIGN_IN = 'USER_SIGN_IN'
+export const USER_SIGN_OUT = 'USER_SIGN_OUT'
+export const USER_CONNECTING = 'USER_CONNECTING'
+export const USER_CONNECTED = 'USER_CONNECTED'
+export const USER_DISCONNECTED = 'USER_DISCONNECTED'
+export const SYNC_STARTED = "SYNC_STARTED"
+export const SYNC_DONE = "SYNC_DONE"
+export const SYNC_FAILED = "SYNC_FAILED"
 
 export function timesLoaded (times) {
   return {
@@ -81,5 +89,56 @@ export function editTime (time) {
   return {
     type: EDIT_TIME,
     time: time
+  }
+}
+
+export function userSignIn() {
+  return {
+    type: USER_SIGN_IN
+  }
+}
+
+
+export function userSignOut() {
+  return {
+    type: USER_SIGN_OUT
+  }
+}
+
+export function userConnecting() {
+  return {
+    type: USER_CONNECTING
+  }
+}
+
+export function userConnected(profile) {
+  return {
+    type: USER_CONNECTED,
+    profile: profile
+  }
+}
+
+export function userDisconnected() {
+  return {
+    type: USER_DISCONNECTED
+  }
+}
+
+export function syncStarted() {
+  return {
+    type: SYNC_STARTED
+  }
+}
+
+export function syncDone() {
+  return {
+    type: SYNC_DONE
+  }
+}
+
+export function syncFailed(error) {
+  return {
+    type: SYNC_FAILED,
+    error: error
   }
 }

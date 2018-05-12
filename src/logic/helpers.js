@@ -3,6 +3,8 @@ import Moment from 'moment'
 import 'moment-duration-format'
 import json2csv from 'json2csv'
 
+const blockstack = require('blockstack')
+
 export class CalculationHelper {
   static fetchCalculation (form) {
     // eslint-disable-next-line no-undef
@@ -65,5 +67,15 @@ export class StoreHelper {
 
   static saveTimes (times) {
     store.set('times', times)
+  }
+}
+
+export class UserHelper {
+  static signIn () {
+    blockstack.redirectToSignIn()
+  }
+
+  static signOut () {
+    blockstack.signUserOut()
   }
 }
