@@ -1,12 +1,12 @@
 import {USER_CONNECTING, USER_CONNECTED, USER_DISCONNECTED} from '../actions/actions'
 
-export default class User {
-  static dispatch (state = { user: null }, action) {
-    if (!User.instance) {
-      User.instance = new User()
+export default class UserProfile {
+  static dispatch (state = { user: null, userMessage: null }, action) {
+    if (!UserProfile.instance) {
+      UserProfile.instance = new UserProfile()
     }
 
-    return User.instance.process(state, action)
+    return UserProfile.instance.process(state, action)
   }
 
   process (state, action) {
@@ -40,7 +40,7 @@ export default class User {
   userDisconnected () {
     return {
       ...this.state,
-      user: null
+      user: null,
       userMessage: this.action.error ? this.action.error : null
     }
   }

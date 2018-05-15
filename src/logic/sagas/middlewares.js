@@ -2,7 +2,9 @@ import { takeLatest, takeEvery, call, put } from 'redux-saga/effects'
 import {CalculationHelper, TimeHelper, StoreHelper, UserHelper} from '../helpers'
 import {CALCULATE, CLEAR_TIMES, LOAD_TIMES, ADD_TIME, DELETE_TIME, DOWNLOAD_TIMES,
   USER_SIGN_IN, USER_SIGN_OUT,
-  timesCleaned, calculationFetched, timesLoaded} from '../actions/actions'
+  timesCleaned, calculationFetched, timesLoaded,
+  userConnecting
+} from '../actions/actions'
 
 function * calculations (action) {
   const calc = yield call(CalculationHelper.fetchCalculation, action.form)
@@ -49,6 +51,7 @@ function * downloadTimes () {
 }
 
 function * userSignIn() {
+  yield put(userConnecting())
   yield call(UserHelper.signIn)
 }
 

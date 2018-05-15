@@ -78,4 +78,12 @@ export class UserHelper {
   static signOut () {
     blockstack.signUserOut()
   }
+
+  static isSignInPending() {
+    blockstack.isSignInPending()
+  }
+
+  static handlePendingSignIn() {
+    blockstack.handlePendingSignIn()
+  }
 }

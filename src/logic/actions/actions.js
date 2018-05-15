@@ -111,10 +111,10 @@ export function userConnecting() {
   }
 }
 
-export function userConnected(profile) {
+export function userConnected(user) {
   return {
     type: USER_CONNECTED,
-    profile: profile
+    user: user
   }
 }
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types';
 
 const DisplayField = ({value, label}) => {
   return (
@@ -8,5 +9,10 @@ const DisplayField = ({value, label}) => {
     </div>
   )
 }
+
+DisplayField.propTypes = {
+  value: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired
+};
 
 export default DisplayField

@@ -1,9 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import BlockstackSignInButton from './BlockstackSignInButton'
 
 import { connect } from 'react-redux'
 import { userSignIn, userSignOut} from '../../logic/actions/actions'
+
+import PropTypes from 'prop-types';
 
 const UserProfile = (props) => {
   const {
@@ -40,20 +41,29 @@ const UserProfile = (props) => {
   );
 }
 
+UserProfile.propTypes = {
+  isSignedIn: PropTypes.boolean,
+  isConnecting: PropTypes.boolean,
+  name: PropTypes.string,
+  avatarUrl: PropTypes.string,
+  message: PropTypes.string,
+  userSignIn: PropTypes.func,
+  userSignOut: PropTypes.func
+}
 const mapStateToProps = (state) => {
   return {
-    isSignedIn: state.user != null,
-    isConnecting: state.user == null && state.userMessage === 'Connecting',
-    name: state.user != null ? state.user.name : null,
-    avatarUrl: state.user != null ? state.user.profileUrl : null,
-    message:  state.userMessage
+    isSignedIn: state.userProfile.user != null,
+    isConnecting: state.userProfile.user == null && state.userProfile.userMessage === 'Connecting',
+    name: state.userProfile.user != null ? state.userProfile.user.name : null,
+    avatarUrl: state.userProfile.user != null ? state.userProfile.user.profileUrl : null,
+    message:  state.userProfile.userMessage
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    userSignIn: (component) => dispatch(userSignIn()),
-    userSignOut: (component) => dispatch(userSignOut())
+    userSignIn: () => dispatch(userSignIn()),
+    userSignOut: () => dispatch(userSignOut())
     }
 }
 
