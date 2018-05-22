@@ -1,9 +1,9 @@
-import { takeLatest, takeEvery, call, put } from 'redux-saga/effects'
+import { takeLatest, takeEvery, call, put, fork } from 'redux-saga/effects'
 import {CalculationHelper, TimeHelper, StoreHelper, UserHelper} from '../helpers'
 import {CALCULATE, CLEAR_TIMES, LOAD_TIMES, ADD_TIME, DELETE_TIME, DOWNLOAD_TIMES,
   USER_SIGN_IN, USER_SIGN_OUT,
   timesCleaned, calculationFetched, timesLoaded,
-  userConnecting
+  userConnecting, userConnected
 } from '../actions/actions'
 
 function * calculations (action) {
@@ -59,7 +59,15 @@ function * userSignOut() {
   yield call(UserHelper.signOut)
 }
 
+function * checkLogin() {
+    if (UserHelper.isSignInPending()) {
+      let user = yield call(UserHelper.handlePendingSignIn())
+      yield put(userConnected(user))
+    }
+}
+
 export default function * rootSaga () {
+  yield fork(checkLogin)
   yield takeLatest(CALCULATE, calculations)
   yield takeEvery(CLEAR_TIMES, clearTimes)
   yield takeLatest(LOAD_TIMES, loadTimesFromStore)

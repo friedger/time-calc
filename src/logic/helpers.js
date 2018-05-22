@@ -80,10 +80,10 @@ export class UserHelper {
   }
 
   static isSignInPending() {
-    blockstack.isSignInPending()
+    return blockstack.isSignInPending()
   }
 
   static handlePendingSignIn() {
-    blockstack.handlePendingSignIn()
+    return blockstack.handlePendingSignIn()
   }
 }
