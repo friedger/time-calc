@@ -54,8 +54,8 @@ const mapStateToProps = (state) => {
   return {
     isSignedIn: state.userProfile.user != null,
     isConnecting: state.userProfile.user == null && state.userProfile.userMessage === 'Connecting',
-    name: state.userProfile.user != null ? state.userProfile.user.name : null,
-    avatarUrl: state.userProfile.user != null ? state.userProfile.user.profileUrl : null,
+    name: state.userProfile.user != null ? state.userProfile.user.profile.name : null,
+    avatarUrl: state.userProfile.user != null ? state.userProfile.user.profile.image[0].contentUrl : null,
     message:  state.userProfile.userMessage
   }
 }

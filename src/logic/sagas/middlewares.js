@@ -3,7 +3,7 @@ import {CalculationHelper, TimeHelper, StoreHelper, UserHelper} from '../helpers
 import {CALCULATE, CLEAR_TIMES, LOAD_TIMES, ADD_TIME, DELETE_TIME, DOWNLOAD_TIMES,
   USER_SIGN_IN, USER_SIGN_OUT,
   timesCleaned, calculationFetched, timesLoaded,
-  userConnecting, userConnected
+  userConnecting, userConnected, userDisconnected
 } from '../actions/actions'
 
 function * calculations (action) {
@@ -61,8 +61,12 @@ function * userSignOut() {
 
 function * checkLogin() {
     if (UserHelper.isSignInPending()) {
-      let user = yield call(UserHelper.handlePendingSignIn())
+      try {
+      const user = yield call(UserHelper.handlePendingSignIn)
       yield put(userConnected(user))
+    } catch (e) {
+      yield put(userDisconnected())
+    }
     }
 }
 
