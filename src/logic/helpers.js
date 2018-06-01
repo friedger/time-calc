@@ -87,3 +87,9 @@ export class UserHelper {
     return blockstack.handlePendingSignIn()
   }
 }
+
+export class SyncHelper {
+  static sync() {
+    return blockstack.putFile("times.json", StoreHelper.loadTimes())
+  }
+}

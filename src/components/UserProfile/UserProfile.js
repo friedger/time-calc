@@ -39,6 +39,7 @@ const UserProfile = (props) => {
     <BlockstackSignInButton
       signIn = {props.userSignIn}
       signOut = {props.userSignOut}
+      isSignedIn = {props.isSignedIn}
     />
   );
 }
@@ -52,6 +53,7 @@ UserProfile.propTypes = {
   userSignIn: PropTypes.func,
   userSignOut: PropTypes.func
 }
+
 const mapStateToProps = (state) => {
   const user = state.userProfile.user;
   const profile = user != null ? state.userProfile.user.profile : null;

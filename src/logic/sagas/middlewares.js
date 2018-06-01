@@ -1,19 +1,22 @@
 import { takeLatest, takeEvery, call, put, fork } from 'redux-saga/effects'
-import {CalculationHelper, TimeHelper, StoreHelper, UserHelper} from '../helpers'
+import {CalculationHelper, TimeHelper, StoreHelper, UserHelper, SyncHelper} from '../helpers'
 import {CALCULATE, CLEAR_TIMES, LOAD_TIMES, ADD_TIME, DELETE_TIME, DOWNLOAD_TIMES,
-  USER_SIGN_IN, USER_SIGN_OUT,
+  USER_SIGN_IN, USER_SIGN_OUT, DATA_CHANGED,
   timesCleaned, calculationFetched, timesLoaded,
-  userConnecting, userConnected, userDisconnected
+  userConnecting, userConnected, userDisconnected,
+  syncStarted, syncDone, syncFailed, dataChanged
+
 } from '../actions/actions'
 
 function * calculations (action) {
   const calc = yield call(CalculationHelper.fetchCalculation, action.form)
-
+  yield put(dataChanged())
   yield put(calculationFetched(calc))
 }
 
 function * clearTimes () {
   yield call(StoreHelper.saveTimes, [])
+  yield put(dataChanged())
   yield put(timesCleaned())
 }
 
@@ -33,6 +36,7 @@ function * addTime (action) {
   times = TimeHelper.sortTimes(times)
 
   yield call(StoreHelper.saveTimes, times)
+  yield put(dataChanged())
   yield loadTimesFromStore()
 }
 
@@ -41,6 +45,7 @@ function * deleteTime (action) {
   times = times.filter(t => JSON.stringify(t) !== JSON.stringify(action.time)) // TODO better use index?
 
   yield call(StoreHelper.saveTimes, times)
+  yield put(dataChanged())
   yield loadTimesFromStore()
 }
 
@@ -62,12 +67,22 @@ function * userSignOut() {
 function * checkLogin() {
     if (UserHelper.isSignInPending()) {
       try {
-      const user = yield call(UserHelper.handlePendingSignIn)
-      yield put(userConnected(user))
-    } catch (e) {
-      yield put(userDisconnected())
+        const user = yield call(UserHelper.handlePendingSignIn)
+        yield put(userConnected(user))
+      } catch (e) {
+        yield put(userDisconnected())
+      }
     }
-    }
+}
+
+function * startSyncing() {
+  try {
+    yield put(syncStarted())
+    yield call(SyncHelper.sync)
+    yield put(syncDone())
+  } catch (e) {
+    yield put(syncFailed("sync error" + e))
+  }
 }
 
 export default function * rootSaga () {
@@ -80,4 +95,5 @@ export default function * rootSaga () {
   yield takeEvery(DOWNLOAD_TIMES, downloadTimes)
   yield takeLatest(USER_SIGN_IN, userSignIn)
   yield takeLatest(USER_SIGN_OUT, userSignOut)
+  yield takeLatest(DATA_CHANGED, startSyncing)
 }

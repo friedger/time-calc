@@ -17,6 +17,7 @@ export const USER_DISCONNECTED = 'USER_DISCONNECTED'
 export const SYNC_STARTED = "SYNC_STARTED"
 export const SYNC_DONE = "SYNC_DONE"
 export const SYNC_FAILED = "SYNC_FAILED"
+export const DATA_CHANGED = "DATA_CHANGED"
 
 export function timesLoaded (times) {
   return {
@@ -140,5 +141,11 @@ export function syncFailed(error) {
   return {
     type: SYNC_FAILED,
     error: error
+  }
+}
+
+export function dataChanged() {
+  return {
+    type: DATA_CHANGED
   }
 }

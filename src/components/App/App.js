@@ -7,7 +7,7 @@ import './App.css'
 import UserProfile  from '../UserProfile/UserProfile'
 import Form from '../Form/Form'
 import TimeList from '../TimeList/TimeList'
-
+import Syncer from '../Syncer/Syncer'
 import createStore from './../../logic/store'
 
 const App = () => {
@@ -21,6 +21,7 @@ const App = () => {
             <div className='mdl-layout-spacer' />
           </div>
           <UserProfile/>
+          <Syncer/>
         </header>
         <main className='mdl-layout__content'>
           <Form />
