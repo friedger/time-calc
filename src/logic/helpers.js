@@ -90,6 +90,16 @@ export class UserHelper {
 
 export class SyncHelper {
   static sync() {
-    return blockstack.putFile("times.json", StoreHelper.loadTimes())
+    return blockstack.putFile("times.json", JSON.stringify(StoreHelper.loadTimes()))
+  }
+
+  static init() {
+    return blockstack.getFile("times.json").then( function(timesString) {
+      return JSON.parse(timesString)
+    }, function(error) {
+      // eslint-disable-next-line no-console
+      console.log("error init " + error)
+      return []
+    })
   }
 }

@@ -69,6 +69,7 @@ function * checkLogin() {
       try {
         const user = yield call(UserHelper.handlePendingSignIn)
         yield put(userConnected(user))
+        yield call(loadTimesRemotely)
       } catch (e) {
         yield put(userDisconnected())
       }
@@ -85,11 +86,25 @@ function * startSyncing() {
   }
 }
 
+function * loadTimesRemotely() {
+  try {
+    yield put(syncStarted())
+    const times = yield call(SyncHelper.init)
+    // eslint-disable-next-line no-console
+    console.log(times)
+    yield put(syncDone())
+    yield put(timesLoaded(times))
+  } catch (e) {
+    yield put(syncFailed("sync error" + e))
+    yield call(loadTimesFromStore)
+  }
+}
+
 export default function * rootSaga () {
   yield fork(checkLogin)
   yield takeLatest(CALCULATE, calculations)
   yield takeEvery(CLEAR_TIMES, clearTimes)
-  yield takeLatest(LOAD_TIMES, loadTimesFromStore)
+  yield takeLatest(LOAD_TIMES, loadTimesRemotely)
   yield takeEvery(ADD_TIME, addTime)
   yield takeEvery(DELETE_TIME, deleteTime)
   yield takeEvery(DOWNLOAD_TIMES, downloadTimes)

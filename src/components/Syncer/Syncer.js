@@ -11,7 +11,7 @@ const Syncer = (props) => {
   } = props;
 
   if (error) {
-      return (<div>${error}</div>)
+      return (<div>{error}</div>)
   }
   if (hasChanges) {
     return (<div>*</div>)
