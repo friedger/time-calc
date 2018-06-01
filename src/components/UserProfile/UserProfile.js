@@ -18,7 +18,9 @@ const UserProfile = (props) => {
   if (isSignedIn) {
     return (
       <div>
-      <img src={avatarUrl} alt=""/> {name}
+      <img src={avatarUrl} width="100" height="100" alt=""/><br/>
+      {name}
+      <br/>
       <BlockstackSignInButton
         signIn = {props.userSignIn}
         signOut = {props.userSignOut}
@@ -51,11 +53,13 @@ UserProfile.propTypes = {
   userSignOut: PropTypes.func
 }
 const mapStateToProps = (state) => {
+  const user = state.userProfile.user;
+  const profile = user != null ? state.userProfile.user.profile : null;
   return {
-    isSignedIn: state.userProfile.user != null,
-    isConnecting: state.userProfile.user == null && state.userProfile.userMessage === 'Connecting',
-    name: state.userProfile.user != null ? state.userProfile.user.profile.name : null,
-    avatarUrl: state.userProfile.user != null ? state.userProfile.user.profile.image[0].contentUrl : null,
+    isSignedIn: user != null,
+    isConnecting: user == null && state.userProfile.userMessage === 'Connecting',
+    name: profile != null ? profile.name : null,
+    avatarUrl: profile != null && "image" in profile && profile.image.length > 0 ? profile.image[0].contentUrl : null,
     message:  state.userProfile.userMessage
   }
 }
