@@ -3,7 +3,7 @@ import critical from "critical";
 import inline from "inline-critical";
 import csso from 'csso';
 
-const BUILD_DIR = __dirname + '/../build/';
+const BUILD_DIR = __dirname + '/../docs/';
 
 let injectCriticalCss = function () {
     critical.generate({
