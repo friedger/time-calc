@@ -1,127 +1,135 @@
 import React from 'react'
-import {Fieldset, createValue} from 'react-forms'
-import TimeField from '../TimeField/TimeField'
-import DisplayField from '../DisplayField/DisplayField'
-import DateField from '../DateField/DateField'
+import PropTypes from 'prop-types'
+
+import Grid from '@material-ui/core/Grid'
+import { withStyles } from '@material-ui/core/styles'
+import { Paper } from '@material-ui/core'
+
+import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux'
-import {fetchCalculation, save, resetCalculation} from '../../logic/actions/actions'
-import Button from './../Button/Button'
-import Moment from 'moment'
-import autoBind from 'react-autobind'
-import PropTypes from 'prop-types';
+import {
+  fetchCalculation,
+  save,
+  resetCalculation
+} from '../../logic/actions/actions'
 
-import './Form.css'
+import TimeField from '../TimeField/TimeField'
+import DateField from '../DateField/DateField'
+import TextField from '../TextField/TextField'
+import Button from '../Button/Button'
+import { TimeHelper } from '../../logic/helpers'
 
-export const SCHEMA = {
-  type: 'object',
-  required: [
-    'start'
-  ],
-  properties: {
-    start: {type: 'string', pattern: /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/},
-    end: {type: 'string', pattern: /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/},
-    break: {type: 'string', pattern: /^$|(^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])$/},
-    date: {type: 'string', pattern: /^.*$/}
+const styles = theme => ({
+  root: {
+    flexGrow: 1
+  },
+  control: {
+    padding: theme.spacing.unit * 2
   }
+})
+
+const validate = (values, props) => {
+  const errors = {}
+
+  if (!values.start || !values.end) {
+    errors.duration = 'No Start and End Time set'
+  }
+
+  if (!Object.keys(errors).length) {
+    props.calculate(values)
+  }
+
+  return errors
 }
 
-export class Form extends React.PureComponent {
-  static propTypes = {
-    save: PropTypes.func.isRequired,
-    calculate: PropTypes.func.isRequired,
-    edit: PropTypes.number,
-    value: PropTypes.object.isRequired
-  }
+const Form = props => (
+  <form onSubmit={props.handleSubmit(props.save)}>
+    <Paper className={props.classes.control}>
+      <Grid container className={props.classes.root} spacing={16} justify='center'>
+        <Grid item xs={12}>
+          <Field name='description' label='Description' fullWidth component={TextField} />
+        </Grid>
+        <Grid item xs={12} sm={6} md={2}>
+          <Field name='start' label='Start Time' component={TimeField} />
+        </Grid>
+        <Grid item xs={12} sm={6} md={2}>
+          <Field name='end' label='End Time' component={TimeField} />
+        </Grid>
+        <Grid item xs={12} sm={6} md={2}>
+          <Field
+            name='break'
+            label='Break Time'
+            defaultValue='00:00'
+            component={TimeField}
+            showPicker={false}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={2}>
+          <Field name='date' label='Day' component={DateField} />
+        </Grid>
+        <Grid item xs={12} sm={6} md={2}>
+          <Field
+            name='duration'
+            label='Duration'
+            component={TimeField}
+            showPicker={false}
+            disabled
+            defaultValue='00:00'
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={2}>
+          {props.valid && <Button
+            invoke={() => null}
+            context={props}
+            type='submit'
+            icon={props.edit ? 'save' : 'add'}
+          />}
+          {props.edit && <Button
+            color='secondary'
+            invoke={props.reset}
+            context={props}
+            icon={'cancel'}
+          />}
+        </Grid>
+      </Grid>
+      <Field
+        name='index'
+        // todo causes rerender: function is the problem, make it static?!
+        component={({input}) => <input type='hidden' {...input} />}
+      />
+    </Paper>
+  </form>
+)
 
-  static defaultProps = {
-    value: {}
-  }
+const mapStateToProps = state => {
+  const edit = !!(state.form.time && state.form.time.values ? state.form.time.values.index !== undefined : undefined)
 
-  constructor (props) {
-    super(props)
-
-    autoBind(this)
-
-    const formValue = this.createForm({date: Moment().format('L')})
-
-    this.state = {formValue}
-  }
-
-  createForm (data) {
-    return createValue({
-      value: data,
-      onChange: this.onChange,
-      schema: SCHEMA
-    })
-  }
-  onChange (formValue) {
-    if (formValue._errorList.length === 0) {
-      this.props.calculate(formValue)
-    } else {
-      this.setState({formValue})
-    }
-  }
-
-  componentWillReceiveProps (props) {
-    const formValue = this.createForm(props.value)
-    this.setState({formValue})
-  }
-
-  render () {
-    return (
-      <Fieldset formValue={this.state.formValue} className='mdl-grid' id='form'>
-        <div className='mdl-cell mdl-cell--2-col mdl-cell--4-col-tablet mdl-cell--6-col-phone'>
-          <TimeField select='start' label='Start Time' />
-        </div>
-        <div className='mdl-cell mdl-cell--2-col mdl-cell--4-col-tablet mdl-cell--6-col-phone'>
-          <TimeField select='end' label='End Time' />
-        </div>
-        <div className='mdl-cell mdl-cell--2-col mdl-cell--4-col-tablet mdl-cell--6-col-phone'>
-          <TimeField select='break' label='Break' timer={false} />
-        </div>
-        <div className='mdl-cell mdl-cell--2-col mdl-cell--4-col-tablet mdl-cell--6-col-phone'>
-          <DateField select='date' label='Day' />
-        </div>
-        <div className='mdl-cell mdl-cell--2-col mdl-cell--4-col-tablet mdl-cell--6-col-phone'>
-          <DisplayField label='Duration' value={(this.props.value && this.props.value.duration) || ''} />
-        </div>
-        <div className='mdl-cell mdl-cell--2-col mdl-cell mdl-cell--4-col-tablet mdl-cell mdl-cell--6-col-phone'>
-          {(this.props.value && this.props.value.duration) &&
-            <Button invoke={this.props.save} context={this} icon={this.props.edit ? 'save' : 'add'} classes='mdl-button--raised mdl-js-ripple-effect mdl-button--accent' />
-          }
-        </div>
-      </Fieldset>
-    )
-  }
-}
-
-const mapStateToProps = (state) => {
   return {
-    value: state.form.current,
-    edit: state.form.edit
+    initialValues: edit ? undefined : {break: '00:00', date: TimeHelper.today()},
+    edit
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    calculate: (formValue) => dispatch(fetchCalculation(formValue)),
-
-    save: (component) => {
-      if (component.props.value) {
-        let time = component.props.value
-
-        if (!time.break) {
-          time.break = '00:00'
-        }
-
-        dispatch(save(time, component.props.edit))
-        dispatch(resetCalculation())
-      }
+    calculate: formValue => dispatch(fetchCalculation(formValue)),
+    reset: () => dispatch(resetCalculation()),
+    save: (values, dispatch) => {
+      dispatch(save(values, values.index))
+      dispatch(resetCalculation())
     }
   }
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Form)
+Form.propTypes = {
+  edit: PropTypes.bool,
+  valid: PropTypes.bool,
+  save: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  reset: PropTypes.func,
+  classes: PropTypes.object
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  withStyles(styles)(reduxForm({ form: 'time', validate })(Form))
+)

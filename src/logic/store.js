@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, compose } from 'redux'
-import  { createLogger } from 'redux-logger'
+import { createLogger } from 'redux-logger'
 import rootReducer from './reducers/reducers'
 import createSagaMiddleware from 'redux-saga'
 import rootSaga from './sagas/middlewares'
@@ -15,10 +15,10 @@ if (process && process.env.NODE_ENV !== 'test') {
 
 export default function configureStore (preloadedState) {
   const store = createStore(
-        rootReducer,
-        preloadedState,
-        composeEnhancers(applyMiddleware(...middlewares))
-    )
+    rootReducer,
+    preloadedState,
+    composeEnhancers(applyMiddleware(...middlewares))
+  )
   sagaMiddleware.run(rootSaga)
 
   return store

@@ -1,15 +1,31 @@
 import React from 'react'
 import autoBind from 'react-autobind'
-import './Dialog.css'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
-export default (WrappedComponent, id) => {
-  return class Dialog extends React.PureComponent {
+import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import withMobileDialog from '@material-ui/core/withMobileDialog'
+import Slide from '@material-ui/core/Slide'
+
+const Transition = (props) => <Slide direction='up' {...props} />
+
+export default (WrappedComponent) => {
+  return withMobileDialog()(class WrappedDialog extends React.PureComponent {
     static propTypes = {
-      onOk: PropTypes.func.isRequired
+      onOk: PropTypes.func.isRequired,
+      fullScreen: PropTypes.bool.isRequired
     }
 
-    context;
+    state = {
+      open: false,
+      title: '',
+      help: '',
+      context: null
+    };
 
     constructor (props) {
       super(props)
@@ -17,38 +33,48 @@ export default (WrappedComponent, id) => {
       autoBind(this)
     }
 
-    onClose = () => document.getElementById(id).close()
-    onOk = () => {
-      if (document.getElementById(id).open) {
-        document.getElementById(id).close()
-      }
-      this.props.onOk(this.context)
+    handleOk = () => {
+      this.handleClose()
+      this.props.onOk(this.state.context)
+    };
+
+    handleClose = () => {
+      this.setState({ open: false })
+    };
+
+    toggleDialog (context, title, help) {
+      this.setState({open: !this.state.open, title, help, context})
     }
 
-    unbind (dialog) {
-      dialog.getElementsByClassName('ok')[0].removeEventListener('click', this.onOk.bind(this), false)
-      dialog.getElementsByClassName('cancel')[0].removeEventListener('click', this.onClose.bind(this), false)
+    render () {
+      const { fullScreen } = this.props
+
+      return (
+        <React.Fragment>
+          <WrappedComponent {...this.props} toggleDialog={this.toggleDialog} />
+          <Dialog
+            fullScreen={fullScreen}
+            open={this.state.open}
+            onClose={this.handleClose}
+            TransitionComponent={Transition}
+            keepMounted
+            aria-labelledby={this.state.title.replace(' ', '-').toLowerCase()}
+          >
+            <DialogTitle id={this.state.title.replace(' ', '-').toLowerCase()}>{this.state.title}</DialogTitle>
+            <DialogContent>
+              <DialogContentText>{this.state.help}</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.handleClose} color='primary'>
+                Gimme a Sec
+              </Button>
+              <Button onClick={this.handleOk} color='primary' autoFocus>
+                Do It
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </React.Fragment>
+      )
     }
-
-    bind (dialog) {
-      dialog.getElementsByClassName('ok')[0].addEventListener('click', this.onOk.bind(this), false)
-      dialog.getElementsByClassName('cancel')[0].addEventListener('click', this.onClose.bind(this), false)
-    }
-
-    toggleDialog (context) {
-      this.context = context
-      const dialog = document.getElementById(id)
-
-      this.unbind(dialog)
-      this.bind(dialog)
-
-      if (dialog.open) {
-        dialog.close()
-      } else {
-        dialog.showModal()
-      }
-    }
-
-    render = () => <WrappedComponent {...this.props} toggleDialog={this.toggleDialog} />
-  }
+  })
 }

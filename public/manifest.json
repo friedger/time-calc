@@ -1,14 +1,15 @@
 {
   "short_name": "time-calc",
   "name": "Time Calculator",
-  "description": "A PWA for time management",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/friedger/time-calc/master/public/favicon.ico",
+      "src": "favicon.ico",
       "sizes": "192x192",
       "type": "image/png"
     }
   ],
+  "background_color": "#2196f3",
+  "theme_color": "#2196f3",
   "start_url": "./",
   "display": "standalone"
 }

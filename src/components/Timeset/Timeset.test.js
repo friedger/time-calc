@@ -1,5 +1,5 @@
 import React from 'react'
-import ConnectedTimeset, {Timeset} from './Timeset'
+import ConnectedTimeset, {StyledTimeset} from './Timeset'
 import 'jest-enzyme'
 import { shallowWithStore, shallowWithState } from 'enzyme-redux'
 import { shallow, mount } from 'enzyme'
@@ -9,9 +9,29 @@ import {Provider} from 'react-redux'
 describe('Component - Timeset', () => {
   const date = {start: '12:00', break: '00:30', end: '14:30', duration: '02:00', date: '12/12/2012'}
 
-  it('is wrapped with redux', () => {
-    const component = shallowWithState(<ConnectedTimeset time={date} index={1} />, {}).dive()
+  it('renders a date set', () => {
+    const component = shallow(<StyledTimeset time={date} index={1} onEditTime={jest.fn()} />)
 
-    expect(component.find(Timeset).length).toBe(1)
+    expect(component.html()).toMatchSnapshot()
+  })
+
+  it('triggers the edit callback', () => {
+    const cb = jest.fn()
+    const component = shallow(<StyledTimeset time={date} index={1} onEditTime={cb} />)
+
+    expect(component.html()).toMatchSnapshot()
+    component.find('button[aria-label="Edit"]').simulate('click')
+
+    expect(cb).toHaveBeenCalledWith({})
+  })
+
+  it('triggers the delete callback', () => {
+    const cb = jest.fn()
+    const component = shallow(<StyledTimeset time={date} index={1} onEditTime={jest.fn()} toggleDialog={cb} />)
+
+    expect(component.html()).toMatchSnapshot()
+    component.find('button[aria-label="Delete"]').simulate('click')
+
+    expect(cb).toHaveBeenCalledWith({})
   })
 })

@@ -1,31 +1,29 @@
 import store from 'store/dist/store.modern'
 import Moment from 'moment'
 import 'moment-duration-format'
-import json2csv from 'json2csv'
+import {parse} from 'json2csv'
 
 const blockstack = require('blockstack')
 
 export class CalculationHelper {
   static fetchCalculation (form) {
-    // eslint-disable-next-line no-undef
-    return new Promise((resolve) => {
-      resolve(CalculationHelper.calculateLocal(form))
-    })
+    return CalculationHelper.calculateLocal(form)
   }
 
   static calculateLocal (form) {
-    const breakDuration = Moment.duration(form.value.break)
-    const startDate = new Moment(form.value.start, 'HH:mm')
-    const endDate = new Moment(form.value.end, 'HH:mm')
+    const breakDuration = Moment.duration(form.break)
+    const startDate = new Moment(form.start, 'HH:mm')
+    const endDate = new Moment(form.end, 'HH:mm')
     const milliseconds = endDate.subtract(breakDuration).diff(startDate)
     const duration = Moment.duration(milliseconds / 1000, 'seconds').format('HH:mm', {trim: false})
 
     return {
-      start: form.value.start,
-      end: form.value.end,
-      break: form.value.break,
+      start: form.start,
+      end: form.end,
+      break: form.break,
       duration: duration,
-      date: form.value.date
+      date: form.date,
+      description: form.description
     }
   }
 }
@@ -52,11 +50,39 @@ export class TimeHelper {
       return
     }
 
-    const headers = Object.getOwnPropertyNames(times[0])
-    const csv = json2csv({ data: times, fields: headers })
+    const headers = Object.getOwnPropertyNames(times[0]).filter((name) => name !== 'index')
+    const csv = parse(times, { fields: headers })
     const csvContent = 'data:text/csv;charset=utf-8;base64,' + btoa(csv)
 
     window.open(csvContent)
+  }
+
+  static moment (value, format) {
+    if (value instanceof Moment) {
+      return value.format(format)
+    }
+
+    if (value) {
+      return new Moment(value, format)
+    }
+
+    return new Moment()
+  }
+
+  static now () {
+    return TimeHelper.time(new Moment())
+  }
+
+  static today () {
+    return TimeHelper.date(new Moment())
+  }
+
+  static time (value) {
+    return TimeHelper.moment(value, 'HH:mm')
+  }
+
+  static date (value) {
+    return TimeHelper.moment(value, 'L')
   }
 }
 

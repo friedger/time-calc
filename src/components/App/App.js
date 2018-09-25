@@ -1,39 +1,73 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
+import Grid from '@material-ui/core/Grid'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import Paper from '@material-ui/core/Paper'
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  withStyles
+} from '@material-ui/core/styles'
+import blue from '@material-ui/core/colors/blue'
+
 import { Provider } from 'react-redux'
-import 'material-design-lite/src/mdlComponentHandler'
+import createStore from './../../logic/store'
 
-import './App.css'
-
-import UserProfile  from '../UserProfile/UserProfile'
 import Form from '../Form/Form'
 import TimeList from '../TimeList/TimeList'
 import Syncer from '../Syncer/Syncer'
-import createStore from './../../logic/store'
 
-const App = () => {
-  return (
-    <Provider store={createStore()}>
-      <div className='mdl-layout mdl-layout--fixed-header'>
-        <header className='mdl-layout__header mdl-layout--no-drawer-button'>
-          <div className='mdl-layout__header-row'>
-            <div className='mdl-layout-spacer' />
-            <div className='mdl-layout-title'>Time - Calculator</div>
-            <div className='mdl-layout-spacer' />
-          </div>
+import MomentUtils from 'material-ui-pickers/utils/moment-utils'
+import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider'
+import moment from 'moment'
+const styles = () => ({
+  root: {
+    flexGrow: 1
+  }
+})
+
+const theme = createMuiTheme({
+  palette: {
+    primary: blue
+  },
+  typography: {
+    fontDisplay: "swap"
+  }
+})
+
+const App = ({ classes }) => (
+  <Provider store={createStore()}>
+    <MuiThemeProvider theme={theme}>
+      <Grid container className={classes.root} spacing={16}>
+        <AppBar position='static' color='primary'>
+          <Toolbar>
+            <Typography variant='title' color='inherit'>Timesheet</Typography>
           <UserProfile/>
           <Syncer/>
-        </header>
-        <main className='mdl-layout__content'>
-          <Form />
-          <div className='mdl-grid'>
-            <div className='mdl-cell mdl-cell--12-col'>
-              <TimeList />
-            </div>
-          </div>
-        </main>
-      </div>
-    </Provider>
-  )
+          </Toolbar>
+        </AppBar>
+
+        <Grid item xs={12}>
+          <MuiPickersUtilsProvider utils={MomentUtils} moment={moment}>
+            <Form />
+          </MuiPickersUtilsProvider>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper>
+            <TimeList />
+          </Paper>
+        </Grid>
+      </Grid>
+    </MuiThemeProvider>
+  </Provider>
+)
+
+App.propTypes = {
+  classes: PropTypes.object.isRequired
 }
 
-export default App
+
+export default withStyles(styles)(App)

@@ -1,22 +1,47 @@
 import React from 'react'
 import DateField from './DateField'
-import { shallow, mount, render } from 'enzyme'
+import { shallow } from 'enzyme'
 import 'jest-enzyme'
-import Moment from 'moment'
+
+import MomentUtils from 'material-ui-pickers/utils/moment-utils'
+import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider'
+import moment from 'moment'
+import { TimeHelper } from '../../logic/helpers'
+import { IconButton } from '@material-ui/core'
 
 describe('Component - Datefield', () => {
   const update = jest.fn()
 
-  const validValue = {errorList: [], value: 'bar', update: update}
-  const invalidValue = {errorList: [{foo: 'bar'}], value: 'bar', update: update}
+  const validValue = {value: '05/25/2018', onChange: update}
+  const invalidValue = {value: '05/32/2018', onChange: update}
 
-  it('sets the label', () => {
-    const component = shallow(<DateField formValue={validValue} label='foo' select='date' />).dive()
+  it('renders correctly', () => {
+    const component = shallow(<MuiPickersUtilsProvider utils={MomentUtils} moment={moment}><DateField input={validValue} label='foo' /></MuiPickersUtilsProvider>)
 
-    expect(component.find('label')).toIncludeText('foo')
+    expect(component.html().replace(TimeHelper.today(), 'TODAY')).toMatchSnapshot()
   })
 
-  describe('Form Handling', () => {
+  it('can hide the picker', () => {
+    const component = shallow(<MuiPickersUtilsProvider utils={MomentUtils} moment={moment}><DateField showPicker={false} input={validValue} label='foo' /></MuiPickersUtilsProvider>)
+
+    expect(component.html().replace(TimeHelper.today(), 'TODAY')).toMatchSnapshot()
+  })
+
+  it('can render a default value', () => {
+    const component = shallow(<MuiPickersUtilsProvider utils={MomentUtils} moment={moment}><DateField showPicker={false} input={{onChange: update}} label='foo' /></MuiPickersUtilsProvider>)
+
+    expect(component.html().replace(TimeHelper.today(), 'TODAY')).toMatchSnapshot()
+  })
+
+  it('opens the datepicker on adornment click', () => {
+    const component = shallow(<MuiPickersUtilsProvider utils={MomentUtils} moment={moment}><DateField input={validValue} label='foo' /></MuiPickersUtilsProvider>)
+
+    component.find(IconButton).simulate('click')
+
+    // expect(component.html().replace(TimeHelper.today(), "TODAY")).toMatchSnapshot();
+  })
+
+  xdescribe('Form Handling', () => {
     it('set the form value from props', () => {
       const component = shallow(<DateField formValue={validValue} select='date' />).dive()
 
@@ -50,17 +75,5 @@ describe('Component - Datefield', () => {
       expect(update).toBeCalledWith('foo')
       expect(component.state('dialog').time).toBeInstanceOf(Moment)
     })
-  })
-
-  it('creates a datepicker', () => {
-    const component = shallow(<DateField formValue={validValue} select='date' />).dive()
-
-    expect(component).toHaveState('dialog')
-  })
-
-  xit('opens the datepicker onfocus', () => {
-    const component = shallow(<DateField formValue={validValue} select='date' />).dive()
-
-    component.find('input').simulate('focus')
   })
 })

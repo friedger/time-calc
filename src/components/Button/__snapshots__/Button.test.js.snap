@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Component - Button adds the classes from props.classes to the button 1`] = `"<button tabindex=\\"-1\\" class=\\"MuiButtonBase-root-7 MuiButtonBase-disabled-8 MuiIconButton-root-1 MuiIconButton-colorPrimary-3 MuiIconButton-disabled-5 foo\\" type=\\"button\\" disabled=\\"\\" variant=\\"raised\\"><span class=\\"MuiIconButton-label-6\\"><i class=\\"material-icons\\"></i></span></button>"`;
+
+exports[`Component - Button adds the mdl-icon from props.icon 1`] = `"<button tabindex=\\"-1\\" class=\\"MuiButtonBase-root-7 MuiButtonBase-disabled-8 MuiIconButton-root-1 MuiIconButton-colorPrimary-3 MuiIconButton-disabled-5\\" type=\\"button\\" disabled=\\"\\" variant=\\"raised\\"><span class=\\"MuiIconButton-label-6\\"><i class=\\"material-icons\\">add</i></span></button>"`;
+
+exports[`Component - Button renders a disabled button if there is no callback defined via props.invoke 1`] = `"<button tabindex=\\"-1\\" class=\\"MuiButtonBase-root-7 MuiButtonBase-disabled-8 MuiIconButton-root-1 MuiIconButton-colorPrimary-3 MuiIconButton-disabled-5\\" type=\\"button\\" disabled=\\"\\" variant=\\"raised\\"><span class=\\"MuiIconButton-label-6\\"><i class=\\"material-icons\\"></i></span></button>"`;
+
+exports[`Component - Button sets the type from props.type 1`] = `"<button tabindex=\\"-1\\" class=\\"MuiButtonBase-root-7 MuiButtonBase-disabled-8 MuiIconButton-root-1 MuiIconButton-colorPrimary-3 MuiIconButton-disabled-5\\" type=\\"reset\\" disabled=\\"\\" variant=\\"raised\\"><span class=\\"MuiIconButton-label-6\\"><i class=\\"material-icons\\"></i></span></button>"`;

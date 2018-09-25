@@ -1,54 +1,41 @@
 import React from 'react'
-import AbstractDateTimeField from '../AbstractDateTimeField'
-import {ErrorList, withFormValue} from 'react-forms'
-import Moment from 'moment'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
-import DatePicker from 'md-date-time-picker/dist/js/mdDateTimePicker'
+import DatePicker from 'material-ui-pickers/DatePicker'
 
-import './DateField.css'
+import { TimeHelper } from '../../logic/helpers'
 
-export class DatepickerField extends AbstractDateTimeField {
-  static propTypes = {
-    formValue: PropTypes.object.isRequired,
-    label: PropTypes.string,
-    select: PropTypes.string.isRequired
-  }
+const dateMask = (value) => {
+  const chars = value.split('')
 
-  createPicker () {
-    const moment = new Moment()
-    moment.set('year', moment.get('year') + 1)
+  const months = [/[0-1]/, chars[0] === '0' ? /[0-9]/ : /[0-2]/]
+  const days = [/[0-3]/, chars[3] === '3' ? /[0-1]/ : /[0-9]/]
+  const years = [/[1-3]/, /[0-9]/, /[0-9]/, /[0-9]/]
 
-    return new DatePicker({
-      type: 'date',
-      future: moment,
-      orientation: 'LANDSCAPE'
-    })
-  }
-
-  updateDialogDate () {
-    this.state.dialog.time = AbstractDateTimeField.date(this.props.formValue.value)
-    // this.setState({dialog: {...this.state.dialog, time : AbstractDateTimeField.date(this.props.formValue.value)}});
-  }
-
-  updateMaterialDate () {
-    this.field.parentNode.MaterialTextfield.change(AbstractDateTimeField.date())
-  }
-
-  render () {
-    const classes = 'mdl-textfield mdl-js-textfield mdl-textfield--floating-label ' + (this.props.formValue.errorList.length ? 'is-invalid' : '')
-
-    return (
-      <div className={classes}>
-        <input id={this.props.select} className='mdl-textfield__input' readOnly ref={(input) => { this.textInput = input; }}  type='text'
-          value={this.props.formValue.value} onFocus={this.onToggle} onChange={this.onChange} />
-        <label className='mdl-textfield__label'>{this.props.label}</label>
-        <ErrorList className='mdl-textfield__error' formValue={this.props.formValue} />
-      </div>
-    )
-  }
-
-  onOk = () => this.props.formValue.update(AbstractDateTimeField.date(this.state.dialog.time))
+  return months.concat('/').concat(days).concat('/').concat(years)
 }
 
-export default withFormValue(DatepickerField)
+const DateField = ({input, label, showPicker}) => <DatePicker
+  value={input.value ? TimeHelper.date(input.value) : null}
+  onChange={(date) => input.onChange(TimeHelper.date(date))}
+  keyboard={showPicker !== false}
+  label={label}
+  format='L'
+  autoOk
+  mask={dateMask}
+  placeholder={TimeHelper.today()}
+  disableOpenOnEnter
+  fullWidth
+  showTodayButton
+  InputLabelProps={{
+    shrink: true
+  }}
+/>
+
+DateField.propTypes = {
+  input: PropTypes.object,
+  label: PropTypes.string,
+  showPicker: PropTypes.bool
+}
+
+export default DateField

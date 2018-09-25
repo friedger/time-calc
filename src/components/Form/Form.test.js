@@ -2,7 +2,6 @@ import React from 'react'
 import ConnectedForm, {Form} from './Form'
 import {TimeField} from '../TimeField/TimeField'
 import DateField from '../DateField/DateField'
-import DisplayField from '../DisplayField/DisplayField'
 import 'jest-enzyme'
 import { shallowWithStore, shallowWithState } from 'enzyme-redux'
 import { createMockStore } from 'redux-test-utils'
@@ -18,11 +17,11 @@ describe('Component - Form', () => {
     const defaultValue = {errorList: [], update: jest.fn()}
     const component = mount(<Form save={save} edit={undefined} calculate={calculate} formValue={defaultValue} />)
 
-    expect(component.containsMatchingElement(<DisplayField label='Duration' value='' />)).toBeTruthy()
-    expect(component.containsMatchingElement(<DateField select='date' label='Day' />)).toBeTruthy()
-    expect(component.containsMatchingElement(<TimeField select='start' label='Start Time' mobile={false} timer />)).toBeTruthy()
-    expect(component.containsMatchingElement(<TimeField select='end' label='End Time' mobile={false} timer />)).toBeTruthy()
-    expect(component.containsMatchingElement(<TimeField select='break' label='Break' mobile={false} timer={false} />)).toBeTruthy()
+    expect(component.containsMatchingElement(<DateField id='date' label='Day' />)).toBeTruthy()
+    expect(component.containsMatchingElement(<TimeField id='start' label='Start Time' />)).toBeTruthy()
+    expect(component.containsMatchingElement(<TimeField id='end' label='End Time' />)).toBeTruthy()
+    expect(component.containsMatchingElement(<TimeField id='break' label='Break' />)).toBeTruthy()
+    expect(component.containsMatchingElement(<TimeField id='duration' label='Duration' disabled />)).toBeTruthy()
   })
 
   it('triggers calculation in case of valid form', () => {

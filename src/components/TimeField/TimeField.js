@@ -1,69 +1,58 @@
 import React from 'react'
-import {ErrorList, withFormValue} from 'react-forms'
-import DatePicker from 'md-date-time-picker/dist/js/mdDateTimePicker'
-import Button from '../Button/Button'
-import AbstractDateTimeField from '../AbstractDateTimeField'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
-import './TimeField.css'
+import TimePicker from 'material-ui-pickers/TimePicker'
 
-export class TimeField extends AbstractDateTimeField {
-  static propTypes = {
-    mobile: PropTypes.bool,
-    timer: PropTypes.bool
-  }
+import { TimeHelper } from '../../logic/helpers'
 
-  static defaultProps = {
-    mobile: false,
-    timer: true
-  };
+const timeMask = (value) => {
+  const chars = value.split('')
 
-  createPicker () {
-    return new DatePicker({
-      type: 'time'
-    })
-  }
+  const hours = [
+    /[0-2]/,
+    chars[0] === '2' ? /[0-3]/ : /[0-9]/
+  ]
 
-  updateDialogDate () {
-    this.state.dialog.time = AbstractDateTimeField.time(this.props.formValue.value)
-        // this.setState({dialog: {...this.state.dialog, time : AbstractDateTimeField.time(this.props.formValue.value)}});
-  }
+  const minutes = [ /[0-5]/, /[0-9]/ ]
 
-  updateMaterialDate () {
-    if (typeof this.props.formValue.value === 'undefined') {
-      this.field.parentNode.MaterialTextfield.change(undefined)
-    } else if (this.props.formValue.value) {
-      this.field.parentNode.MaterialTextfield.change(AbstractDateTimeField.time(this.props.formValue.value))
-    }
-  }
-
-  render () {
-    const classes = 'mdl-textfield mdl-js-textfield mdl-textfield--floating-label ' + (this.props.formValue.errorList.length ? 'is-invalid' : '')
-    let listeners = {onChange: this.onChange}
-
-    if (this.props.mobile === false) {
-      listeners = {...listeners, onFocus: this.onToggle, onKeyUp: this.onClose}
-    }
-
-    return (
-      <div className={classes}>
-        <input className='mdl-textfield__input' type='time' id={this.props.select} ref={(field) => { this.field = field; }}  value={this.props.formValue.value} placeholder='HH:mm' {...listeners} />
-        <label className='mdl-textfield__label'>{this.props.label}</label>
-        {this.props.formValue.errorList.length ? <ErrorList className='mdl-textfield__error' formValue={this.props.formValue} /> : undefined}
-        {this.props.timer &&
-        <Button invoke={this.onUpdate} context={this} icon='timer'
-          classes='mdl-button--icon mdl-button--colored pull-right' />}
-      </div>
-    )
-  }
-
-  onToggle = () => {
-    this.state.dialog.toggle()
-    this.state.dialog.time = AbstractDateTimeField.time(this.props.formValue.value)
-  }
-
-  onUpdate = () => this.props.formValue.update(AbstractDateTimeField.time().format('HH:mm'))
-  onOk = () => this.props.formValue.update(AbstractDateTimeField.time(this.state.dialog.time))
+  return hours.concat(':').concat(minutes)
 }
 
-export default withFormValue(TimeField)
+/* if (keyboard) { localInputProps[${adornmentPosition}Adornment] = ( <InputAdornment position={adornmentPosition} {...InputAdornmentProps} disabled={disabled}> <IconButton onClick={this.openPicker}> <Icon> {keyboardIcon} </Icon> </IconButton> </InputAdornment> ); } */
+
+const TimeField = ({input, label, showPicker, disabled, defaultValue}) => <TimePicker
+  value={input && input.value ? TimeHelper.time(input.value) : null}
+  onChange={(date) => input.onChange(TimeHelper.time(date))}
+  keyboard
+  label={label}
+  mask={timeMask}
+  autoOk
+  placeholder={defaultValue || TimeHelper.now()}
+  disableOpenOnEnter
+  fullWidth
+  todayLabel='Now'
+  keyboardIcon='timer'
+  ampm={false}
+  InputAdornmentProps={{
+    style: {
+      display: showPicker === false ? 'none' : 'flex'
+    }
+  }}
+  disabled={disabled}
+  invalidDateMessage='Invalid Time'
+  showTodayButton
+  // tabIndexIconButton="-1"
+  InputLabelProps={{
+    shrink: true
+  }}
+/>
+
+TimeField.propTypes = {
+  input: PropTypes.object,
+  label: PropTypes.string,
+  showPicker: PropTypes.bool,
+  disabled: PropTypes.bool,
+  defaultValue: PropTypes.any
+}
+
+export default TimeField
