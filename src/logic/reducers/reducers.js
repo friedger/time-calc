@@ -2,7 +2,6 @@ import { combineReducers } from 'redux'
 import { reducer as formReducer } from 'redux-form'
 import {enableBatching} from 'redux-batched-actions'
 import Timelist from './timelist'
-import Form from './form'
 import UserProfile from './userProfile'
 import Syncer from './syncer'
 

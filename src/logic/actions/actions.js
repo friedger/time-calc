@@ -105,6 +105,11 @@ export function editTime (time) {
   }
 }
 
+export function userSignIn() {
+  return {
+    type: USER_SIGN_IN
+  }
+}
 
 export function userSignOut() {
   return {
