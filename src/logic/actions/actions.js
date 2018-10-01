@@ -10,6 +10,15 @@ export const CALCULATION_FETCHED = '@@redux-form/CHANGE'
 export const TIMES_CLEANED = 'TIMES_CLEANED'
 export const TIMES_LOADED = 'TIMES_LOADED'
 export const SET_FIELD = '@@redux-form/CHANGE'
+export const USER_SIGN_IN = 'USER_SIGN_IN'
+export const USER_SIGN_OUT = 'USER_SIGN_OUT'
+export const USER_CONNECTING = 'USER_CONNECTING'
+export const USER_CONNECTED = 'USER_CONNECTED'
+export const USER_DISCONNECTED = 'USER_DISCONNECTED'
+export const SYNC_STARTED = "SYNC_STARTED"
+export const SYNC_DONE = "SYNC_DONE"
+export const SYNC_FAILED = "SYNC_FAILED"
+export const DATA_CHANGED = "DATA_CHANGED"
 
 export function timesLoaded (times) {
   return {
@@ -93,5 +102,61 @@ export function editTime (time) {
     type: EDIT_TIME,
     meta: {form: 'time'},
     payload: {...time.time, index: time.index}
+  }
+}
+
+export function userSignIn() {
+  return {
+    type: USER_SIGN_IN
+  }
+}
+
+export function userSignOut() {
+  return {
+    type: USER_SIGN_OUT
+  }
+}
+
+export function userConnecting() {
+  return {
+    type: USER_CONNECTING
+  }
+}
+
+export function userConnected(user) {
+  return {
+    type: USER_CONNECTED,
+    user: user
+  }
+}
+
+export function userDisconnected() {
+  return {
+    type: USER_DISCONNECTED
+  }
+}
+
+export function syncStarted() {
+  return {
+    type: SYNC_STARTED
+  }
+}
+
+export function syncDone() {
+  return {
+    type: SYNC_DONE
+  }
+}
+
+export function syncFailed(error) {
+  return {
+    type: SYNC_FAILED,
+    error: error
+  }
+}
+
+export function dataChanged() {
+  return {
+    type: DATA_CHANGED
   }
 }

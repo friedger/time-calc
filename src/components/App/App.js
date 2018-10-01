@@ -18,6 +18,8 @@ import createStore from './../../logic/store'
 
 import Form from '../Form/Form'
 import TimeList from '../TimeList/TimeList'
+import Syncer from '../Syncer/Syncer'
+import UserProfile from '../UserProfile/UserProfile'
 
 import MomentUtils from 'material-ui-pickers/utils/moment-utils'
 import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider'
@@ -45,6 +47,8 @@ const App = ({ classes }) => (
         <AppBar position='static' color='primary'>
           <Toolbar>
             <Typography variant='title' color='inherit'>Timesheet</Typography>
+            <UserProfile/>
+            <Syncer/>
           </Toolbar>
         </AppBar>
         <Grid item xs={12}>
