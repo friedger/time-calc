@@ -62,6 +62,7 @@ function * userSignIn() {
 
 function * userSignOut() {
   yield call(UserHelper.signOut)
+  yield put(userDisconnected())
 }
 
 function * checkLogin() {

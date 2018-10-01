@@ -24,6 +24,7 @@ const UserProfile = (props) => {
       <BlockstackSignInButton
         signIn = {props.userSignIn}
         signOut = {props.userSignOut}
+        isSignedIn = {props.isSignedIn}
       />
       </div>
     )
@@ -45,8 +46,8 @@ const UserProfile = (props) => {
 }
 
 UserProfile.propTypes = {
-  isSignedIn: PropTypes.boolean,
-  isConnecting: PropTypes.boolean,
+  isSignedIn: PropTypes.bool,
+  isConnecting: PropTypes.bool,
   name: PropTypes.string,
   avatarUrl: PropTypes.string,
   message: PropTypes.string,

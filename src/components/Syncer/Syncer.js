@@ -24,9 +24,9 @@ const Syncer = (props) => {
 }
 
 Syncer.propTypes = {
-  hasChanges: PropTypes.boolean,
-  isSyncing: PropTypes.boolean,
-  allSynced: PropTypes.boolean,
+  hasChanges: PropTypes.bool,
+  isSyncing: PropTypes.bool,
+  allSynced: PropTypes.bool,
   error: PropTypes.string
 }
 

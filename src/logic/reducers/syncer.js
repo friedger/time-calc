@@ -11,7 +11,6 @@ export default class Syncer {
 
   process (state, action) {
     this.state = state
-    this.syncState = state.syncState || null
     this.action = action
 
     switch (action.type) {
