@@ -8,7 +8,10 @@ coverage
 
 # production
 build
+docs
 
 # misc
 src/**/*.css
 server/build
+
+.idea
