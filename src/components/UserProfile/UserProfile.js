@@ -5,6 +5,18 @@ import { connect } from 'react-redux'
 import { userSignIn, userSignOut} from '../../logic/actions/actions'
 
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core';
+
+const styles = () => ({
+  root: {
+    textAlign:"center"
+  },
+  avatar: {
+    borderRadius:"50%",
+    height:"20px",
+    width:"20px",
+  }
+})
 
 const UserProfile = (props) => {
   const {
@@ -12,19 +24,20 @@ const UserProfile = (props) => {
     isConnecting,
     name,
     avatarUrl,
-    message
+    message,
+    classes
   } = props;
 
   if (isSignedIn) {
+    const image = (<img src={avatarUrl} alt={name} className={classes.avatar}/>)
     return (
-      <div>
-      <img src={avatarUrl} width="100" height="100" alt=""/><br/>
-      {name}
-      <br/>
+      <div className={classes.root}>          
       <BlockstackSignInButton
         signIn = {props.userSignIn}
         signOut = {props.userSignOut}
         isSignedIn = {props.isSignedIn}
+        img = {image}
+        includeBlockstackLogo = {false}
       />
       </div>
     )
@@ -52,7 +65,8 @@ UserProfile.propTypes = {
   avatarUrl: PropTypes.string,
   message: PropTypes.string,
   userSignIn: PropTypes.func,
-  userSignOut: PropTypes.func
+  userSignOut: PropTypes.func,
+  classes: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => {
@@ -77,4 +91,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(UserProfile);
+)(withStyles(styles) (UserProfile));

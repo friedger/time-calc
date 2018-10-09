@@ -28,6 +28,9 @@ import moment from 'moment'
 const styles = () => ({
   root: {
     flexGrow: 1
+  },
+  title : {
+    flexGrow: 1
   }
 })
 
@@ -46,7 +49,7 @@ const App = ({ classes }) => (
       <Grid container className={classes.root} spacing={16}>
         <AppBar position='static' color='primary'>
           <Toolbar>
-            <Typography variant='title' color='inherit'>Timesheet</Typography>
+            <Typography variant='title' color='inherit' className={classes.title}>Timesheet</Typography>
             <UserProfile/>
             <Syncer/>
           </Toolbar>

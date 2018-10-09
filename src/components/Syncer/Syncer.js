@@ -1,33 +1,47 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import CloudOffIcon from '@material-ui/icons/CloudOff'
+import SaveIcon from '@material-ui/icons/Save'
+import SyncIcon from '@material-ui/icons/Sync'
+import CloudCircleIcon from '@material-ui/icons/CloudCircle'
+import CloudDoneIcon from '@material-ui/icons/CloudDone'
+import { withStyles } from '@material-ui/core';
+
+const styles = () => ({
+  root: {
+    margin:"8px"
+  }
+});
 
 const Syncer = (props) => {
   const {
     hasChanges,
     isSyncing,
     allSynced,
-    error
+    error,
+    classes
   } = props;
 
   if (error) {
-      return (<div>{error}</div>)
+      return (<div><CloudOffIcon/>{error}</div>)
   }
   if (hasChanges) {
-    return (<div>*</div>)
+    return (<div className={classes.root}><SaveIcon titleAccess="Needs syncing"/></div>)
   } else if (isSyncing) {
-    return (<div>Syncing ...</div>)
+    return (<div className={classes.root}><SyncIcon titleAccess="Syncing ..."/></div>)
   } else if (allSynced) {
-    return (<div>Saved.</div>)
+    return (<div className={classes.root}><CloudDoneIcon titleAccess="Sync done"/></div>)
   }
-  return <div>Sync state</div>
+  return <div className={classes.root}><CloudCircleIcon titleAccess="Sync State"/></div>
 }
 
 Syncer.propTypes = {
   hasChanges: PropTypes.bool,
   isSyncing: PropTypes.bool,
   allSynced: PropTypes.bool,
-  error: PropTypes.string
+  error: PropTypes.string,
+  classes: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => {
@@ -44,4 +58,4 @@ const mapStateToProps = (state) => {
 export default connect(
   mapStateToProps,
   null
-)(Syncer);
+)(withStyles(styles)(Syncer));

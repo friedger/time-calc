@@ -27,6 +27,7 @@ const BlockstackSignInButton = (props) => {
     imageStyle,
     textStyle,
     style,
+    img,
   } = props;
 
   let {
@@ -53,13 +54,18 @@ const BlockstackSignInButton = (props) => {
 
 
   const imageInlineStyle = Object.assign({}, imageDefaultStyle, imageStyle);
+  let altImg = (null)
+  if (img) {
+    altImg = (img)
+   }
+
   const image = (includeBlockstackLogo) ? (
     <img
       src="https://media.githubusercontent.com/media/blockstack/designs/master/app-icons/assets/blockstack-app-icon-1024x1024.png"
       alt="Blockstack Logo"
       style={imageInlineStyle}
     />
-  ) : (null);
+  ) : (altImg);
 
   const textInlineStyle = Object.assign({}, textDefaultStyle, textStyle);
 
@@ -117,6 +123,7 @@ BlockstackSignInButton.propTypes = {
   isSignedIn: PropTypes.bool.isRequired,
   signOut: PropTypes.func.isRequired,
   signIn: PropTypes.func.isRequired,
+  img: PropTypes.object
 };
 
 BlockstackSignInButton.defaultProps = {
@@ -130,6 +137,7 @@ BlockstackSignInButton.defaultProps = {
   signOutStyle: {},
   imageStyle: {},
   textStyle: {},
+  img : null,
 };
 
 export default BlockstackSignInButton;
