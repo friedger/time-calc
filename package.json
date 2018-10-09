@@ -32,6 +32,7 @@
     "@material-ui/icons": "^3.0.0",
     "@material-ui/core": "^3.0.0",
     "blockstack": "^18.0.4",
+    "blockstack-react-scripts": "1.0.4",
     "json2csv": "^4.2.1",
     "material-ui-pickers": "^1.0.0-rc.12",
     "moment": "^2.22.2",
@@ -49,11 +50,12 @@
     "store": "^2.0.12"
   },
   "scripts": {
-    "test": "react-scripts test --env=jsdom",
-    "dev": "react-scripts start",
+    "test": "blockstack-react-scripts test --env=jsdom",
+    "dev": "blockstack-react-scripts start",
     "critical": "cat ./build/index.html | critical --base=./build --folder=./build --inline --minify > ./build/index_critical.html && mv ./build/index_critical.html ./build/index.html",
-    "build": "rm -rf build/* && mv .env ._env && react-scripts build && mv ._env .env",
+    "build": "rm -rf build/* && mv .env ._env && blockstack-react-scripts build && mv ._env .env",
     "coverage": "npm run test -- --coverage",
+    "eject": "blockstack-react-scripts eject",
     "sw": "sw-precache --config=scripts/sw-precache-config.js",
     "cs": "standard --fix src/**/*.js src/**/**/*.js -v --color --parser babel-eslint --env jest --env browser --env node --env serviceWorker",
     "ssr": "react-snapshot && BABEL_ENV=production node_modules/.bin/babel-node scripts/ssr.js"
