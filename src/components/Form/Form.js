@@ -31,8 +31,8 @@ const styles = theme => ({
 const validate = (values, props) => {
   const errors = {}
 
-  if (!values.start || !values.end) {
-    errors.duration = 'No Start and End Time set'
+  if (!values.start && !values.end) {
+    errors.duration = 'No Start or End Time set'
   }
 
   if (!Object.keys(errors).length) {

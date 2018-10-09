@@ -66,7 +66,9 @@ export class TimeList extends React.PureComponent {
 
   calculateSum () {
     let durationSum = Moment.duration('00:00')
-    this.props.times.map(t => durationSum.add(t.duration))
+    this.props.times
+      .filter(t => t.start && t.end)
+      .map(t => durationSum.add(t.duration))
     return durationSum.format('HH:mm', {trim: false})
   }
 
