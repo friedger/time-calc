@@ -31,7 +31,12 @@ const styles = () => ({
   },
   title : {
     flexGrow: 1
-  }
+  },
+  footer: {
+    backgroundColor: theme.palette.background.paper,
+    marginTop: theme.spacing.unit * 8,
+    padding: `${theme.spacing.unit * 6}px 0`,
+},
 })
 
 const theme = createMuiTheme({
@@ -49,7 +54,7 @@ const App = ({ classes }) => (
       <Grid container className={classes.root} spacing={16}>
         <AppBar position='static' color='primary'>
           <Toolbar>
-            <Typography variant='title' color='inherit' className={classes.title}>Timesheet</Typography>
+            <Typography variant='title' color='inherit' className={classes.title}>OI Timesheet</Typography>            
             <UserProfile/>
             <Syncer/>
           </Toolbar>
@@ -65,6 +70,16 @@ const App = ({ classes }) => (
           </Paper>
         </Grid>
       </Grid>
+      {/* Footer */}
+      <footer className={classes.footer}>
+        <Typography variant="h6" align="center" gutterBottom>
+          made by OpenIntents.org
+        </Typography>
+        <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
+          Open Source And Free!
+        </Typography>
+      </footer>
+      {/* End footer */}
     </MuiThemeProvider>
   </Provider>
 )

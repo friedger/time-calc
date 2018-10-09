@@ -2,7 +2,7 @@
   "name": "time-calc",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://friedger.github.io/time-calc",
+  "homepage": "https://oi-timesheet.com",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
