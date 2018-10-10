@@ -1,18 +1,19 @@
 # Time Calculator
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/digitalkaoz/time-calc.svg)](https://greenkeeper.io/)
+[![Greenkeeper badge](https://badges.greenkeeper.io/friedger/time-calc.svg)](https://greenkeeper.io/)
 
-https://time-calc.digitalkaoz.net
+Based on https://time-calc.digitalkaoz.net
 
 ## Whats Inside
 
 > all the fancy stuff out there ;)
 
 * react (unejected react-app)
-* redux
+* redux, saga
 * service-worker (works perfectly as PWA)
 * sass
-* totally educational koa2 server side app (as the app works perfect without backend)
+* **blockstack** (added in this repo, not in the version by digitalkaoz)
+* ~~totally educational koa2 server side app (as the app works perfect without backend)~~
 
 ## Features
 
@@ -20,6 +21,7 @@ https://time-calc.digitalkaoz.net
 * timetable can be downloaded as *csv*
 * pwa - yeah service worker
 * responsive mdl
+* **decentralized storage of your data**
 
 ## Installation
 

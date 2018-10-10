@@ -8,10 +8,11 @@ coverage
 
 # production
 build
-docs
 
 # misc
 src/**/*.css
 server/build
 
 .idea
+.env
+._env

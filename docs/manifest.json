@@ -1,0 +1,15 @@
+{
+  "short_name": "time-calc",
+  "name": "Time Calculator",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "background_color": "#2196f3",
+  "theme_color": "#2196f3",
+  "start_url": "./",
+  "display": "standalone"
+}
