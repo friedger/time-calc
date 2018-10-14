@@ -10,7 +10,6 @@ import {CALCULATE, CLEAR_TIMES, LOAD_TIMES, ADD_TIME, DELETE_TIME, DOWNLOAD_TIME
 
 function * calculations (action) {
   const calc = yield call(CalculationHelper.fetchCalculation, action.form)
-  yield put(dataChanged())
   yield put(calculationFetched(calc))
 }
 

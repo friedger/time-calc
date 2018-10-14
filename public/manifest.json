@@ -3,18 +3,18 @@
   "name" : "OI Timesheet",
   "icons": [
       {
-        "src": "/android-chrome-192x192.png",
+        "src": "https://oi-timesheet.com/android-chrome-192x192.png",
         "sizes": "192x192",
         "type": "image/png"
       },
       {
-        "src": "/android-chrome-512x512.png",
+        "src": "https://oi-timesheet.com/android-chrome-512x512.png",
         "sizes": "512x512",
         "type": "image/png"
       }
   ],
   "background_color": "#2196f3",
   "theme_color": "#2196f3",
-  "start_url": "/",
+  "start_url": "https://oi-timesheet.com/",
   "display": "standalone"
 }
