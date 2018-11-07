@@ -1,5 +1,6 @@
 import React from "react";
 import autoBind from "react-autobind";
+import {connect} from 'react-redux';
 import PropTypes from "prop-types";
 
 import IconButton from "@material-ui/core/IconButton";
@@ -10,6 +11,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ShareIcon from "@material-ui/icons/Share";
 import { withStyles } from "@material-ui/core";
+import {requestApproval} from '../../logic/actions/actions';
 
 const ITEM_HEIGHT = 48;
 const styles = () => ({
@@ -19,12 +21,14 @@ const styles = () => ({
 
 class AppMenu extends React.Component {
   state = {
-    anchorEl: null
-  };
+    anchorEl: null,
+    pickContact: false
+  }
 
   static propTypes = {
-    classes: PropTypes.object.isRequired
-  };
+    classes: PropTypes.object.isRequired,
+    onRequestApproval: PropTypes.any
+  }
 
   constructor(props) {
     super(props);
@@ -47,6 +51,9 @@ class AppMenu extends React.Component {
             // eslint-disable-next-line no-console
             console.error("Share failed:", err.message);
           }
+    } else if (item === "request_approval") {    
+        this.props.onRequestApproval("friedger.id.blockstack")
+        this.setState( {pickContact: true})
     }
   }
 
@@ -79,6 +86,20 @@ class AppMenu extends React.Component {
             }
           }}
         >
+          
+          <MenuItem
+          // eslint-disable-next-line no-console
+          onClick={(event) => {console.log("nav.share " + navigator.share);this.handleMenuItemClick(event, "request_approval")}}>
+            <ListItemIcon className={classes.icon}>
+              <ShareIcon />
+            </ListItemIcon>
+            <ListItemText
+              classes={{ primary: classes.primary }}
+              inset
+              primary="Share to approve"
+            />
+          </MenuItem>
+          {navigator.share &&
           <MenuItem
           // eslint-disable-next-line no-console
           onClick={(event) => {console.log("nav.share " + navigator.share);this.handleMenuItemClick(event, "share")}}>
@@ -88,13 +109,20 @@ class AppMenu extends React.Component {
             <ListItemText
               classes={{ primary: classes.primary }}
               inset
-              primary="Share"
+              primary="Share app"
             />
           </MenuItem>
+          }
         </Menu>
       </div>
     );
   }
 }
 
-export default withStyles(styles)(AppMenu);
+const mapDispatchToProps = (dispatch) => {
+    return {
+      onRequestApproval: (userId) => dispatch(requestApproval(userId)),
+    }
+  }
+
+export default connect(null, mapDispatchToProps)(withStyles(styles)(AppMenu));

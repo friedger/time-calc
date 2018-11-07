@@ -1,4 +1,4 @@
-import {SYNC_STARTED, SYNC_DONE, SYNC_FAILED, DATA_CHANGED} from '../actions/actions'
+import {SYNC_STARTED, SYNC_DONE, SYNC_FAILED, DATA_CHANGED} from '../actions/actions';
 
 export default class Syncer {
   static dispatch (state = { hasChanges: null, isSyncing: null, allSynced: null, error:null }, action) {

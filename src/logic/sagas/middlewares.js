@@ -25,7 +25,8 @@ import {
   syncStarted,
   syncDone,
   syncFailed,
-  dataChanged
+  dataChanged,
+  REQUEST_APPROVAL
 } from "../actions/actions";
 
 function* calculations(action) {
@@ -54,7 +55,18 @@ function* addTime(action) {
     // create
     times.push(action.time);
   }
-  times = TimeHelper.sortTimes(times);
+  try {
+    // eslint-disable-next-line no-console
+    console.log(JSON.stringify(action.index))
+    // eslint-disable-next-line no-console
+    console.log(JSON.stringify(action.time))
+    // eslint-disable-next-line no-console
+    console.log(JSON.stringify(times))
+  times = TimeHelper.sortTimes(times.filter(t => t != null));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e.toString(), e);
+  }
 
   yield call(StoreHelper.saveTimes, times);
   yield put(dataChanged());
@@ -91,6 +103,7 @@ function* checkLogin() {
     try {
       const user = UserHelper.loadUserData();
       yield put(userConnected(user));
+      yield call(SyncHelper.savePubKey);
       yield call(loadTimesRemotely);
     } catch (e) {
       yield put(userDisconnected());
@@ -99,6 +112,7 @@ function* checkLogin() {
     try {
       const user = yield call(UserHelper.handlePendingSignIn);
       yield put(userConnected(user));
+      yield call(SyncHelper.savePubKey);
       yield call(loadTimesRemotely);
     } catch (e) {
       yield put(userDisconnected());
@@ -119,7 +133,7 @@ function* startSyncing() {
 function* loadTimesRemotely() {
   try {
     yield put(syncStarted());
-    const times = yield call(SyncHelper.init);
+    const times = yield call(() => SyncHelper.init(false));
     // eslint-disable-next-line no-console
     console.log(times);
     yield put(syncDone());
@@ -128,6 +142,12 @@ function* loadTimesRemotely() {
     yield put(syncFailed("sync error" + e));
     yield call(loadTimesFromStore);
   }
+}
+
+function * requestApproval(action) {
+  yield(put(syncStarted()));
+  yield call(SyncHelper.requestApproval(action.userId));
+  yield(put(syncDone()));
 }
 
 export default function* rootSaga() {
@@ -141,4 +161,5 @@ export default function* rootSaga() {
   yield takeLatest(USER_SIGN_IN, userSignIn);
   yield takeLatest(USER_SIGN_OUT, userSignOut);
   yield takeLatest(DATA_CHANGED, startSyncing);
+  yield takeEvery(REQUEST_APPROVAL, requestApproval);
 }

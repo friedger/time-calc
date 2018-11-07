@@ -19,6 +19,7 @@ export const SYNC_STARTED = "SYNC_STARTED"
 export const SYNC_DONE = "SYNC_DONE"
 export const SYNC_FAILED = "SYNC_FAILED"
 export const DATA_CHANGED = "DATA_CHANGED"
+export const REQUEST_APPROVAL = "REQUEST_APPROVAL"
 
 export function timesLoaded (times) {
   return {
@@ -158,5 +159,12 @@ export function syncFailed(error) {
 export function dataChanged() {
   return {
     type: DATA_CHANGED
+  }
+}
+
+export function requestApproval(userId) {
+  return {
+    type: REQUEST_APPROVAL,
+    userId
   }
 }

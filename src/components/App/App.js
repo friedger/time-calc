@@ -64,7 +64,7 @@ const App = ({ classes }) => (
             </Typography>
             <UserProfile />
             <Syncer />
-            {navigator.share && <AppMenu/>}
+            <AppMenu/>
           </Toolbar>
         </AppBar>
         <Grid item xs={12}>
@@ -80,16 +80,18 @@ const App = ({ classes }) => (
       </Grid>
       {/* Footer */}
       <footer className={classes.footer}>
-        <Typography variant="h6" align="center" gutterBottom>
+        <Typography variant="subheading" align="center" gutterBottom>
           made by OpenIntents.org
         </Typography>
         <Typography
-          variant="subtitle1"
+          variant="subheading"
           align="center"
           color="textSecondary"
           component="p"
         >
-          Open Source And Free!
+          <a href="https://github.com/friedger/time-calc">Open Source And Free!</a>
+        </Typography>
+        <Typography align="center">
           Version {process.env.REACT_APP_APPVERSION}
         </Typography>
       </footer>
