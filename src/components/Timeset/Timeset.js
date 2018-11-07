@@ -42,6 +42,11 @@ const styles = theme => ({
 })
 
 export const Timeset = ({classes, time, onEditTime, toggleDialog, index}) => {
+  if (time == null) {
+    return <TableRow className={classes.row}>
+    <TableCell className={classes.important}>Invalid time</TableCell>
+    </TableRow>
+  }
   const date = new Moment(time.date, 'L').format('LL') // TODO should be refactored out into time utils
 
   return <TableRow className={classes.row}>
