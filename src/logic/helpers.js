@@ -112,6 +112,14 @@ export class UserHelper {
   static handlePendingSignIn() {
     return blockstack.handlePendingSignIn()
   }
+
+  static isUserSignedIn() {
+    return blockstack.isUserSignedIn()
+  }
+
+  static loadUserData() {
+    return blockstack.loadUserData()
+  }
 }
 
 export class SyncHelper {

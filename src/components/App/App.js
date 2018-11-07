@@ -1,43 +1,44 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from "react";
+import PropTypes from "prop-types";
 
-import Grid from '@material-ui/core/Grid'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
-import Paper from '@material-ui/core/Paper'
+import Grid from "@material-ui/core/Grid";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import Paper from "@material-ui/core/Paper";
 import {
   MuiThemeProvider,
   createMuiTheme,
   withStyles
-} from '@material-ui/core/styles'
-import blue from '@material-ui/core/colors/blue'
+} from "@material-ui/core/styles";
+import blue from "@material-ui/core/colors/blue";
 
-import { Provider } from 'react-redux'
-import createStore from './../../logic/store'
+import { Provider } from "react-redux";
+import createStore from "./../../logic/store";
 
-import Form from '../Form/Form'
-import TimeList from '../TimeList/TimeList'
-import Syncer from '../Syncer/Syncer'
-import UserProfile from '../UserProfile/UserProfile'
+import Form from "../Form/Form";
+import TimeList from "../TimeList/TimeList";
+import Syncer from "../Syncer/Syncer";
+import UserProfile from "../UserProfile/UserProfile";
+import AppMenu from "./AppMenu";
 
-import MomentUtils from 'material-ui-pickers/utils/moment-utils'
-import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider'
-import moment from 'moment'
+import MomentUtils from "material-ui-pickers/utils/moment-utils";
+import MuiPickersUtilsProvider from "material-ui-pickers/utils/MuiPickersUtilsProvider";
+import moment from "moment";
 
 const styles = () => ({
   root: {
     flexGrow: 1
   },
-  title : {
+  title: {
     flexGrow: 1
   },
   footer: {
     backgroundColor: theme.palette.background.paper,
     marginTop: theme.spacing.unit * 8,
-    padding: `${theme.spacing.unit * 6}px 0`,
-},
-})
+    padding: `${theme.spacing.unit * 6}px 0`
+  }
+});
 
 const theme = createMuiTheme({
   palette: {
@@ -46,17 +47,24 @@ const theme = createMuiTheme({
   typography: {
     fontDisplay: "swap"
   }
-})
+});
 
 const App = ({ classes }) => (
   <Provider store={createStore()}>
     <MuiThemeProvider theme={theme}>
       <Grid container className={classes.root} spacing={16}>
-        <AppBar position='static' color='primary'>
+        <AppBar position="static" color="primary">
           <Toolbar>
-            <Typography variant='title' color='inherit' className={classes.title}>OI Timesheet</Typography>            
-            <UserProfile/>
-            <Syncer/>
+            <Typography
+              variant="title"
+              color="inherit"
+              className={classes.title}
+            >
+              OI Timesheet
+            </Typography>
+            <UserProfile />
+            <Syncer />
+            {navigator.share && <AppMenu/>}
           </Toolbar>
         </AppBar>
         <Grid item xs={12}>
@@ -75,17 +83,23 @@ const App = ({ classes }) => (
         <Typography variant="h6" align="center" gutterBottom>
           made by OpenIntents.org
         </Typography>
-        <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
+        <Typography
+          variant="subtitle1"
+          align="center"
+          color="textSecondary"
+          component="p"
+        >
           Open Source And Free!
+          Version {process.env.REACT_APP_APPVERSION}
         </Typography>
       </footer>
       {/* End footer */}
     </MuiThemeProvider>
   </Provider>
-)
+);
 
 App.propTypes = {
   classes: PropTypes.object.isRequired
-}
+};
 
-export default withStyles(styles)(App)
+export default withStyles(styles)(App);
