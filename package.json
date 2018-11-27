@@ -100,7 +100,7 @@
     "test": "node scripts/test.js --env=jsdom",
     "dev": "node scripts/start.js",
     "critical": "cat ./build/index.html | critical --base=./build --folder=./build --inline --minify > ./build/index_critical.html && mv ./build/index_critical.html ./build/index.html",
-    "build": "rm -rf build/* && mv .env ._env && node scripts/build.js && mv ._env .env",
+    "build": "rm -rf build/* && touch .env && mv .env ._env && node scripts/build.js && mv ._env .env",
     "coverage": "npm run test -- --coverage",
     "sw": "sw-precache --config=scripts/sw-precache-config.js",
     "cs": "standard --fix src/**/*.js src/**/**/*.js -v --color --parser babel-eslint --env jest --env browser --env node --env serviceWorker",
