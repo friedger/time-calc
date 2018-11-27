@@ -61,7 +61,7 @@ const BlockstackSignInButton = (props) => {
 
   const image = (includeBlockstackLogo) ? (
     <img
-      src="https://media.githubusercontent.com/media/blockstack/designs/master/app-icons/assets/blockstack-app-icon-1024x1024.png"
+      src="blockstack.png"
       alt="Blockstack Logo"
       style={imageInlineStyle}
     />

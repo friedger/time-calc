@@ -5,12 +5,18 @@ import { parse } from "json2csv";
 
 const blockstack = require("blockstack");
 
+const STORE_CURRENT_PROJECT = "currentProject";
+const STORE_PROJECTS = "projects";
+const STORE_TIMES = "times";
+
 export class CalculationHelper {
   static fetchCalculation(form) {
     return CalculationHelper.calculateLocal(form);
   }
 
   static calculateLocal(form) {
+    // eslint-disable-next-line no-console
+    console.log(form);
     const breakDuration = Moment.duration(form.break);
     const startDate = new Moment(form.start, "HH:mm");
     const endDate = new Moment(form.end, "HH:mm");
@@ -26,7 +32,9 @@ export class CalculationHelper {
       break: form.break,
       duration: duration,
       date: form.date,
-      description: form.description
+      description: form.description,
+      id: form.id,
+      projectId: form.projectId
     };
   }
 }
@@ -93,11 +101,42 @@ export class TimeHelper {
 
 export class StoreHelper {
   static loadTimes() {
-    return store.get("times") || [];
+    return store.get(STORE_TIMES) || [];
   }
 
   static saveTimes(times) {
-    store.set("times", times);
+    store.set(STORE_TIMES, times);
+  }
+}
+
+export class ProjectHelper {
+  static loadCurrentProject() {
+    let currentProject = store.get(STORE_CURRENT_PROJECT);
+    // eslint-disable-next-line no-console
+    console.log("load currentProject", currentProject);
+    if (!currentProject) {
+      currentProject = {
+        filename: "times.json",
+        title: "Unnamed",
+        id: uuid()
+      };
+    }
+    return currentProject;
+  }
+
+  static saveCurrentProject(project) {    
+    if (!project.id) {
+      project.id = uuid();
+    }
+    store.set(STORE_CURRENT_PROJECT, project);    
+  }
+
+  static loadProjects() {
+    return store.get(STORE_PROJECTS) || [];
+  }
+
+  static saveProjects(projects) {
+    store.set(STORE_PROJECTS, projects);
   }
 }
 
@@ -105,7 +144,7 @@ export class UserHelper {
   static signIn() {
     try {
       blockstack.redirectToSignIn(
-        `${window.location.origin}/`,
+        `${window.location.origin}/app`,
         `${window.location.origin}/manifest.json`,
         ["store_write", "publish_data"]
       );
@@ -149,16 +188,17 @@ export class SyncHelper {
         console.log(e);
       });
   }
-  static sync() {
+
+  static sync(filename) {
     return blockstack.putFile(
-      "times.json",
+      filename,
       JSON.stringify(StoreHelper.loadTimes())
     );
   }
 
-  static init(normal) {
-    if (normal) {
-      return blockstack.getFile("times.json").then(
+  static init(filename, username) {
+    if (!username) {
+      return blockstack.getFile(filename).then(
         function(timesString) {
           // eslint-disable-next-line no-console
           console.log("times " + timesString);
@@ -172,15 +212,17 @@ export class SyncHelper {
       );
     } else {
       const profile = blockstack.loadUserData();
-      const options = { decrypt: false, username: "friedger.id" };
-      const filename = `shared/${profile.username}/times.json`;
+      const options = { decrypt: false, username };
+      const sharedFilename = `shared/${profile.username}/${filename}`;
       // eslint-disable-next-line no-console
-      console.log("loading " + filename);
-      return blockstack.getFile(filename, options).then(
+      console.log("loading " + sharedFilename);
+      return blockstack.getFile(sharedFilename, options).then(
         function(timesString) {
           // eslint-disable-next-line no-console
           console.log("times " + timesString);
-          return JSON.parse(blockstack.decryptContent(timesString)).filter(t => t != null);
+          return JSON.parse(blockstack.decryptContent(timesString)).filter(
+            t => t != null
+          );
         },
         function(error) {
           // eslint-disable-next-line no-console
@@ -191,7 +233,11 @@ export class SyncHelper {
     }
   }
 
-  static requestApproval(username) {
+  static syncProjectList() {
+    blockstack.putFile("projects.json", ProjectHelper.loadProjects());
+  }
+
+  static requestApproval(filename, username) {
     return () => {
       // eslint-disable-next-line no-console
       console.log("get key for " + username);
@@ -207,7 +253,7 @@ export class SyncHelper {
             console.log("key " + file);
             const publicKey = JSON.parse(file);
             return blockstack.putFile(
-              "shared/" + username + "/times.json",
+              `shared/${username}/${filename}`,
               blockstack.encryptContent(
                 JSON.stringify(StoreHelper.loadTimes()),
                 { publicKey }
@@ -226,4 +272,12 @@ export class SyncHelper {
       }
     };
   }
+}
+
+export function uuid() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 }

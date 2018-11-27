@@ -92,11 +92,7 @@ const Form = props => (
           />}
         </Grid>
       </Grid>
-      <Field
-        name='index'
-        // todo causes rerender: function is the problem, make it static?!
-        component={({input}) => <input type='hidden' {...input} />}
-      />
+     
     </Paper>
   </form>
 )
@@ -115,7 +111,9 @@ const mapDispatchToProps = dispatch => {
     calculate: formValue => dispatch(fetchCalculation(formValue)),
     reset: () => dispatch(resetCalculation()),
     save: (values, dispatch) => {
-      dispatch(save(values, values.index))
+      // eslint-disable-next-line no-console
+      console.log("form values", values)
+      dispatch(save(values))
       dispatch(resetCalculation())
     }
   }

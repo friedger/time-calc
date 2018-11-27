@@ -4,8 +4,10 @@ import {enableBatching} from 'redux-batched-actions'
 import Timelist from './timelist'
 import UserProfile from './userProfile'
 import Syncer from './syncer'
+import ProjectList from './projectlist';
 
 export default combineReducers({
+  projectlist: ProjectList.dispatch,
   timelist: Timelist.dispatch,
   form: enableBatching(formReducer),
   userProfile: UserProfile.dispatch,

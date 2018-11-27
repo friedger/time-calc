@@ -4,7 +4,9 @@ import {
   TimeHelper,
   StoreHelper,
   UserHelper,
-  SyncHelper
+  SyncHelper,
+  ProjectHelper,
+  uuid
 } from "../helpers";
 import {
   CALCULATE,
@@ -16,6 +18,7 @@ import {
   USER_SIGN_IN,
   USER_SIGN_OUT,
   DATA_CHANGED,
+  LOAD_PROJECTS,
   timesCleaned,
   calculationFetched,
   timesLoaded,
@@ -26,7 +29,13 @@ import {
   syncDone,
   syncFailed,
   dataChanged,
-  REQUEST_APPROVAL
+  projectsLoaded,
+  REQUEST_APPROVAL,
+  NAVIGATE_TO_PROJECTS,
+  NAVIGATE_TO_APP,
+  currentProjectChanged,
+  SAVE_PROJECT,
+  projectSaved
 } from "../actions/actions";
 
 function* calculations(action) {
@@ -47,22 +56,28 @@ function* loadTimesFromStore() {
 
 function* addTime(action) {
   let times = yield call(StoreHelper.loadTimes);
+  if (!action.time.id) {
+    action.time.id = uuid();
+  }
 
-  if (action.index !== undefined) {
+  if (!action.time.projectId) {
+    let project = yield call(ProjectHelper.loadCurrentProject);
+    action.time.projectId = project.id;
+  }
+
+  let index = times.findIndex(value => {
+    return action.time.id === value.id;
+  });
+
+  if (index >= 0) {
     // update
-    times[action.index] = action.time;
+    times[index] = action.time;
   } else {
     // create
     times.push(action.time);
   }
   try {
-    // eslint-disable-next-line no-console
-    console.log(JSON.stringify(action.index))
-    // eslint-disable-next-line no-console
-    console.log(JSON.stringify(action.time))
-    // eslint-disable-next-line no-console
-    console.log(JSON.stringify(times))
-  times = TimeHelper.sortTimes(times.filter(t => t != null));
+    times = TimeHelper.sortTimes(times.filter(t => t != null));
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e.toString(), e);
@@ -98,32 +113,43 @@ function* userSignOut() {
   yield put(userDisconnected());
 }
 
+function afterLogin(user) {
+  return function*() {
+    yield put(userConnected(user));
+    yield call(SyncHelper.savePubKey);
+    yield call(loadTimesRemotely);
+  };
+}
+
 function* checkLogin() {
   if (UserHelper.isUserSignedIn()) {
     try {
       const user = UserHelper.loadUserData();
-      yield put(userConnected(user));
-      yield call(SyncHelper.savePubKey);
-      yield call(loadTimesRemotely);
+      yield call(afterLogin(user));
     } catch (e) {
       yield put(userDisconnected());
     }
   } else if (UserHelper.isSignInPending()) {
     try {
       const user = yield call(UserHelper.handlePendingSignIn);
-      yield put(userConnected(user));
-      yield call(SyncHelper.savePubKey);
-      yield call(loadTimesRemotely);
+      yield call(afterLogin(user));
     } catch (e) {
       yield put(userDisconnected());
     }
+  } else {
+    yield put(syncStarted());
+    const project = yield call(ProjectHelper.loadCurrentProject);
+    yield put(currentProjectChanged(project));
+    yield call(loadTimesFromStore);
+    yield put(syncDone());
   }
 }
 
 function* startSyncing() {
   try {
     yield put(syncStarted());
-    yield call(SyncHelper.sync);
+    const project = yield call(ProjectHelper.loadCurrentProject);
+    yield call(() => SyncHelper.sync(project.filename));
     yield put(syncDone());
   } catch (e) {
     yield put(syncFailed("sync error" + e));
@@ -133,9 +159,11 @@ function* startSyncing() {
 function* loadTimesRemotely() {
   try {
     yield put(syncStarted());
-    const times = yield call(() => SyncHelper.init(false));
-    // eslint-disable-next-line no-console
-    console.log(times);
+    const project = yield call(ProjectHelper.loadCurrentProject);
+    yield put(currentProjectChanged(project));
+    const times = yield call(() =>
+      SyncHelper.init(project.filename, project.owner)
+    );
     yield put(syncDone());
     yield put(timesLoaded(times));
   } catch (e) {
@@ -144,10 +172,60 @@ function* loadTimesRemotely() {
   }
 }
 
-function * requestApproval(action) {
-  yield(put(syncStarted()));
-  yield call(SyncHelper.requestApproval(action.userId));
-  yield(put(syncDone()));
+function* requestApproval(action) {
+  yield put(syncStarted());
+  const project = yield call(ProjectHelper.loadCurrentProject);
+  var username = action.username;
+  if (!username) {
+    if (project.customer) {
+      username = project.customer.contact;
+    }
+  }
+  if (username) {
+    yield call(SyncHelper.requestApproval(project.filename, username));
+    yield put(syncDone());
+  } else {
+    yield put(syncFailed("no username"));
+  }
+}
+
+function* navigateToProjects(action) {
+  yield action.history.push("/projects");
+}
+
+function* navigateToApp(action) {
+  // eslint-disable-next-line no-console
+  console.log(action);
+  try {
+    yield action.history.push("/app");
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+  }
+}
+
+function* loadProjectsRemotely() {
+  try {
+    yield put(syncStarted());
+    const projects = yield call(ProjectHelper.loadProjects);
+    yield put(syncDone());
+    yield put(projectsLoaded(projects));
+  } catch (e) {
+    yield put(syncFailed("projects sync error" + e));
+  }
+}
+
+function* saveProject(action) {
+  try {
+    yield put(syncStarted());
+    // eslint-disable-next-line no-console
+    console.log(action);
+    yield call(() => ProjectHelper.saveCurrentProject(action.project));
+    yield put(syncDone());
+    yield put(projectSaved(action.project));
+  } catch (e) {
+    yield put(syncFailed("save project failed" + e));
+  }
 }
 
 export default function* rootSaga() {
@@ -162,4 +240,8 @@ export default function* rootSaga() {
   yield takeLatest(USER_SIGN_OUT, userSignOut);
   yield takeLatest(DATA_CHANGED, startSyncing);
   yield takeEvery(REQUEST_APPROVAL, requestApproval);
+  yield takeLatest(NAVIGATE_TO_PROJECTS, navigateToProjects);
+  yield takeLatest(NAVIGATE_TO_APP, navigateToApp);
+  yield takeLatest(LOAD_PROJECTS, loadProjectsRemotely);
+  yield takeLatest(SAVE_PROJECT, saveProject);
 }

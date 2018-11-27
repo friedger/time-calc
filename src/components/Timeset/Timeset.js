@@ -41,7 +41,7 @@ const styles = theme => ({
   }
 })
 
-export const Timeset = ({classes, time, onEditTime, toggleDialog, index}) => {
+export const Timeset = ({classes, time, onEditTime, toggleDialog}) => {
   if (time == null) {
     return <TableRow className={classes.row}>
     <TableCell className={classes.important}>Invalid time</TableCell>
@@ -57,7 +57,7 @@ export const Timeset = ({classes, time, onEditTime, toggleDialog, index}) => {
     <TableCell className={classes.hideMobile} numeric>{time.break}</TableCell>
     <TableCell className={classes.important} numeric>{time.duration}</TableCell>
     <TableCell>
-      <Button invoke={() => onEditTime({index: index, time: time})} label='Edit' icon='edit' />
+      <Button invoke={() => onEditTime({time: time})} label='Edit' icon='edit' />
       <Button color='secondary' invoke={() => toggleDialog(time, 'Delete Time?', 'really delete this TimeRecord?')} label='Delete' icon='delete' />
     </TableCell>
   </TableRow>
@@ -67,7 +67,6 @@ Timeset.propTypes = {
   toggleDialog: PropTypes.func,
   time: PropTypes.object.isRequired,
   onEditTime: PropTypes.func.isRequired,
-  index: PropTypes.number.isRequired,
   classes: PropTypes.object.isRequired
 }
 
@@ -82,8 +81,9 @@ const mapDispatchToProps = (dispatch) => {
       setField('date', time.time.date),
       setField('break', time.time.break),
       setField('duration', time.time.duration),
-      setField('index', time.index),
-      setField('description', time.time.description)
+      setField('id', time.time.id),
+      setField('projectId', time.time.projectId),
+      setField('description', time.time.description)      
     ]))
   }
 }

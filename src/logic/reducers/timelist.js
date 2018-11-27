@@ -15,13 +15,13 @@ export default class Timelist {
     this.action = action
 
     switch (action.type) {
-      case TIMES_LOADED: return this.loadTimes()
+      case TIMES_LOADED: return this.setTimes()
       case TIMES_CLEANED: return this.clearTimes()
       default: return state
     }
   }
 
-  loadTimes () {
+  setTimes () {
     return {
       ...this.state,
       times: this.action.times
