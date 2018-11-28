@@ -29,6 +29,7 @@ export const LOAD_PROJECTS = "LOAD_PROJECTS";
 export const PROJECTS_LOADED = "PROJECTS_LOADED";
 export const CURRENT_PROJECT_CHANGED = "CURRENT_PROJECT_CHANGED";
 export const FILES_LOADED = "FILES_LOADED";
+export const EXPORT_PROJECTS = "EXPORT_PROJECTS";
 
 export function timesLoaded(times, currentProjectId) {
   return {
@@ -144,6 +145,11 @@ export function filesLoaded(files) {
   }
 }
 
+export function exportProjects() {
+  return {
+    type: EXPORT_PROJECTS
+  }
+}
 export function userSignIn() {
   return {
     type: USER_SIGN_IN

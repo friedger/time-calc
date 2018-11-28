@@ -47,9 +47,7 @@ class AppMenu extends React.Component {
     autoBind(this);
   }
 
-  handleClick = event => {
-    // eslint-disable-next-line no-console
-    console.log("currentTarget " + event.currentTarget);
+  handleClick = event => {    
     this.setState({ anchorEl: event.currentTarget });
   };
 
@@ -100,6 +98,7 @@ class AppMenu extends React.Component {
         </IconButton>
         <Menu
           id="app-menu"
+          anchorEl={anchorEl}
           open={open}
           onClose={this.handleClose}
           PaperProps={{

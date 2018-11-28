@@ -272,9 +272,7 @@ export class SyncHelper {
 
   static allFiles() {
     const files = [];
-    let profile = blockstack.loadUserData();
-    // eslint-disable-next-line no-console
-    console.log(profile);
+    let profile = blockstack.loadUserData();    
 
     return blockstack
       .getAppBucketUrl(profile.hubUrl, profile.appPrivateKey)

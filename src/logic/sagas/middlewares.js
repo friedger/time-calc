@@ -239,11 +239,10 @@ function* loadProjectsRemotely() {
 function* saveProject(action) {
   try {
     yield put(syncStarted());
-    // eslint-disable-next-line no-console
-    console.log(action);
     yield call(() => ProjectHelper.saveCurrentProject(action.project));
     yield put(syncDone());
     yield put(projectSaved(action.project));
+    yield put(currentProjectChanged(action.project));
   } catch (e) {
     yield put(syncFailed("save project failed" + e));
   }

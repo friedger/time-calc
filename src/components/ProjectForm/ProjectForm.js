@@ -1,20 +1,30 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-
+import classNames from "classnames";
 import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core/styles";
-import { Paper, Typography } from "@material-ui/core";
+import {
+  Paper,
+  Typography,
+  Button,
+  RadioGroup,
+  Radio,
+  FormControlLabel
+} from "@material-ui/core";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import {
   saveProject,
   createProject,
-  navigateToApp
+  navigateToApp,
+  exportProjects
 } from "../../logic/actions/actions";
 import { withRouter } from "react-router-dom";
 
 import TextField from "../TextField/TextField";
-import Button from "../Button/Button";
+import GenericButton from "../Button/Button";
+import DownloadIcon from "@material-ui/icons/CloudDownload";
+
 import { uuid } from "../../logic/helpers";
 
 const styles = theme => ({
@@ -23,6 +33,18 @@ const styles = theme => ({
   },
   control: {
     padding: theme.spacing.unit * 2
+  },
+  button: {
+    margin: theme.spacing.unit
+  },
+  leftIcon: {
+    marginRight: theme.spacing.unit
+  },
+  rightIcon: {
+    marginLeft: theme.spacing.unit
+  },
+  iconSmall: {
+    fontSize: 20
   }
 });
 
@@ -42,21 +64,71 @@ const readOnlyText = field => {
 
 class ProjectForm extends Component {
   state = {
-    newTitle: ""
+    newTitle: "",
+    selectedProjectId: ""
   };
 
   constructor() {
-    super() 
+    super();
   }
 
-  onNewTitleChanged = (event) => {
+  componentDidMount() {
     this.setState({
-      newTitle: event.target.value
+      selectedProjectId: this.props.currentProject.id
     });
   }
 
+  onNewTitleChanged = event => {
+    this.setState({
+      newTitle: event.target.value
+    });
+  };
+
+  onProjectSelected = event => {
+    const selectedProjectId = event.target.value  
+    this.setState({
+      selectedProjectId,
+    });
+    const selectedProject = this.props.projects.find(p => p.id === selectedProjectId)
+    this.props.setCurrentProject(this.props.history, selectedProject);    
+  };
+
+  renderExportPaper() {
+    const props = this.props;
+    return (
+      <Grid item xs={12}>
+        <Paper className={props.classes.control} style={{ margin: "10px" }}>
+          <Typography variant="title">Export your time sheets</Typography>
+          <Button
+            onClick={() => props.exportProjects(props.history)}
+            variant="contained"
+            size="small"
+            className={props.classes.button}
+          >
+            <DownloadIcon
+              className={classNames(
+                props.classes.leftIcon,
+                props.classes.iconSmall
+              )}
+            />
+            Export
+          </Button>
+          <Grid container spacing={16} justify="center">
+            {Object.keys(props.files).map(k => (
+              <Grid key={k} item xs={12} md={6}>
+                <a href={props.files[k]}>
+                  <Typography variant="body2">{props.files[k]}</Typography>
+                </a>
+              </Grid>
+            ))}
+          </Grid>
+        </Paper>
+      </Grid>
+    );
+  }
   render() {
     const props = this.props;
+
     return (
       <div>
         <form onSubmit={props.handleSubmit(props.save)}>
@@ -87,7 +159,7 @@ class ProjectForm extends Component {
               </Grid>
               <Grid item xs={12} sm={6} md={2}>
                 {props.valid && (
-                  <Button
+                  <GenericButton
                     invoke={() => null}
                     context={props}
                     type="submit"
@@ -95,7 +167,7 @@ class ProjectForm extends Component {
                   />
                 )}
                 {props.edit && (
-                  <Button
+                  <GenericButton
                     color="secondary"
                     invoke={props.reset}
                     context={props}
@@ -106,65 +178,53 @@ class ProjectForm extends Component {
             </Grid>
           </Paper>
         </form>
-        <Paper className={props.classes.control} style={{ margin: "10px" }}>
-          <Typography variant="title">Create new project</Typography>
-          <Field
-            name="newTitle"
-            label="Customer/Project title"
-            type="text"
-            fullWidth
-            onChange={this.onNewTitleChanged}
-            component={TextField}
-          />
-          <Button
-            invoke={() => props.addProject(props.history, this.state.newTitle)}
-            context={props}
-            icon={"add"}
-          />
-        </Paper>
 
         <Grid container>
           <Grid item xs={12} sm={6}>
             <Paper className={props.classes.control} style={{ margin: "10px" }}>
-              <Typography variant="title">All local projects</Typography>
-              <Grid container spacing={16} justify="center">
-                {Object.keys(props.projects).map(k => (
-                  <Grid key={k} item container justify="center">
-                    <Grid item xs={12} md={8}>
-                      <a href={props.projects[k].remoteUrl}>
-                        <Typography variant="body1">
-                          {props.projects[k].title}
-                        </Typography>
-                      </a>
-                    </Grid>
-                    <Grid item xs={12} md={4} zeroMinWidth>
-                      <Typography
-                        variant="body2"
-                        style={{ color: "gray" }}
-                        noWrap
-                      >
-                        {props.projects[k].id}
-                      </Typography>
-                    </Grid>
-                  </Grid>
+              <Typography variant="title">Select current projects</Typography>
+              <RadioGroup
+                aria-label="Projects"
+                name="project"
+                className={props.classes.group}
+                value={this.state.selectedProjectId}
+                onChange={this.onProjectSelected}
+              >
+                {props.projects && Object.keys(props.projects).map(k => (
+                  <FormControlLabel
+                    key={k}
+                    value={props.projects[k].id}
+                    control={<Radio />}
+                    label={props.projects[k].title}
+                  />
                 ))}
-              </Grid>
+              </RadioGroup>
             </Paper>
           </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <Paper className={props.classes.control} style={{ margin: "10px" }}>
-              <Typography variant="title">All remote projects</Typography>
-              <Grid container spacing={16} justify="center">
-                {Object.keys(props.files).map(k => (
-                  <Grid key={k} item xs={12} md={6}>
-                    <a href={props.files[k]}>
-                      <Typography variant="body2">{props.files[k]}</Typography>
-                    </a>
-                  </Grid>
-                ))}
-              </Grid>
-            </Paper>
+          <Grid container item xs={12} sm={6}>
+            <Grid item xs={12}>
+              <Paper
+                className={props.classes.control}
+                style={{ margin: "10px" }}
+              >
+                <Typography variant="title">Create new project</Typography>
+                <Field
+                  name="newTitle"
+                  label="Customer/Project title"
+                  type="text"
+                  fullWidth
+                  onChange={this.onNewTitleChanged}
+                  component={TextField}
+                />
+                <GenericButton
+                  invoke={() =>
+                    props.addProject(props.history, this.state.newTitle)
+                  }
+                  context={props}
+                  icon={"add"}
+                />
+              </Paper>
+            </Grid>
           </Grid>
         </Grid>
       </div>
@@ -180,7 +240,8 @@ const mapStateToProps = state => {
       : { id: uuid() },
     edit: !!currentProject,
     projects: state.projectlist.projects,
-    files: state.projectlist.files || []
+    files: state.projectlist.files || [],
+    currentProject
   };
 };
 
@@ -189,8 +250,15 @@ const mapDispatchToProps = dispatch => {
     save: project => {
       dispatch(saveProject(project));
     },
-    addProject: (history, newTitle) => {      
+    addProject: (history, newTitle) => {
       dispatch(createProject(newTitle));
+      dispatch(navigateToApp(history, true));
+    },
+    exportProjects: () => {
+      dispatch(exportProjects());
+    },
+    setCurrentProject: (history, project) => {
+      dispatch(saveProject(project));
       dispatch(navigateToApp(history, true));
     }
   };
@@ -204,9 +272,12 @@ ProjectForm.propTypes = {
   reset: PropTypes.func,
   classes: PropTypes.object,
   addProject: PropTypes.func,
+  exportProjects: PropTypes.func,
+  setCurrentProject: PropTypes.func,
   history: PropTypes.any.isRequired,
   projects: PropTypes.array,
-  files: PropTypes.array
+  files: PropTypes.array,
+  currentProject: PropTypes.any
 };
 
 export default withRouter(
