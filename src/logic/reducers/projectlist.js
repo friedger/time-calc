@@ -1,7 +1,8 @@
 import {
   PROJECTS_LOADED,
   CURRENT_PROJECT_CHANGED,
-  PROJECT_SAVED
+  PROJECT_SAVED,
+  FILES_LOADED
 } from "../actions/actions";
 
 export default class ProjectList {
@@ -25,6 +26,8 @@ export default class ProjectList {
         return this.setCurrentProject();
       case PROJECT_SAVED:
         return this.updateProject();
+      case FILES_LOADED:
+        return this.setFiles();
       default:
         return state;
     }
@@ -40,7 +43,8 @@ export default class ProjectList {
   setCurrentProject() {
     return {
       ...this.state,
-      currentProject: this.action.project
+      currentProject: this.action.project,
+      projects: this.action.projects
     };
   }
 
@@ -66,5 +70,12 @@ export default class ProjectList {
       projects: this.state.projects,
       currentProject
     };
+  }
+
+  setFiles() {
+    return {
+      ...this.state,
+      files: this.action.files
+    }
   }
 }

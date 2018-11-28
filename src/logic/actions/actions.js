@@ -12,6 +12,7 @@ export const TIMES_LOADED = "TIMES_LOADED";
 export const SET_FIELD = "@@redux-form/CHANGE";
 export const SAVE_PROJECT = "SAVE_PROJECT";
 export const PROJECT_SAVED = "PROJECT_SAVED";
+export const CREATE_PROJECT = "CREATE_PROJECT";
 export const USER_SIGN_IN = "USER_SIGN_IN";
 export const USER_SIGN_OUT = "USER_SIGN_OUT";
 export const USER_CONNECTING = "USER_CONNECTING";
@@ -27,11 +28,13 @@ export const NAVIGATE_TO_APP = "NAVIGATE_TO_APP";
 export const LOAD_PROJECTS = "LOAD_PROJECTS";
 export const PROJECTS_LOADED = "PROJECTS_LOADED";
 export const CURRENT_PROJECT_CHANGED = "CURRENT_PROJECT_CHANGED";
+export const FILES_LOADED = "FILES_LOADED";
 
-export function timesLoaded(times) {
+export function timesLoaded(times, currentProjectId) {
   return {
     type: TIMES_LOADED,
-    times: times
+    times,
+    currentProjectId
   };
 }
 
@@ -127,6 +130,20 @@ export function projectSaved(project) {
   }
 }
 
+export function createProject(title) {
+  return {
+    type: CREATE_PROJECT,
+    title
+  }
+}
+
+export function filesLoaded(files) {
+  return {
+    type: FILES_LOADED,
+    files
+  }
+}
+
 export function userSignIn() {
   return {
     type: USER_SIGN_IN
@@ -199,10 +216,11 @@ export function navigateToProjects(history) {
   };
 }
 
-export function navigateToApp(history) {
+export function navigateToApp(history, waitForNewProject) {
   return {
     type: NAVIGATE_TO_APP,
-    history
+    history,
+    waitForNewProject
   };
 }
 
@@ -219,9 +237,10 @@ export function projectsLoaded(projects) {
   };
 }
 
-export function currentProjectChanged(project) {
+export function currentProjectChanged(project, projects) {
   return {
     type: CURRENT_PROJECT_CHANGED,
-    project
+    project,
+    projects
   };
 }

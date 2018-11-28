@@ -43,7 +43,7 @@ const validate = (values, props) => {
 }
 
 const Form = props => (
-  <form onSubmit={props.handleSubmit(props.save)}>
+  <form onSubmit={props.handleSubmit((values) => props.save(values,props.currentProject))}>
     <Paper className={props.classes.control}>
       <Grid container className={props.classes.root} spacing={16} justify='center'>
         <Grid item xs={12}>
@@ -102,7 +102,8 @@ const mapStateToProps = state => {
 
   return {
     initialValues: edit ? undefined : {break: '00:00', date: TimeHelper.today()},
-    edit
+    edit,
+    currentProject: state.projectlist.currentProject
   }
 }
 
@@ -110,10 +111,8 @@ const mapDispatchToProps = dispatch => {
   return {
     calculate: formValue => dispatch(fetchCalculation(formValue)),
     reset: () => dispatch(resetCalculation()),
-    save: (values, dispatch) => {
-      // eslint-disable-next-line no-console
-      console.log("form values", values)
-      dispatch(save(values))
+    save: (values, currentProject) => {
+      dispatch(save(values, currentProject.id))
       dispatch(resetCalculation())
     }
   }
@@ -125,7 +124,8 @@ Form.propTypes = {
   save: PropTypes.func,
   handleSubmit: PropTypes.func,
   reset: PropTypes.func,
-  classes: PropTypes.object
+  classes: PropTypes.object,
+  currentProject: PropTypes.object
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(

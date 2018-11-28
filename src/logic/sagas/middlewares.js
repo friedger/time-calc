@@ -35,7 +35,9 @@ import {
   NAVIGATE_TO_APP,
   currentProjectChanged,
   SAVE_PROJECT,
-  projectSaved
+  CREATE_PROJECT,
+  projectSaved,
+  filesLoaded
 } from "../actions/actions";
 
 function* calculations(action) {
@@ -51,7 +53,8 @@ function* clearTimes() {
 
 function* loadTimesFromStore() {
   const times = yield call(StoreHelper.loadTimes);
-  yield put(timesLoaded(times));
+  const project = yield ProjectHelper.loadCurrentProject();
+  yield put(timesLoaded(times, project.id));
 }
 
 function* addTime(action) {
@@ -118,6 +121,7 @@ function afterLogin(user) {
     yield put(userConnected(user));
     yield call(SyncHelper.savePubKey);
     yield call(loadTimesRemotely);
+    yield call(loadProjectsRemotely);
   };
 }
 
@@ -139,7 +143,8 @@ function* checkLogin() {
   } else {
     yield put(syncStarted());
     const project = yield call(ProjectHelper.loadCurrentProject);
-    yield put(currentProjectChanged(project));
+    const projects = yield call(ProjectHelper.loadProjects);
+    yield put(currentProjectChanged(project, projects));
     yield call(loadTimesFromStore);
     yield put(syncDone());
   }
@@ -149,7 +154,7 @@ function* startSyncing() {
   try {
     yield put(syncStarted());
     const project = yield call(ProjectHelper.loadCurrentProject);
-    yield call(() => SyncHelper.sync(project.filename));
+    yield call(() => SyncHelper.sync(project.id + "/" + project.filename));
     yield put(syncDone());
   } catch (e) {
     yield put(syncFailed("sync error" + e));
@@ -159,13 +164,29 @@ function* startSyncing() {
 function* loadTimesRemotely() {
   try {
     yield put(syncStarted());
+    const oldProjects = yield call(ProjectHelper.loadProjects);
     const project = yield call(ProjectHelper.loadCurrentProject);
-    yield put(currentProjectChanged(project));
-    const times = yield call(() =>
-      SyncHelper.init(project.filename, project.owner)
-    );
+    const projects = yield call(ProjectHelper.loadProjects);
+    yield put(currentProjectChanged(project, projects));
+
+    let times;
+    if (oldProjects.length == projects.length) {
+      // project already existed
+      times = yield call(() =>
+        SyncHelper.load(project.id + "/" + project.filename, project.owner)
+      );
+      if (!times) {
+        yield call(loadTimesFromStore);
+        yield put(syncFailed("no remote file"));
+        return;
+      }
+    } else {
+      // new project
+      SyncHelper.sync(project.id + "/" + project.filename);
+      times = [];
+    }
     yield put(syncDone());
-    yield put(timesLoaded(times));
+    yield put(timesLoaded(times, project.id));
   } catch (e) {
     yield put(syncFailed("sync error" + e));
     yield call(loadTimesFromStore);
@@ -194,8 +215,6 @@ function* navigateToProjects(action) {
 }
 
 function* navigateToApp(action) {
-  // eslint-disable-next-line no-console
-  console.log(action);
   try {
     yield action.history.push("/app");
   } catch (e) {
@@ -210,6 +229,8 @@ function* loadProjectsRemotely() {
     const projects = yield call(ProjectHelper.loadProjects);
     yield put(syncDone());
     yield put(projectsLoaded(projects));
+    const files = yield call(SyncHelper.allFiles);
+    yield put(filesLoaded(files));
   } catch (e) {
     yield put(syncFailed("projects sync error" + e));
   }
@@ -228,6 +249,14 @@ function* saveProject(action) {
   }
 }
 
+function* createProject(action) {
+  const projects = yield ProjectHelper.loadProjects();
+  const project = yield call(() => ProjectHelper.createProject(projects, action.title));
+  yield call(() => ProjectHelper.saveCurrentProject(project));
+  yield put(projectSaved(action.project));
+  yield put(currentProjectChanged(project));
+}
+
 export default function* rootSaga() {
   yield fork(checkLogin);
   yield takeLatest(CALCULATE, calculations);
@@ -244,4 +273,5 @@ export default function* rootSaga() {
   yield takeLatest(NAVIGATE_TO_APP, navigateToApp);
   yield takeLatest(LOAD_PROJECTS, loadProjectsRemotely);
   yield takeLatest(SAVE_PROJECT, saveProject);
+  yield takeLatest(CREATE_PROJECT, createProject);
 }

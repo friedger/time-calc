@@ -5,7 +5,7 @@ import { parse } from "json2csv";
 
 const blockstack = require("blockstack");
 
-const STORE_CURRENT_PROJECT = "currentProject";
+const STORE_CURRENT_PROJECT_ID = "currentProjectId";
 const STORE_PROJECTS = "projects";
 const STORE_TIMES = "times";
 
@@ -111,24 +111,53 @@ export class StoreHelper {
 
 export class ProjectHelper {
   static loadCurrentProject() {
-    let currentProject = store.get(STORE_CURRENT_PROJECT);
-    // eslint-disable-next-line no-console
-    console.log("load currentProject", currentProject);
-    if (!currentProject) {
-      currentProject = {
-        filename: "times.json",
-        title: "Unnamed",
-        id: uuid()
-      };
+    let currentProjectId = store.get(STORE_CURRENT_PROJECT_ID) || undefined;
+    let projects = ProjectHelper.loadProjects();
+    let currentProject;
+
+    if (currentProjectId) {
+      currentProject = projects.find(p => p.id === currentProjectId);
+    } else {
+      currentProject = undefined;
     }
+
+    if (!currentProject) {
+      currentProject = ProjectHelper.createProject(projects);
+    }
+
     return currentProject;
   }
 
-  static saveCurrentProject(project) {    
+  static createProject(projects, title) {
+    let currentProject = {
+      filename: "times.json",
+      title: title || "Unnamed",
+      id: uuid()
+    };
+    projects.push(currentProject);
+    store.set(STORE_PROJECTS, projects);
+    return currentProject;
+  }
+
+  static saveCurrentProject(project) {
     if (!project.id) {
       project.id = uuid();
     }
-    store.set(STORE_CURRENT_PROJECT, project);    
+
+    let projects = ProjectHelper.loadProjects();
+
+    let index = projects.findIndex(p => p.id === project.id);
+    if (index < 0) {
+      projects.push(project);
+    } else {
+      projects[index] = Object.assign(projects[index], project); // keep other properties
+    }
+    store.set(STORE_PROJECTS, projects);
+
+    let currentProjectId = store.get(STORE_CURRENT_PROJECT_ID) || undefined;
+    if (currentProjectId !== project.id) {
+      store.set(STORE_CURRENT_PROJECT_ID, project.id);
+    }
   }
 
   static loadProjects() {
@@ -196,17 +225,21 @@ export class SyncHelper {
     );
   }
 
-  static init(filename, username) {
+  static load(filename, username) {
     if (!username) {
       return blockstack.getFile(filename).then(
         function(timesString) {
           // eslint-disable-next-line no-console
           console.log("times " + timesString);
-          return JSON.parse(timesString).filter(t => t != null);
+          if (timesString) {
+            return JSON.parse(timesString).filter(t => t != null);
+          } else {
+            return null;
+          }
         },
         function(error) {
           // eslint-disable-next-line no-console
-          console.log("error init " + error);
+          console.log("error load " + error);
           return [];
         }
       );
@@ -226,7 +259,7 @@ export class SyncHelper {
         },
         function(error) {
           // eslint-disable-next-line no-console
-          console.log("error init " + error);
+          console.log("error load " + error);
           return [];
         }
       );
@@ -235,6 +268,26 @@ export class SyncHelper {
 
   static syncProjectList() {
     blockstack.putFile("projects.json", ProjectHelper.loadProjects());
+  }
+
+  static allFiles() {
+    const files = [];
+    let profile = blockstack.loadUserData();
+    // eslint-disable-next-line no-console
+    console.log(profile);
+
+    return blockstack
+      .getAppBucketUrl(profile.hubUrl, profile.appPrivateKey)
+      .then(bucketUrl => {
+        return blockstack
+          .listFiles(f => {
+            files.push(bucketUrl + f);
+            return true;
+          })
+          .then(function() {
+            return files;
+          });
+      });
   }
 
   static requestApproval(filename, username) {
