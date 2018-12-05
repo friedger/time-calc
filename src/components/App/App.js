@@ -54,12 +54,13 @@ const BareOIAppBar = ({
   classes,
   currentProject,
   location,
-  signedOut
+  signedOut,
+  sharedSheet
 }) => {
   let title;
   let app = location.pathname !== "/";
   let projects = location.pathname === "/projects";
-  if (app && !!currentProject && !!currentProject.title) {
+  if (app && !!currentProject && !!currentProject.title && !sharedSheet) {
     title = <div>OI Timesheet - {currentProject.title}</div>;
   } else {
     title = <div>OI Timesheet</div>;
@@ -67,9 +68,7 @@ const BareOIAppBar = ({
   return (
     <AppBar position="static" color="primary">
       <Toolbar>
-        {projects && (
-          <AppHomeMenu/>
-        )}
+        {projects && <AppHomeMenu />}
         <Typography variant="title" color="inherit" className={classes.title}>
           {title}
         </Typography>
@@ -87,17 +86,25 @@ BareOIAppBar.propTypes = {
   match: PropTypes.any,
   location: PropTypes.any,
   signedOut: PropTypes.bool,
-  history: PropTypes.object
+  history: PropTypes.object,
+  sharedSheet: PropTypes.bool
 };
 
 const OIAppBar = withRouter(
-  connect(
-    state => {
-      return {
-        currentProject: state.projectlist.currentProject,
-        signedOut: !state.userProfile.user && !state.userProfile.userMessage
-      };
-    })(withStyles(styles)(BareOIAppBar))
+  connect((state, ownProps) => {
+    // eslint-disable-next-line no-console
+    console.log("ownProps", ownProps);
+    const sharedSheet =
+      ownProps.location &&
+      ownProps.location.pathname &&
+      ownProps.location.pathname.startsWith("/shared");
+
+    return {
+      currentProject: state.projectlist.currentProject,
+      signedOut: !state.userProfile.user && !state.userProfile.userMessage,
+      sharedSheet
+    };
+  })(withStyles(styles)(BareOIAppBar))
 );
 
 const App = ({ classes }) => (
@@ -108,7 +115,10 @@ const App = ({ classes }) => (
           <OIAppBar />
           <Route path="/app" component={TimeListContainer} />
           <Route path="/projects" component={ProjectsContainer} />
-          <Route path="/shared/:user/:project/:file" component={SharedTimeListContainer}/>
+          <Route
+            path="/shared/:user/:project/:file"
+            component={SharedTimeListContainer}
+          />
           <Route path="/" exact component={PublicHomePage} />
         </Grid>
         {/* Footer */}

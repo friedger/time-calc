@@ -266,20 +266,22 @@ function* saveProject(action) {
     yield call(() => ProjectHelper.saveCurrentProject(action.project));
     yield put(syncDone());
     yield put(projectSaved(action.project));
-    yield put(currentProjectChanged(action.project));
+    let projects = yield ProjectHelper.loadProjects();
+    yield put(currentProjectChanged(action.project, projects));
   } catch (e) {
     yield put(syncFailed("save project failed" + e));
   }
 }
 
 function* createProject(action) {
-  const projects = yield ProjectHelper.loadProjects();
+  let projects = yield ProjectHelper.loadProjects();
   const project = yield call(() =>
     ProjectHelper.createProject(projects, action.title)
   );
   yield call(() => ProjectHelper.saveCurrentProject(project));
   yield put(projectSaved(action.project));
-  yield put(currentProjectChanged(project));
+  projects = yield ProjectHelper.loadProjects();
+  yield put(currentProjectChanged(project, projects));
 }
 
 export default function* rootSaga() {
