@@ -143,6 +143,9 @@ export class ProjectHelper {
     if (!project.id) {
       project.id = uuid();
     }
+    if (!project.filesname) {
+      project.filename = "times.json";
+    }
 
     let projects = ProjectHelper.loadProjects();
 
@@ -243,7 +246,7 @@ export class SyncHelper {
           return [];
         }
       );
-    } else {
+    } else {      
       const profile = blockstack.loadUserData();
       const options = { decrypt: false, username };
       const sharedFilename = `shared/${profile.username}/${filename}`;
@@ -272,7 +275,7 @@ export class SyncHelper {
 
   static allFiles() {
     const files = [];
-    let profile = blockstack.loadUserData();    
+    let profile = blockstack.loadUserData();
 
     return blockstack
       .getAppBucketUrl(profile.hubUrl, profile.appPrivateKey)
@@ -298,13 +301,14 @@ export class SyncHelper {
         zoneFileLookupURL: "https://core.blockstack.org/v1/names"
       };
       try {
-        blockstack.getFile("key.json", options).then(
+        return blockstack.getFile("key.json", options).then(
           file => {
-            // eslint-disable-next-line no-console
-            console.log("key " + file);
             const publicKey = JSON.parse(file);
+            const sharedFilename = `shared/${username}/${filename}`;
+            // eslint-disable-next-line no-console
+            console.log("shared file " + sharedFilename);
             return blockstack.putFile(
-              `shared/${username}/${filename}`,
+              sharedFilename,
               blockstack.encryptContent(
                 JSON.stringify(StoreHelper.loadTimes()),
                 { publicKey }

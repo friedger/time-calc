@@ -17,13 +17,13 @@ import {
   saveProject,
   createProject,
   navigateToApp,
-  exportProjects
+  loadProjects
 } from "../../logic/actions/actions";
 import { withRouter } from "react-router-dom";
 
 import TextField from "../TextField/TextField";
 import GenericButton from "../Button/Button";
-import DownloadIcon from "@material-ui/icons/CloudDownload";
+import RefreshIcon from "@material-ui/icons/Refresh";
 
 import { uuid } from "../../logic/helpers";
 
@@ -85,12 +85,14 @@ class ProjectForm extends Component {
   };
 
   onProjectSelected = event => {
-    const selectedProjectId = event.target.value  
+    const selectedProjectId = event.target.value;
     this.setState({
-      selectedProjectId,
+      selectedProjectId
     });
-    const selectedProject = this.props.projects.find(p => p.id === selectedProjectId)
-    this.props.setCurrentProject(this.props.history, selectedProject);    
+    const selectedProject = this.props.projects.find(
+      p => p.id === selectedProjectId
+    );
+    this.props.setCurrentProject(this.props.history, selectedProject);
   };
 
   renderExportPaper() {
@@ -98,20 +100,20 @@ class ProjectForm extends Component {
     return (
       <Grid item xs={12}>
         <Paper className={props.classes.control} style={{ margin: "10px" }}>
-          <Typography variant="title">Export your time sheets</Typography>
+          <Typography variant="title">Your remote files</Typography>
           <Button
             onClick={() => props.exportProjects(props.history)}
             variant="contained"
             size="small"
             className={props.classes.button}
           >
-            <DownloadIcon
+            <RefreshIcon
               className={classNames(
                 props.classes.leftIcon,
                 props.classes.iconSmall
               )}
             />
-            Export
+            Refresh
           </Button>
           <Grid container spacing={16} justify="center">
             {Object.keys(props.files).map(k => (
@@ -150,10 +152,25 @@ class ProjectForm extends Component {
               </Grid>
               <Grid item xs={12}>
                 <Field
+                  name="customer"
+                  label="Customer (Blockstack ID), for read-only access"
+                  fullWidth
+                  component={TextField}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Field
                   name="id"
                   label="Project Id"
+                  type="text"                  
+                  component={readOnlyText}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Field
+                  name="filename"
+                  label="Filename"
                   type="text"
-                  fullWidth
                   component={readOnlyText}
                 />
               </Grid>
@@ -190,14 +207,15 @@ class ProjectForm extends Component {
                 value={this.state.selectedProjectId}
                 onChange={this.onProjectSelected}
               >
-                {props.projects && Object.keys(props.projects).map(k => (
-                  <FormControlLabel
-                    key={k}
-                    value={props.projects[k].id}
-                    control={<Radio />}
-                    label={props.projects[k].title}
-                  />
-                ))}
+                {props.projects &&
+                  Object.keys(props.projects).map(k => (
+                    <FormControlLabel
+                      key={k}
+                      value={props.projects[k].id}
+                      control={<Radio />}
+                      label={props.projects[k].title}
+                    />
+                  ))}
               </RadioGroup>
             </Paper>
           </Grid>
@@ -227,6 +245,7 @@ class ProjectForm extends Component {
             </Grid>
           </Grid>
         </Grid>
+        {this.renderExportPaper()}
       </div>
     );
   }
@@ -236,7 +255,12 @@ const mapStateToProps = state => {
   const currentProject = state.projectlist.currentProject;
   return {
     initialValues: currentProject
-      ? { id: currentProject.id, title: currentProject.title }
+      ? {
+          id: currentProject.id,
+          title: currentProject.title,
+          filename: currentProject.filename,
+          customer: currentProject.customer
+        }
       : { id: uuid() },
     edit: !!currentProject,
     projects: state.projectlist.projects,
@@ -255,7 +279,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(navigateToApp(history, true));
     },
     exportProjects: () => {
-      dispatch(exportProjects());
+      dispatch(loadProjects());
     },
     setCurrentProject: (history, project) => {
       dispatch(saveProject(project));

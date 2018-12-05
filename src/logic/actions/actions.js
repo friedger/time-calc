@@ -1,6 +1,7 @@
 export const CALCULATE = "CALCULATE";
 export const ADD_TIME = "ADD_TIME";
 export const LOAD_TIMES = "LOAD_TIMES";
+export const LOAD_SHARED_TIMES = "LOAD_SHARED_TIMES";
 export const CLEAR_TIMES = "CLEAR_TIMES";
 export const DELETE_TIME = "DELETE_TIME";
 export const DOWNLOAD_TIMES = "DOWNLOAD_TIMES";
@@ -21,6 +22,9 @@ export const USER_DISCONNECTED = "USER_DISCONNECTED";
 export const SYNC_STARTED = "SYNC_STARTED";
 export const SYNC_DONE = "SYNC_DONE";
 export const SYNC_FAILED = "SYNC_FAILED";
+export const APPROVAL_STARTED = "APPROVAL_STARTED";
+export const APPROVAL_DONE = "APPROVAL_DONE";
+export const APPROVAL_FAILED = "APPROVAL_FAILED";
 export const DATA_CHANGED = "DATA_CHANGED";
 export const REQUEST_APPROVAL = "REQUEST_APPROVAL";
 export const NAVIGATE_TO_PROJECTS = "NAVIGATE_TO_PROJECTS";
@@ -71,6 +75,15 @@ export function save(time) {
   return {
     type: ADD_TIME,
     time: time
+  };
+}
+
+export function loadSharedTimes(user, projectId, filename) {
+  return {
+    type: LOAD_SHARED_TIMES,
+    filename,
+    user,
+    projectId,
   };
 }
 
@@ -200,6 +213,26 @@ export function syncFailed(error) {
   };
 }
 
+export function approvalStarted() {
+  return {
+    type: APPROVAL_STARTED
+  };
+}
+
+export function approvalDone(url) {
+  return {
+    type: APPROVAL_DONE,
+    url
+  };
+}
+
+export function approvalFailed(error) {
+  return {
+    type: APPROVAL_FAILED,
+    error: error
+  };
+}
+
 export function dataChanged(filename) {
   return {
     type: DATA_CHANGED,
@@ -207,10 +240,9 @@ export function dataChanged(filename) {
   };
 }
 
-export function requestApproval(filename, username) {
+export function requestApproval(username) {
   return {
-    type: REQUEST_APPROVAL,
-    filename,
+    type: REQUEST_APPROVAL,    
     username
   };
 }

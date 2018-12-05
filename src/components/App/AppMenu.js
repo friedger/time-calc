@@ -11,10 +11,14 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ShareIcon from "@material-ui/icons/Share";
 import SettingsIcon from "@material-ui/icons/Settings";
-import { withStyles } from "@material-ui/core";
+import { withStyles, Dialog, DialogTitle } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
 import {
   requestApproval,
-  navigateToProjects,
+  navigateToProjects
 } from "../../logic/actions/actions";
 import { withRouter } from "react-router-dom";
 
@@ -31,7 +35,8 @@ const styles = () => ({
 class AppMenu extends React.Component {
   state = {
     anchorEl: null,
-    pickContact: false
+    pickContact: false,
+    customerCopyDialogOpen: false
   };
 
   static propTypes = {
@@ -39,7 +44,12 @@ class AppMenu extends React.Component {
     onRequestApproval: PropTypes.any,
     onProjectSettings: PropTypes.any,
     history: PropTypes.any,
-    signedIn: PropTypes.bool.isRequired
+    signedIn: PropTypes.bool.isRequired,
+    hasCustomer: PropTypes.bool.isRequired,
+    currentProject: PropTypes.object,
+    customerCopySaved: PropTypes.bool,
+    customerCopyUrl: PropTypes.string,
+    shareUrl: PropTypes.string
   };
 
   constructor(props) {
@@ -47,11 +57,13 @@ class AppMenu extends React.Component {
     autoBind(this);
   }
 
-  handleClick = event => {    
+  handleClick = event => {
     this.setState({ anchorEl: event.currentTarget });
   };
 
   handleMenuItemClick = (event, item) => {
+    const { currentProject } = this.props;
+
     if (item === MENU_SHARE) {
       try {
         // eslint-disable-next-line no-console
@@ -63,8 +75,10 @@ class AppMenu extends React.Component {
         alert("Couldn't share (" + err + ")");
       }
     } else if (item === MENU_REQUEST_APPROVAL) {
-      this.props.onRequestApproval("friedger.id.blockstack");
-      this.setState({ pickContact: true });
+      if (currentProject && currentProject.customer) {
+        this.handleDialogClickOpen();
+        this.props.onRequestApproval(currentProject.customer);
+      }
     } else if (item === MENU_PROJECTS) {
       this.props.onProjectSettings(this.props.history);
     }
@@ -75,8 +89,23 @@ class AppMenu extends React.Component {
     this.setState({ anchorEl: null });
   };
 
+  handleDialogClickOpen = () => {
+    this.setState({ customerCopyDialogOpen: true });
+  };
+
+  handleDialogClose = () => {
+    this.setState({ customerCopyDialogOpen: false });
+  };
+
   render() {
-    const { classes, signedIn } = this.props;
+    const {
+      classes,
+      signedIn,
+      hasCustomer,
+      customerCopySaved,
+      customerCopyUrl,
+      shareUrl
+    } = this.props;
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
 
@@ -123,23 +152,23 @@ class AppMenu extends React.Component {
               primary="Project settings"
             />
           </MenuItem>
-          {signedIn &&
-          <MenuItem
-            // eslint-disable-next-line no-console
-            onClick={event => {
-              this.handleMenuItemClick(event, MENU_REQUEST_APPROVAL);
-            }}
-          >
-            <ListItemIcon className={classes.icon}>
-              <ShareIcon />
-            </ListItemIcon>
-            <ListItemText
-              classes={{ primary: classes.primary }}
-              inset
-              primary="Share to approve"
-            />
-          </MenuItem>
-          }
+          {signedIn && hasCustomer && (
+            <MenuItem
+              // eslint-disable-next-line no-console
+              onClick={event => {
+                this.handleMenuItemClick(event, MENU_REQUEST_APPROVAL);
+              }}
+            >
+              <ListItemIcon className={classes.icon}>
+                <ShareIcon />
+              </ListItemIcon>
+              <ListItemText
+                classes={{ primary: classes.primary }}
+                inset
+                primary="Share with customer"
+              />
+            </MenuItem>
+          )}
           {navigator.share && (
             <MenuItem
               // eslint-disable-next-line no-console
@@ -158,20 +187,71 @@ class AppMenu extends React.Component {
             </MenuItem>
           )}
         </Menu>
+        <Dialog
+          open={this.state.customerCopyDialogOpen}
+          onClose={this.handleDialogClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Customer Copy"}
+          </DialogTitle>
+          {customerCopySaved && (
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Copy for your customer has been stored at 
+                <a href={customerCopyUrl}>{customerCopyUrl}</a>.                
+              </DialogContentText>
+              <DialogContentText id="alert-dialog-description">
+                Please share with {this.props.currentProject.customer} the link below <br/>
+                <a href={shareUrl}>{shareUrl}</a>.                
+              </DialogContentText>
+            </DialogContent>
+          )}
+          {!customerCopySaved && (
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Copy for your customer is currently generated.... please wait!
+              </DialogContentText>
+            </DialogContent>
+          )}
+          {customerCopySaved && (
+            <DialogActions>
+              <Button
+                onClick={this.handleDialogClose}
+                color="primary"
+                autoFocus
+              >
+                Ok
+              </Button>
+            </DialogActions>
+          )}
+        </Dialog>
       </div>
     );
   }
 }
 
-const mapStateToProps =  state => {
-  return {
-    signedIn: !!state.userProfile.user && !!state.userProfile.userMessage
+const mapStateToProps = state => {
+  let shareUrl;
+  if (state.projectlist.currentProject) {
+    shareUrl = window.origin + "/shared/" + state.userProfile.user.username + "/" + state.projectlist.currentProject.id + "/" + state.projectlist.currentProject.filename;
   }
-}
+  // eslint-disable-next-line no-console
+  console.log("shareUrl " + shareUrl);
+  return {
+    currentProject: state.projectlist.currentProject,
+    signedIn: !!state.userProfile.user && !state.userProfile.userMessage,
+    hasCustomer: !!state.projectlist.currentProject.customer,
+    customerCopySaved: !!state.syncState.customerCopySaved,
+    customerCopyUrl: state.syncState.customerCopyUrl,
+    shareUrl:shareUrl
+  };
+};
 const mapDispatchToProps = dispatch => {
   return {
     onRequestApproval: userId => dispatch(requestApproval(userId)),
-    onProjectSettings: history => dispatch(navigateToProjects(history)),
+    onProjectSettings: history => dispatch(navigateToProjects(history))
   };
 };
 

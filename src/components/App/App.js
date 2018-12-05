@@ -24,6 +24,7 @@ import AppMenu from "./AppMenu";
 import PublicHomePage from "./PublicHomePage";
 import TimeListContainer from "./TimeListContainer";
 import ProjectsContainer from "./ProjectsContainer";
+import SharedTimeListContainer from "./SharedTimeListContainer";
 import AppHomeMenu from "./AppHomeMenu";
 
 const styles = () => ({
@@ -107,6 +108,7 @@ const App = ({ classes }) => (
           <OIAppBar />
           <Route path="/app" component={TimeListContainer} />
           <Route path="/projects" component={ProjectsContainer} />
+          <Route path="/shared/:user/:project/:file" component={SharedTimeListContainer}/>
           <Route path="/" exact component={PublicHomePage} />
         </Grid>
         {/* Footer */}

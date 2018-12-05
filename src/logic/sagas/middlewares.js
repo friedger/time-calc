@@ -37,7 +37,11 @@ import {
   SAVE_PROJECT,
   CREATE_PROJECT,
   projectSaved,
-  filesLoaded
+  filesLoaded,
+  approvalStarted,
+  approvalDone,
+  approvalFailed,
+  LOAD_SHARED_TIMES
 } from "../actions/actions";
 
 function* calculations(action) {
@@ -161,6 +165,24 @@ function* startSyncing() {
   }
 }
 
+function* loadSharedTimesRemotely(action) {
+  try {
+    yield put(syncStarted());
+
+    let times = yield call(() =>
+        SyncHelper.load(action.projectId + "/" + action.filename, action.user)
+      );
+    if (!times || times.length == 0) {
+      yield put(syncFailed("times not found"));    
+    } else {
+      yield put(syncDone());
+      yield put(timesLoaded(times, action.projectId));
+    }
+  } catch (e) {
+    yield put(syncFailed("sync error" + e));    
+  }
+}
+
 function* loadTimesRemotely() {
   try {
     yield put(syncStarted());
@@ -194,19 +216,21 @@ function* loadTimesRemotely() {
 }
 
 function* requestApproval(action) {
-  yield put(syncStarted());
+  yield put(approvalStarted());
   const project = yield call(ProjectHelper.loadCurrentProject);
   var username = action.username;
   if (!username) {
     if (project.customer) {
-      username = project.customer.contact;
+      username = project.customer;
     }
   }
   if (username) {
-    yield call(SyncHelper.requestApproval(project.filename, username));
-    yield put(syncDone());
+    const url = yield call(
+      SyncHelper.requestApproval(project.id + "/" + project.filename, username)
+    );    
+    yield put(approvalDone(url));
   } else {
-    yield put(syncFailed("no username"));
+    yield put(approvalFailed("no username"));
   }
 }
 
@@ -250,7 +274,9 @@ function* saveProject(action) {
 
 function* createProject(action) {
   const projects = yield ProjectHelper.loadProjects();
-  const project = yield call(() => ProjectHelper.createProject(projects, action.title));
+  const project = yield call(() =>
+    ProjectHelper.createProject(projects, action.title)
+  );
   yield call(() => ProjectHelper.saveCurrentProject(project));
   yield put(projectSaved(action.project));
   yield put(currentProjectChanged(project));
@@ -261,6 +287,7 @@ export default function* rootSaga() {
   yield takeLatest(CALCULATE, calculations);
   yield takeEvery(CLEAR_TIMES, clearTimes);
   yield takeLatest(LOAD_TIMES, loadTimesRemotely);
+  yield takeLatest(LOAD_SHARED_TIMES, loadSharedTimesRemotely);
   yield takeEvery(ADD_TIME, addTime);
   yield takeEvery(DELETE_TIME, deleteTime);
   yield takeEvery(DOWNLOAD_TIMES, downloadTimes);
