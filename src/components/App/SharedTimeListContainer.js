@@ -14,13 +14,16 @@ class SharedTimeListContainer extends Component {
     match: PropTypes.any,
     loadTimes: PropTypes.func,
     timesLoaded: PropTypes.bool,
-    message: PropTypes.string
+    message: PropTypes.string,
+    signedIn: PropTypes.bool
   };
 
   componentDidMount() {
     // eslint-disable-next-line no-console
     console.log(this.props);
-    this.props.loadTimes();
+    if (this.props.signedIn) {
+      this.props.loadTimes();
+    }
   }
 
   render() {
@@ -34,7 +37,7 @@ class SharedTimeListContainer extends Component {
           <Typography variant="title">Shared Timesheet</Typography>
           <Grid item xs={12}>
             <Paper>
-              {timesLoaded && <TimeList />}
+              {timesLoaded && <TimeList readOnly="true"/>}
               {!timesLoaded && (
                 <Typography variant="body1">{message}</Typography>
               )}
@@ -47,13 +50,18 @@ class SharedTimeListContainer extends Component {
 }
 
 export default connect(
-  state => {
-    // eslint-disable-next-line no-console
-    console.log("yncState", state.syncState);
+  state => {    
+    let signedIn = !!state.userProfile.user && !state.userProfile.userMessage;
+    let message;
+    if (!signedIn) {
+      message = "Please sign in to see shared timesheet.";
+    } else {
+      message = state.syncState.error || "Loading ...";
+    }
     return {
-      signedIn: !!state.userProfile.user && !state.userProfile.userMessage,
+      signedIn,
       timesLoaded: !!state.timelist.times && state.timelist.times.length > 0,
-      message: state.syncState.error || "Loading ..."
+      message
     };
   },
   (dispatch, ownProps) => {

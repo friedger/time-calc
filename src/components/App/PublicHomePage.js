@@ -1,6 +1,5 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import { Link } from "react-router-dom";
 
 const launcherStyle = {
   width: "100vw",
@@ -38,16 +37,8 @@ const PublicHomePage = () => {
           Across devices with <a href="https://blockstack.org"><b>Blockstack</b></a>.
         </Typography>
         <div>
-          <Link to="/app">
+          <a href="/#/app">
             <img alt="Launch as Web App" src="pwa.png" height="64vh" />
-          </Link>
-        
-          <a href="https://play.google.com/store/apps/details?id=org.openintents.timesheet">
-            <img
-              alt="Get it on Google Play"
-              src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
-              height="64vh"
-            />
           </a>
         </div>
       </div>

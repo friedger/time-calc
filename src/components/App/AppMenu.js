@@ -103,7 +103,6 @@ class AppMenu extends React.Component {
       signedIn,
       hasCustomer,
       customerCopySaved,
-      customerCopyUrl,
       shareUrl
     } = this.props;
     const { anchorEl } = this.state;
@@ -199,12 +198,11 @@ class AppMenu extends React.Component {
           {customerCopySaved && (
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
-                Copy for your customer has been stored at 
-                <a href={customerCopyUrl}>{customerCopyUrl}</a>.                
+                A copy has been stored for your customer/reviewer.                
               </DialogContentText>
               <DialogContentText id="alert-dialog-description">
-                Please share with {this.props.currentProject.customer} the link below <br/>
-                <a href={shareUrl}>{shareUrl}</a>.                
+                Please share with <b>{this.props.currentProject.customer}</b> the link below <br/>
+                <a href={shareUrl}>{shareUrl}</a>               
               </DialogContentText>
             </DialogContent>
           )}
@@ -234,18 +232,16 @@ class AppMenu extends React.Component {
 
 const mapStateToProps = state => {
   let shareUrl;
-  if (state.projectlist.currentProject) {
-    shareUrl = window.origin + "/shared/" + state.userProfile.user.username + "/" + state.projectlist.currentProject.id + "/" + state.projectlist.currentProject.filename;
+  if (state.projectlist.currentProject && state.userProfile.user) {
+    shareUrl = window.origin + "/#/shared/" + state.userProfile.user.username + "/" + state.projectlist.currentProject.id + "/" + state.projectlist.currentProject.filename;
   }
-  // eslint-disable-next-line no-console
-  console.log("shareUrl " + shareUrl);
   return {
     currentProject: state.projectlist.currentProject,
     signedIn: !!state.userProfile.user && !state.userProfile.userMessage,
     hasCustomer: !!state.projectlist.currentProject.customer,
     customerCopySaved: !!state.syncState.customerCopySaved,
     customerCopyUrl: state.syncState.customerCopyUrl,
-    shareUrl:shareUrl
+    shareUrl
   };
 };
 const mapDispatchToProps = dispatch => {

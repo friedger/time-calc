@@ -54,7 +54,8 @@ export class TimeList extends React.PureComponent {
     download: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
     deleteAllHelp: PropTypes.string,
-    deleteAllTitle: PropTypes.string
+    deleteAllTitle: PropTypes.string,
+    readOnly: PropTypes.string
   };
 
   constructor(props) {
@@ -72,6 +73,8 @@ export class TimeList extends React.PureComponent {
   }
 
   render() {
+    // eslint-disable-next-line no-console
+    console.log("props", this.props)
     if (!this.props.times || !this.props.times.length) {
       return (
       <div />
@@ -79,7 +82,7 @@ export class TimeList extends React.PureComponent {
     }
 
     const sum = this.calculateSum();
-    const { classes } = this.props;
+    const { classes, readOnly } = this.props;
 
     return (
       <Table className={classes.table} id="times">
@@ -99,6 +102,7 @@ export class TimeList extends React.PureComponent {
             <TableCell className={classes.important} numeric>
               Duration
             </TableCell>
+            {!readOnly  && (
             <TableCell>
               <Button
                 invoke={() => this.props.download(this.props.times)}
@@ -118,12 +122,13 @@ export class TimeList extends React.PureComponent {
                 icon="delete"
               />
             </TableCell>
+            )}
           </TableRow>
         </TableHead>
 
         <TableBody>
           {Object.keys(this.props.times).map(k => (
-            <Timeset key={k} time={this.props.times[k]} />
+            <Timeset key={k} time={this.props.times[k]} readOnly={readOnly}/>
           ))}
         </TableBody>
         <TableFooter>
@@ -136,7 +141,9 @@ export class TimeList extends React.PureComponent {
             <TableCell className={classes.important} numeric>
               {sum}
             </TableCell>
+            {!readOnly  && (
             <TableCell className={classes.hideMobile} />
+            )}
           </TableRow>
         </TableFooter>
       </Table>

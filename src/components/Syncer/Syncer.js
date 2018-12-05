@@ -6,7 +6,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import SyncIcon from "@material-ui/icons/Sync";
 import CloudCircleIcon from "@material-ui/icons/CloudCircle";
 import CloudDoneIcon from "@material-ui/icons/CloudDone";
-import { withStyles } from "@material-ui/core";
+import { withStyles, Tooltip } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 
 const styles = () => ({
@@ -21,8 +21,9 @@ const Syncer = props => {
   if (error) {
     return (
       <div>
-        <CloudOffIcon />
-        {error}
+         <Tooltip title={error}>
+          <CloudOffIcon />
+        </Tooltip>
       </div>
     );
   }

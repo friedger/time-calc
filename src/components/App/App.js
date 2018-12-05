@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { BrowserRouter, Route } from "react-router-dom";
+import { HashRouter, Route } from "react-router-dom";
 
 import Grid from "@material-ui/core/Grid";
 import AppBar from "@material-ui/core/AppBar";
@@ -102,7 +102,7 @@ const OIAppBar = withRouter(
 
 const App = ({ classes }) => (
   <Provider store={createStore()}>
-    <BrowserRouter>
+    <HashRouter>
       <MuiThemeProvider theme={theme}>
         <Grid container className={classes.root} spacing={16}>
           <OIAppBar />
@@ -132,7 +132,7 @@ const App = ({ classes }) => (
         </footer>
         {/* End footer */}
       </MuiThemeProvider>
-    </BrowserRouter>
+    </HashRouter>
   </Provider>
 );
 

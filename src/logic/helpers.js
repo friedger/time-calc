@@ -176,7 +176,7 @@ export class UserHelper {
   static signIn() {
     try {
       blockstack.redirectToSignIn(
-        `${window.location.origin}/app`,
+        `${window.location.origin}/`,
         `${window.location.origin}/manifest.json`,
         ["store_write", "publish_data"]
       );
@@ -246,17 +246,16 @@ export class SyncHelper {
           return [];
         }
       );
-    } else {      
+    } else {
       const profile = blockstack.loadUserData();
       const options = { decrypt: false, username };
       const sharedFilename = `shared/${profile.username}/${filename}`;
       // eslint-disable-next-line no-console
       console.log("loading " + sharedFilename);
       return blockstack.getFile(sharedFilename, options).then(
-        function(timesString) {
-          // eslint-disable-next-line no-console
-          console.log("times " + timesString);
-          return JSON.parse(blockstack.decryptContent(timesString)).filter(
+        function(timesString) {          
+          const times = blockstack.decryptContent(timesString);
+          return JSON.parse(times).filter(
             t => t != null
           );
         },
@@ -303,10 +302,8 @@ export class SyncHelper {
       try {
         return blockstack.getFile("key.json", options).then(
           file => {
-            const publicKey = JSON.parse(file);
+            const publicKey = JSON.parse(file);            
             const sharedFilename = `shared/${username}/${filename}`;
-            // eslint-disable-next-line no-console
-            console.log("shared file " + sharedFilename);
             return blockstack.putFile(
               sharedFilename,
               blockstack.encryptContent(

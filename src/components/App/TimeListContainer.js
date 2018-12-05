@@ -9,18 +9,18 @@ import moment from "moment";
 import Form from "../Form/Form";
 import TimeList from "../TimeList/TimeList";
 
-
-const TimeListContainer = () => (<div>
-              <Grid item xs={12}>
-                <MuiPickersUtilsProvider utils={MomentUtils} moment={moment}>
-                  <Form />
-                </MuiPickersUtilsProvider>
-              </Grid>
-              <Grid item xs={12}>
-                <Paper>
-                  <TimeList />
-                </Paper>
-              </Grid>
-            </div>
+const TimeListContainer = () => (
+  <div>
+    <Grid item xs={12}>
+      <MuiPickersUtilsProvider utils={MomentUtils} moment={moment}>
+        <Form />
+      </MuiPickersUtilsProvider>
+    </Grid>
+    <Grid item xs={12}>
+      <Paper>
+        <TimeList />
+      </Paper>
+    </Grid>
+  </div>
 );
 export default TimeListContainer;
