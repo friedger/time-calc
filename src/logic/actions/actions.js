@@ -71,10 +71,11 @@ export function resetCalculation() {
   };
 }
 
-export function save(time) {
+export function save(time, projectId) {
+  time.projectId = projectId;
   return {
     type: ADD_TIME,
-    time: time
+    time
   };
 }
 
@@ -83,14 +84,7 @@ export function loadSharedTimes(user, projectId, filename) {
     type: LOAD_SHARED_TIMES,
     filename,
     user,
-    projectId,
-  };
-}
-
-export function loadTimes(filename) {
-  return {
-    type: LOAD_TIMES,
-    filename
+    projectId
   };
 }
 
@@ -141,27 +135,27 @@ export function projectSaved(project) {
   return {
     type: PROJECT_SAVED,
     project
-  }
+  };
 }
 
 export function createProject(title) {
   return {
     type: CREATE_PROJECT,
     title
-  }
+  };
 }
 
 export function filesLoaded(files) {
   return {
     type: FILES_LOADED,
     files
-  }
+  };
 }
 
 export function exportProjects() {
   return {
     type: EXPORT_PROJECTS
-  }
+  };
 }
 export function userSignIn() {
   return {
@@ -242,7 +236,7 @@ export function dataChanged(filename) {
 
 export function requestApproval(username) {
   return {
-    type: REQUEST_APPROVAL,    
+    type: REQUEST_APPROVAL,
     username
   };
 }

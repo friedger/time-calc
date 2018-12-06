@@ -136,6 +136,7 @@ export class ProjectHelper {
     };
     projects.push(currentProject);
     store.set(STORE_PROJECTS, projects);
+    store.set(STORE_CURRENT_PROJECT_ID, currentProject.id);
     return currentProject;
   }
 
@@ -253,11 +254,9 @@ export class SyncHelper {
       // eslint-disable-next-line no-console
       console.log("loading " + sharedFilename);
       return blockstack.getFile(sharedFilename, options).then(
-        function(timesString) {          
+        function(timesString) {
           const times = blockstack.decryptContent(timesString);
-          return JSON.parse(times).filter(
-            t => t != null
-          );
+          return JSON.parse(times).filter(t => t != null);
         },
         function(error) {
           // eslint-disable-next-line no-console
@@ -302,7 +301,7 @@ export class SyncHelper {
       try {
         return blockstack.getFile("key.json", options).then(
           file => {
-            const publicKey = JSON.parse(file);            
+            const publicKey = JSON.parse(file);
             const sharedFilename = `shared/${username}/${filename}`;
             return blockstack.putFile(
               sharedFilename,
