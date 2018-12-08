@@ -122,6 +122,10 @@ function* userSignOut() {
 
 function afterLogin(user) {
   return function*() {
+    user.gaiaUrl = yield UserHelper.getAppBucketUrl(
+      user.hubUrl,
+      user.appPrivateKey
+    );
     yield put(userConnected(user));
     yield call(SyncHelper.savePubKey);
     yield call(loadTimesRemotely);
@@ -135,6 +139,8 @@ function* checkLogin() {
       const user = UserHelper.loadUserData();
       yield call(afterLogin(user));
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
       yield put(userDisconnected());
     }
   } else if (UserHelper.isSignInPending()) {
@@ -142,6 +148,8 @@ function* checkLogin() {
       const user = yield call(UserHelper.handlePendingSignIn);
       yield call(afterLogin(user));
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
       yield put(userDisconnected());
     }
   } else {
@@ -170,16 +178,16 @@ function* loadSharedTimesRemotely(action) {
     yield put(syncStarted());
 
     let times = yield call(() =>
-        SyncHelper.load(action.projectId + "/" + action.filename, action.user)
-      );
+      SyncHelper.load(action.projectId + "/" + action.filename, action.user)
+    );
     if (!times || times.length == 0) {
-      yield put(syncFailed("times not found"));    
+      yield put(syncFailed("times not found"));
     } else {
       yield put(syncDone());
       yield put(timesLoaded(times, action.projectId));
     }
   } catch (e) {
-    yield put(syncFailed("sync error" + e));    
+    yield put(syncFailed("sync error" + e));
   }
 }
 
@@ -227,7 +235,7 @@ function* requestApproval(action) {
   if (username) {
     const url = yield call(
       SyncHelper.requestApproval(project.id + "/" + project.filename, username)
-    );    
+    );
     yield put(approvalDone(url));
   } else {
     yield put(approvalFailed("no username"));
@@ -247,12 +255,27 @@ function* navigateToApp(action) {
   }
 }
 
+function mergedProject(p1, p2) {
+  return Object.assign(p1, p2);
+}
+
 function* loadProjectsRemotely() {
   try {
     yield put(syncStarted());
-    const projects = yield call(ProjectHelper.loadProjects);
+    const localProjects = yield call(ProjectHelper.loadProjects);
+    const remoteProjects = yield call(SyncHelper.loadProjects);
+    for (var project in remoteProjects) {
+      let i = localProjects.findIndex(p => p.id === project.id);
+      if (i < 0) {
+        localProjects.push(project);
+      } else {
+        localProjects[i] = mergedProject(project, localProjects[i]);
+      }
+    }
+    ProjectHelper.saveProjects(localProjects);
+    yield call(SyncHelper.syncProjects);
     yield put(syncDone());
-    yield put(projectsLoaded(projects));
+    yield put(projectsLoaded(localProjects));
     const files = yield call(SyncHelper.allFiles);
     yield put(filesLoaded(files));
   } catch (e) {
@@ -280,6 +303,7 @@ function* createProject(action) {
   );
   yield call(() => ProjectHelper.saveCurrentProject(project));
   yield put(projectSaved(action.project));
+  yield put(timesLoaded([]));
   projects = yield ProjectHelper.loadProjects();
   yield put(currentProjectChanged(project, projects));
 }

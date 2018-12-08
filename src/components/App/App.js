@@ -139,6 +139,10 @@ const App = ({ classes }) => (
           <Typography align="center">
             Version {process.env.REACT_APP_APPVERSION}
           </Typography>
+          <Typography><a href="https://github.com/friedger/time-calc/releases">
+          What is new</a></Typography>
+          <Typography><a href='https://github.com/friedger/time-calc/issues?q=is%3Aissue+is%3Aopen+label%3A"bug"'>
+          Known issues</a></Typography>
         </footer>
         {/* End footer */}
       </MuiThemeProvider>

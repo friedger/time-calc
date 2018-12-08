@@ -27,6 +27,10 @@ import RefreshIcon from "@material-ui/icons/Refresh";
 
 import { uuid } from "../../logic/helpers";
 
+const uuidPrefix = new RegExp("^........-....-4...-....-............[.]*");
+const startsWithProjectId = function(path) {
+  return uuidPrefix.test(path);
+};
 const styles = theme => ({
   root: {
     flexGrow: 1
@@ -95,8 +99,20 @@ class ProjectForm extends Component {
     this.props.setCurrentProject(this.props.history, selectedProject);
   };
 
+  titleFor = k => {
+    const p = this.props.projectsById[k];
+    let title;
+    if (p && p.title) {
+      title = p.title;
+    } else {
+      title = k;
+    }
+    return title;
+  };
+
   renderExportPaper() {
     const props = this.props;
+    const { timesheetFiles, otherFiles } = this.props;
     return (
       <Grid item xs={12}>
         <Paper className={props.classes.control} style={{ margin: "10px" }}>
@@ -115,11 +131,58 @@ class ProjectForm extends Component {
             />
             Refresh
           </Button>
+          <Typography variant="display1">Timesheet Files</Typography>
           <Grid container spacing={16} justify="center">
-            {Object.keys(props.files).map(k => (
+            {Object.keys(timesheetFiles).map(k => (
+              <Grid container key={k} item xs={12} md={6}>
+                <Grid item xs={12}>
+                  <Typography variant="body1">
+                    Project {this.titleFor(k)}
+                  </Typography>
+                </Grid>
+                {Object.keys(timesheetFiles[k]).map(i => (
+                  <React.Fragment key={i}>
+                    <Grid item xs={2} md={1}>
+                      {" "}
+                    </Grid>
+                    <Grid container item xs={10} md={5}>
+                      <Grid item xs={12}>
+                        <Typography
+                          variant="body1"
+                          style={{ fontWeight: "bold" }}
+                        >
+                          File {i}
+                        </Typography>
+                      </Grid>
+                      {Object.keys(timesheetFiles[k][i]).map(j => (
+                        <Grid key={j} item xs={12}>
+                          <Typography variant="body2">
+                            <a href={timesheetFiles[k][i][j].file}>
+                              {timesheetFiles[k][i][j].user && (
+                                <div>
+                                  shared with {timesheetFiles[k][i][j].user} in
+                                  private
+                                </div>
+                              )}
+                              {!timesheetFiles[k][i][j].user && (
+                                <span>your private version</span>
+                              )}
+                            </a>
+                          </Typography>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </React.Fragment>
+                ))}
+              </Grid>
+            ))}
+          </Grid>
+          <Typography variant="display1">Other Files</Typography>
+          <Grid container spacing={16} justify="center">
+            {Object.keys(otherFiles).map(k => (
               <Grid key={k} item xs={12} md={6}>
-                <a href={props.files[k]}>
-                  <Typography variant="body2">{props.files[k]}</Typography>
+                <a href={otherFiles[k].file}>
+                  <Typography variant="body2">{otherFiles[k].path}</Typography>
                 </a>
               </Grid>
             ))}
@@ -162,7 +225,7 @@ class ProjectForm extends Component {
                 <Field
                   name="id"
                   label="Project Id"
-                  type="text"                  
+                  type="text"
                   component={readOnlyText}
                 />
               </Grid>
@@ -251,8 +314,81 @@ class ProjectForm extends Component {
   }
 }
 
+const pushTimesheetFile = (
+  timesheetFiles,
+  projectsById,
+  projectId,
+  file,
+  path,
+  user,
+  filename
+) => {
+  if (!timesheetFiles[projectId]) {
+    timesheetFiles[projectId] = [];
+  }
+  if (!timesheetFiles[projectId][filename]) {
+    timesheetFiles[projectId][filename] = [];
+  }
+  timesheetFiles[projectId][filename].push({ file, path, user, filename });
+};
+
 const mapStateToProps = state => {
   const currentProject = state.projectlist.currentProject;
+  const files = state.projectlist.files || [];
+
+  const timesheetFiles = {};
+  const projectsById = {};
+  const otherFiles = [];
+
+  const projects = state.projectlist.projects;
+  if (state.userProfile.user) {
+    for (let i1 in projects) {
+      let p = projects[i1];
+      projectsById[p.id] = p;
+    }
+    const gaiaPrefix = state.userProfile.user.gaiaUrl;
+
+    for (let i in files) {
+      const file = files[i];
+      const path = file.substring(gaiaPrefix.length);
+      if (path.startsWith("shared")) {
+        const pathParts = path.split("/");
+        let user;
+        let projectId;
+        let filename;
+        if (pathParts.length > 1) {
+          user = pathParts[1];
+          projectId = pathParts[2];
+          filename = pathParts[3];
+        }
+        pushTimesheetFile(
+          timesheetFiles,
+          projectsById,
+          projectId,
+          file,
+          path,
+          user,
+          filename
+        );
+      } else {
+        if (startsWithProjectId(path)) {
+          const projectId = path.substring(0, 36);
+          const filename = path.substring(37);
+          pushTimesheetFile(
+            timesheetFiles,
+            projectsById,
+            projectId,
+            file,
+            path,
+            null,
+            filename
+          );
+        } else {
+          otherFiles.push({ file, path });
+        }
+      }
+    }
+  }
   return {
     initialValues: currentProject
       ? {
@@ -264,8 +400,10 @@ const mapStateToProps = state => {
       : { id: uuid() },
     edit: !!currentProject,
     projects: state.projectlist.projects,
-    files: state.projectlist.files || [],
-    currentProject
+    timesheetFiles,
+    otherFiles,
+    currentProject,
+    projectsById
   };
 };
 
@@ -300,8 +438,11 @@ ProjectForm.propTypes = {
   setCurrentProject: PropTypes.func,
   history: PropTypes.any.isRequired,
   projects: PropTypes.array,
-  files: PropTypes.array,
-  currentProject: PropTypes.any
+  timesheetFiles: PropTypes.object,
+  sharedFiles: PropTypes.array,
+  otherFiles: PropTypes.array,
+  currentProject: PropTypes.any,
+  projectsById: PropTypes.object
 };
 
 export default withRouter(

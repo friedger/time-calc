@@ -8,15 +8,14 @@ const blockstack = require("blockstack");
 const STORE_CURRENT_PROJECT_ID = "currentProjectId";
 const STORE_PROJECTS = "projects";
 const STORE_TIMES = "times";
+const STORE_PK_SAVED = "pkSaved";
 
 export class CalculationHelper {
   static fetchCalculation(form) {
     return CalculationHelper.calculateLocal(form);
   }
 
-  static calculateLocal(form) {
-    // eslint-disable-next-line no-console
-    console.log(form);
+  static calculateLocal(form) {    
     const breakDuration = Moment.duration(form.break);
     const startDate = new Moment(form.start, "HH:mm");
     const endDate = new Moment(form.end, "HH:mm");
@@ -206,16 +205,30 @@ export class UserHelper {
   static loadUserData() {
     return blockstack.loadUserData();
   }
+
+  static getAppBucketUrl(hubUrl, appPrivateKey) {
+    return blockstack.getAppBucketUrl(hubUrl, appPrivateKey);
+  }
 }
 
 export class SyncHelper {
   static savePubKey() {
+    store.set(STORE_PK_SAVED, true)
+    if (store.get(STORE_PK_SAVED)){
+      return;
+    }
+    let userData = blockstack.loadUserData();
+    if (!userData) {
+      return;
+    }
     const publicKey = blockstack.getPublicKeyFromPrivate(
-      blockstack.loadUserData().appPrivateKey
+      userData.appPrivateKey
     );
     blockstack
       .putFile("key.json", JSON.stringify(publicKey), { encrypt: false })
-      .then(() => {})
+      .then(() => {
+        store.set(STORE_PK_SAVED, true);
+      })
       .catch(e => {
         // eslint-disable-next-line no-console
         console.log(e);
@@ -232,9 +245,7 @@ export class SyncHelper {
   static load(filename, username) {
     if (!username) {
       return blockstack.getFile(filename).then(
-        function(timesString) {
-          // eslint-disable-next-line no-console
-          console.log("times " + timesString);
+        function(timesString) {          
           if (timesString) {
             return JSON.parse(timesString).filter(t => t != null);
           } else {
@@ -250,9 +261,7 @@ export class SyncHelper {
     } else {
       const profile = blockstack.loadUserData();
       const options = { decrypt: false, username };
-      const sharedFilename = `shared/${profile.username}/${filename}`;
-      // eslint-disable-next-line no-console
-      console.log("loading " + sharedFilename);
+      const sharedFilename = `shared/${profile.username}/${filename}`;      
       return blockstack.getFile(sharedFilename, options).then(
         function(timesString) {
           const times = blockstack.decryptContent(timesString);
@@ -267,8 +276,12 @@ export class SyncHelper {
     }
   }
 
-  static syncProjectList() {
+  static syncProjects() {
     blockstack.putFile("projects.json", ProjectHelper.loadProjects());
+  }
+
+  static loadProjects() {
+    return blockstack.getFile("project.json");
   }
 
   static allFiles() {
@@ -290,9 +303,7 @@ export class SyncHelper {
   }
 
   static requestApproval(filename, username) {
-    return () => {
-      // eslint-disable-next-line no-console
-      console.log("get key for " + username);
+    return () => {      
       const options = {
         decrypt: false,
         username,
