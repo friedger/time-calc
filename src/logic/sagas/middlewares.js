@@ -206,9 +206,11 @@ function* loadTimesRemotely() {
         SyncHelper.load(project.id + "/" + project.filename, project.owner)
       );
       if (!times) {
-        yield call(loadTimesFromStore);
+        StoreHelper.saveTimes([]);
         yield put(syncFailed("no remote file"));
         return;
+      } else {
+        StoreHelper.saveTimes(times);
       }
     } else {
       // new project
@@ -247,6 +249,9 @@ function* navigateToProjects(action) {
 }
 
 function* navigateToApp(action) {
+  if (action.waitForNewProject) {
+    yield put(syncStarted());
+  }
   try {
     yield action.history.push("/app");
   } catch (e) {
@@ -287,6 +292,18 @@ function* saveProject(action) {
   try {
     yield put(syncStarted());
     yield call(() => ProjectHelper.saveCurrentProject(action.project));
+
+    const project = action.project;
+    let times = yield SyncHelper.load(
+      project.id + "/" + project.filename,
+      project.owner
+    );
+    if (!times) {
+      times = [];
+    }
+    StoreHelper.saveTimes(times);
+    yield put(timesLoaded(times, project.id));
+
     yield put(syncDone());
     yield put(projectSaved(action.project));
     let projects = yield ProjectHelper.loadProjects();
@@ -301,9 +318,12 @@ function* createProject(action) {
   const project = yield call(() =>
     ProjectHelper.createProject(projects, action.title)
   );
+
   yield call(() => ProjectHelper.saveCurrentProject(project));
   yield put(projectSaved(action.project));
-  yield put(timesLoaded([]));
+  const times = [];
+  StoreHelper.saveTimes(times);
+  yield put(timesLoaded(times));
   projects = yield ProjectHelper.loadProjects();
   yield put(currentProjectChanged(project, projects));
 }
