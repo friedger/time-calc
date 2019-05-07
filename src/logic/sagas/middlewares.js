@@ -180,7 +180,7 @@ function* loadSharedTimesRemotely(action) {
     let times = yield call(() =>
       SyncHelper.load(action.projectId + "/" + action.filename, action.user)
     );
-    if (!times || times.length == 0) {
+    if (!times || times.length === 0) {
       yield put(syncFailed("times not found"));
     } else {
       yield put(syncDone());
@@ -200,7 +200,7 @@ function* loadTimesRemotely() {
     yield put(currentProjectChanged(project, projects));
 
     let times;
-    if (oldProjects.length == projects.length) {
+    if (oldProjects.length === projects.length) {
       // project already existed
       times = yield call(() =>
         SyncHelper.load(project.id + "/" + project.filename, project.owner)

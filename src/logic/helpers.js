@@ -15,7 +15,7 @@ export class CalculationHelper {
     return CalculationHelper.calculateLocal(form);
   }
 
-  static calculateLocal(form) {    
+  static calculateLocal(form) {
     const breakDuration = Moment.duration(form.break);
     const startDate = new Moment(form.start, "HH:mm");
     const endDate = new Moment(form.end, "HH:mm");
@@ -213,8 +213,8 @@ export class UserHelper {
 
 export class SyncHelper {
   static savePubKey() {
-    store.set(STORE_PK_SAVED, true)
-    if (store.get(STORE_PK_SAVED)){
+    store.set(STORE_PK_SAVED, true);
+    if (store.get(STORE_PK_SAVED)) {
       return;
     }
     let userData = blockstack.loadUserData();
@@ -245,7 +245,7 @@ export class SyncHelper {
   static load(filename, username) {
     if (!username) {
       return blockstack.getFile(filename).then(
-        function(timesString) {          
+        function(timesString) {
           if (timesString) {
             return JSON.parse(timesString).filter(t => t != null);
           } else {
@@ -261,7 +261,7 @@ export class SyncHelper {
     } else {
       const profile = blockstack.loadUserData();
       const options = { decrypt: false, username };
-      const sharedFilename = `shared/${profile.username}/${filename}`;      
+      const sharedFilename = `shared/${profile.username}/${filename}`;
       return blockstack.getFile(sharedFilename, options).then(
         function(timesString) {
           const times = blockstack.decryptContent(timesString);
@@ -303,7 +303,7 @@ export class SyncHelper {
   }
 
   static requestApproval(filename, username) {
-    return () => {      
+    return () => {
       const options = {
         decrypt: false,
         username,
@@ -339,7 +339,7 @@ export class SyncHelper {
 export function uuid() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
     var r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8;
+      v = c === "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }

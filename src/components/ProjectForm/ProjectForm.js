@@ -72,10 +72,6 @@ class ProjectForm extends Component {
     selectedProjectId: ""
   };
 
-  constructor() {
-    super();
-  }
-
   componentDidMount() {
     this.setState({
       selectedProjectId: this.props.currentProject.id

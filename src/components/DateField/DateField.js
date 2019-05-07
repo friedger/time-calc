@@ -12,7 +12,7 @@ const DateField = ({ input, label, showPicker }) => {
         value={input.value ? TimeHelper.date(input.value) : null}
         onChange={date => input.onChange(TimeHelper.date(date))}
         label={label}
-        format="MM/dd/yyyy"
+        format="MM/DD/YYYY"
         autoOk
         placeholder={TimeHelper.today()}
         disableOpenOnEnter
