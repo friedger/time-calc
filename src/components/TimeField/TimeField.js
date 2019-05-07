@@ -5,16 +5,6 @@ import { KeyboardTimePicker } from "@material-ui/pickers";
 
 import { TimeHelper } from "../../logic/helpers";
 
-const timeMask = value => {
-  const chars = value.split("");
-
-  const hours = [/[0-2]/, chars[0] === "2" ? /[0-3]/ : /[0-9]/];
-
-  const minutes = [/[0-5]/, /[0-9]/];
-
-  return hours.concat(":").concat(minutes);
-};
-
 /* if (keyboard) { localInputProps[${adornmentPosition}Adornment] = ( <InputAdornment position={adornmentPosition} {...InputAdornmentProps} disabled={disabled}> <IconButton onClick={this.openPicker}> <Icon> {keyboardIcon} </Icon> </IconButton> </InputAdornment> ); } */
 
 const TimeField = ({ input, label, showPicker, disabled, defaultValue }) => (
