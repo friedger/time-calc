@@ -1,8 +1,8 @@
 import React from "react";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import MomentUtils from "material-ui-pickers/utils/moment-utils";
-import MuiPickersUtilsProvider from "material-ui-pickers/utils/MuiPickersUtilsProvider";
+import MomentUtils from "@date-io/moment";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 
 import moment from "moment";
 
