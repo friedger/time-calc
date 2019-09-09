@@ -264,19 +264,22 @@ function mergedProject(p1, p2) {
   return Object.assign(p1, p2);
 }
 
+const sameId = project => p => {
+  return p.id === project.id;
+};
 function* loadProjectsRemotely() {
   try {
     yield put(syncStarted());
     const localProjects = yield call(ProjectHelper.loadProjects);
     const remoteProjects = yield call(SyncHelper.loadProjects);
-    for (var project in remoteProjects) {
-      let i = localProjects.findIndex(p => p.id === project.id);
+    remoteProjects.forEach(project => {
+      let i = localProjects.findIndex(sameId(project));
       if (i < 0) {
         localProjects.push(project);
       } else {
         localProjects[i] = mergedProject(project, localProjects[i]);
       }
-    }
+    });
     ProjectHelper.saveProjects(localProjects);
     yield call(SyncHelper.syncProjects);
     yield put(syncDone());
@@ -315,12 +318,9 @@ function* saveProject(action) {
 
 function* createProject(action) {
   let projects = yield ProjectHelper.loadProjects();
-  const project = yield call(() =>
-    ProjectHelper.createProject(projects, action.title)
-  );
-
+  const project = ProjectHelper.createProject(projects, action.title);
   yield call(() => ProjectHelper.saveCurrentProject(project));
-  yield put(projectSaved(action.project));
+  yield put(projectSaved(project));
   const times = [];
   StoreHelper.saveTimes(times);
   yield put(timesLoaded(times));

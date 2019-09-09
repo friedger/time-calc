@@ -36,7 +36,7 @@ const styles = theme => ({
     flexGrow: 1
   },
   control: {
-    padding: theme.spacing.unit * 2
+    padding: theme.spacing(2)
   },
   button: {
     margin: theme.spacing.unit
@@ -56,7 +56,7 @@ const validate = values => {
   const errors = {};
 
   if (!values.name) {
-    errors.duration = "No Name set";
+    errors.name = "No Name set";
   }
 
   return errors;
@@ -112,7 +112,7 @@ class ProjectForm extends Component {
     return (
       <Grid item xs={12}>
         <Paper className={props.classes.control} style={{ margin: "10px" }}>
-          <Typography variant="title">Your remote files</Typography>
+          <Typography variant="h3">Your remote files</Typography>
           <Button
             onClick={() => props.exportProjects(props.history)}
             variant="contained"
@@ -127,8 +127,8 @@ class ProjectForm extends Component {
             />
             Refresh
           </Button>
-          <Typography variant="display1">Timesheet Files</Typography>
-          <Grid container spacing={16} justify="center">
+          <Typography variant="h5">Timesheet Files</Typography>
+          <Grid container spacing={2} justify="center">
             {Object.keys(timesheetFiles).map(k => (
               <Grid container key={k} item xs={12} md={6}>
                 <Grid item xs={12}>
@@ -155,10 +155,10 @@ class ProjectForm extends Component {
                           <Typography variant="body2">
                             <a href={timesheetFiles[k][i][j].file}>
                               {timesheetFiles[k][i][j].user && (
-                                <div>
+                                <span>
                                   shared with {timesheetFiles[k][i][j].user} in
                                   private
-                                </div>
+                                </span>
                               )}
                               {!timesheetFiles[k][i][j].user && (
                                 <span>your private version</span>
@@ -173,8 +173,8 @@ class ProjectForm extends Component {
               </Grid>
             ))}
           </Grid>
-          <Typography variant="display1">Other Files</Typography>
-          <Grid container spacing={16} justify="center">
+          <Typography variant="h5">Other Files</Typography>
+          <Grid container spacing={2} justify="center">
             {Object.keys(otherFiles).map(k => (
               <Grid key={k} item xs={12} md={6}>
                 <a href={otherFiles[k].file}>
@@ -194,11 +194,11 @@ class ProjectForm extends Component {
       <div>
         <form onSubmit={props.handleSubmit(props.save)}>
           <Paper className={props.classes.control} style={{ margin: "10px" }}>
-            <Typography variant="title">Edit current project</Typography>
+            <Typography variant="h3">Edit current project</Typography>
             <Grid
               container
               className={props.classes.root}
-              spacing={16}
+              spacing={2}
               justify="center"
             >
               <Grid item xs={12}>
@@ -242,14 +242,6 @@ class ProjectForm extends Component {
                     icon={props.edit ? "save" : "add"}
                   />
                 )}
-                {props.edit && (
-                  <GenericButton
-                    color="secondary"
-                    invoke={props.reset}
-                    context={props}
-                    icon={"cancel"}
-                  />
-                )}
               </Grid>
             </Grid>
           </Paper>
@@ -258,7 +250,7 @@ class ProjectForm extends Component {
         <Grid container>
           <Grid item xs={12} sm={6}>
             <Paper className={props.classes.control} style={{ margin: "10px" }}>
-              <Typography variant="title">Select current projects</Typography>
+              <Typography variant="h3">Select current projects</Typography>
               <RadioGroup
                 aria-label="Projects"
                 name="project"
@@ -284,7 +276,7 @@ class ProjectForm extends Component {
                 className={props.classes.control}
                 style={{ margin: "10px" }}
               >
-                <Typography variant="title">Create new project</Typography>
+                <Typography variant="h3">Create new project</Typography>
                 <Field
                   name="newTitle"
                   label="Customer/Project title"
@@ -338,14 +330,12 @@ const mapStateToProps = state => {
 
   const projects = state.projectlist.projects;
   if (state.userProfile.user) {
-    for (let i1 in projects) {
-      let p = projects[i1];
+    projects.forEach(p => {
       projectsById[p.id] = p;
-    }
+    });
     const gaiaPrefix = state.userProfile.user.gaiaUrl;
 
-    for (let i in files) {
-      const file = files[i];
+    files.forEach(file => {
       const path = file.substring(gaiaPrefix.length);
       if (path.startsWith("shared")) {
         const pathParts = path.split("/");
@@ -383,7 +373,7 @@ const mapStateToProps = state => {
           otherFiles.push({ file, path });
         }
       }
-    }
+    });
   }
   return {
     initialValues: currentProject
@@ -427,7 +417,6 @@ ProjectForm.propTypes = {
   valid: PropTypes.bool,
   save: PropTypes.func,
   handleSubmit: PropTypes.func,
-  reset: PropTypes.func,
   classes: PropTypes.object,
   addProject: PropTypes.func,
   exportProjects: PropTypes.func,

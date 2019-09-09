@@ -34,7 +34,7 @@ class SharedTimeListContainer extends Component {
     return (
       <div>
         <Grid container>
-          <Typography variant="title">Shared Timesheet</Typography>
+          <Typography variant="h3">Shared Timesheet</Typography>
           <Grid item xs={12}>
             <Paper>
               {timesLoaded && <TimeList readOnly="true"/>}
@@ -50,7 +50,7 @@ class SharedTimeListContainer extends Component {
 }
 
 export default connect(
-  state => {    
+  state => {
     let signedIn = !!state.userProfile.user && !state.userProfile.userMessage;
     let message;
     if (!signedIn) {

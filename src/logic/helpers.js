@@ -277,11 +277,20 @@ export class SyncHelper {
   }
 
   static syncProjects() {
-    blockstack.putFile("projects.json", ProjectHelper.loadProjects());
+    blockstack.putFile(
+      "projects.json",
+      JSON.stringify(ProjectHelper.loadProjects())
+    );
   }
 
   static loadProjects() {
-    return blockstack.getFile("project.json");
+    return blockstack.getFile("projects.json").then(projectsString => {
+      try {
+        return JSON.parse(projectsString);
+      } catch (e) {
+        return [];
+      }
+    });
   }
 
   static allFiles() {

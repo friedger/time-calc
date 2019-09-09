@@ -18,7 +18,7 @@ const PublicHomePage = () => {
     <div style={launcherStyle}>
       <div>
         <div>
-          <img height="100vh" width="100vw" src="/android-chrome-512x512.png" />
+          <img height="100vh" width="100vw" src="/android-chrome-512x512.png" alt="Logo"/>
         </div>
 
         <Typography variant="headline">

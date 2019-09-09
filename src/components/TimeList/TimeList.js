@@ -26,7 +26,7 @@ import Timeset from "../Timeset/Timeset";
 const styles = theme => ({
   root: {
     width: "100%",
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
     overflowX: "auto"
   },
   important: {
@@ -90,16 +90,16 @@ export class TimeList extends React.PureComponent {
           <TableRow>
             <TableCell className={classes.important}>Day</TableCell>
             <TableCell className={classes.hideMobile}>Description</TableCell>
-            <TableCell className={classes.hideMobile} numeric>
+            <TableCell className={classes.hideMobile} align="right">
               Start
             </TableCell>
-            <TableCell className={classes.hideMobile} numeric>
+            <TableCell className={classes.hideMobile} align="right">
               End
             </TableCell>
-            <TableCell className={classes.hideMobile} numeric>
+            <TableCell className={classes.hideMobile} align="right">
               Break
             </TableCell>
-            <TableCell className={classes.important} numeric>
+            <TableCell className={classes.important} align="right">
               Duration
             </TableCell>
             {!readOnly  && (
@@ -138,7 +138,7 @@ export class TimeList extends React.PureComponent {
             <TableCell className={classes.hideMobile} />
             <TableCell className={classes.hideMobile} />
             <TableCell className={classes.hideMobile} />
-            <TableCell className={classes.important} numeric>
+            <TableCell className={classes.important} align="right">
               {sum}
             </TableCell>
             {!readOnly  && (

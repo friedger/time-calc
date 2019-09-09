@@ -36,8 +36,8 @@ const styles = () => ({
   },
   footer: {
     backgroundColor: theme.palette.background.paper,
-    marginTop: theme.spacing.unit * 8,
-    padding: `${theme.spacing.unit * 6}px 0`
+    marginTop: theme.spacing(8),
+    padding: `${theme.spacing(6)}px 0`
   }
 });
 
@@ -69,7 +69,7 @@ const BareOIAppBar = ({
     <AppBar position="static" color="primary">
       <Toolbar>
         {projects && <AppHomeMenu />}
-        <Typography variant="title" color="inherit" className={classes.title}>
+        <Typography variant="h3" color="inherit" className={classes.title}>
           {title}
         </Typography>
         <UserProfile />
@@ -111,7 +111,7 @@ const App = ({ classes }) => (
   <Provider store={createStore()}>
     <HashRouter>
       <MuiThemeProvider theme={theme}>
-        <Grid container className={classes.root} spacing={16}>
+        <Grid container className={classes.root} spacing={2}>
           <OIAppBar />
           <Route path="/app" component={TimeListContainer} />
           <Route path="/projects" component={ProjectsContainer} />
@@ -123,11 +123,11 @@ const App = ({ classes }) => (
         </Grid>
         {/* Footer */}
         <footer className={classes.footer}>
-          <Typography variant="subheading" align="center" gutterBottom>
+          <Typography variant="body2" align="center" gutterBottom>
             made by OpenIntents.org
           </Typography>
           <Typography
-            variant="subheading"
+            variant="body2"
             align="center"
             color="textSecondary"
             component="p"

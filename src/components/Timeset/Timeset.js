@@ -41,7 +41,13 @@ const styles = theme => ({
   }
 });
 
-export const Timeset = ({ classes, time, onEditTime, toggleDialog, readOnly }) => {
+export const Timeset = ({
+  classes,
+  time,
+  onEditTime,
+  toggleDialog,
+  readOnly
+}) => {
   if (time == null) {
     return (
       <TableRow className={classes.row}>
@@ -54,16 +60,16 @@ export const Timeset = ({ classes, time, onEditTime, toggleDialog, readOnly }) =
     <TableRow className={classes.row}>
       <TableCell className={classes.important}>{date}</TableCell>
       <TableCell className={classes.hideMobile}>{time.description}</TableCell>
-      <TableCell className={classes.hideMobile} numeric>
+      <TableCell className={classes.hideMobile} align="right">
         {time.start}
       </TableCell>
-      <TableCell className={classes.hideMobile} numeric>
+      <TableCell className={classes.hideMobile} align="right">
         {time.end}
       </TableCell>
-      <TableCell className={classes.hideMobile} numeric>
+      <TableCell className={classes.hideMobile} align="right">
         {time.break}
       </TableCell>
-      <TableCell className={classes.important} numeric>
+      <TableCell className={classes.important} align="right">
         {time.duration}
       </TableCell>
       {!readOnly && (

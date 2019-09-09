@@ -24,7 +24,7 @@ const styles = theme => ({
     flexGrow: 1
   },
   control: {
-    padding: theme.spacing.unit * 2
+    padding: theme.spacing(2)
   }
 })
 
@@ -45,7 +45,7 @@ const validate = (values, props) => {
 const Form = props => (
   <form onSubmit={props.handleSubmit((values) => props.save(values,props.currentProject))}>
     <Paper className={props.classes.control}>
-      <Grid container className={props.classes.root} spacing={16} justify='center'>
+      <Grid container className={props.classes.root} spacing={2} justify='center'>
         <Grid item xs={12}>
           <Field name='description' label='Description' fullWidth component={TextField} />
         </Grid>
@@ -92,7 +92,7 @@ const Form = props => (
           />}
         </Grid>
       </Grid>
-     
+
     </Paper>
   </form>
 )

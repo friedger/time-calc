@@ -15,7 +15,6 @@ const DateField = ({ input, label, showPicker }) => {
         format="MM/DD/YYYY"
         autoOk
         placeholder={TimeHelper.today()}
-        disableOpenOnEnter
         fullWidth
         showTodayButton
         InputLabelProps={{
@@ -32,7 +31,6 @@ const DateField = ({ input, label, showPicker }) => {
         format="MM/dd/yyyy"
         autoOk
         placeholder={TimeHelper.today()}
-        disableOpenOnEnter
         fullWidth
         showTodayButton
         InputLabelProps={{

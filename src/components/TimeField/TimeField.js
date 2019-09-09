@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import { KeyboardTimePicker } from "@material-ui/pickers";
-
+import TimerIcon from "@material-ui/icons/Timer"
 import { TimeHelper } from "../../logic/helpers";
 
 /* if (keyboard) { localInputProps[${adornmentPosition}Adornment] = ( <InputAdornment position={adornmentPosition} {...InputAdornmentProps} disabled={disabled}> <IconButton onClick={this.openPicker}> <Icon> {keyboardIcon} </Icon> </IconButton> </InputAdornment> ); } */
@@ -14,10 +14,9 @@ const TimeField = ({ input, label, showPicker, disabled, defaultValue }) => (
     label={label}
     autoOk
     placeholder={defaultValue || TimeHelper.now()}
-    disableOpenOnEnter
     fullWidth
     todayLabel="Now"
-    keyboardIcon="timer"
+    keyboardIcon={<TimerIcon/>}
     ampm={false}
     InputAdornmentProps={{
       style: {
