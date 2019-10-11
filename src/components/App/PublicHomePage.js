@@ -21,7 +21,7 @@ const PublicHomePage = () => {
           <img height="100vh" width="100vw" src="/android-chrome-512x512.png" alt="Logo"/>
         </div>
 
-        <Typography variant="headline">
+        <Typography variant="body1">
           Be more productive! Track your time spent on projects and clients.
         </Typography>
 

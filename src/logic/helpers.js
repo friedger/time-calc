@@ -242,38 +242,52 @@ export class SyncHelper {
     );
   }
 
-  static load(filename, username) {
-    if (!username) {
-      return blockstack.getFile(filename).then(
-        function(timesString) {
-          if (timesString) {
-            return JSON.parse(timesString).filter(t => t != null);
+  static loadTimes(filename) {
+    return blockstack.getFile(filename).then(
+      function(timesString) {
+        if (timesString) {
+          return JSON.parse(timesString).filter(t => t != null);
+        } else {
+          return null;
+        }
+      },
+      function(error) {
+        // eslint-disable-next-line no-console
+        console.log("error load " + error);
+        return [];
+      }
+    );
+  }
+
+  static loadSharedTimes(filename, username) {
+    const profile = blockstack.loadUserData();
+    const options = { decrypt: false, username };
+    const sharedFilename = `shared/${profile.username}/${filename}`;
+    return blockstack.getFile(sharedFilename, options).then(
+      fileString => {
+        if (fileString) {
+          const plainContent = blockstack.decryptContent(fileString);
+          const contentJSON = JSON.parse(plainContent);
+          console.log(contentJSON)
+          if (Object.prototype.hasOwnProperty.call(contentJSON, "times")) {
+            return { ...contentJSON, owner: username };
+          } else if (Array.isArray(contentJSON)) {
+            return { times: contentJSON, owner: username };
           } else {
-            return null;
+            return { times: [], owner: username };
           }
-        },
-        function(error) {
-          // eslint-disable-next-line no-console
-          console.log("error load " + error);
-          return [];
+        } else {
+          throw Error(
+            `Timesheet was not shared with you (${profile.username}).Contact ${username}`
+          );
         }
-      );
-    } else {
-      const profile = blockstack.loadUserData();
-      const options = { decrypt: false, username };
-      const sharedFilename = `shared/${profile.username}/${filename}`;
-      return blockstack.getFile(sharedFilename, options).then(
-        function(timesString) {
-          const times = blockstack.decryptContent(timesString);
-          return JSON.parse(times).filter(t => t != null);
-        },
-        function(error) {
-          // eslint-disable-next-line no-console
-          console.log("error load " + error);
-          return [];
-        }
-      );
-    }
+      },
+      error => {
+        // eslint-disable-next-line no-console
+        console.log("error load " + error);
+        return { times: [], owner: username };
+      }
+    );
   }
 
   static syncProjects() {
@@ -285,12 +299,36 @@ export class SyncHelper {
 
   static loadProjects() {
     return blockstack.getFile("projects.json").then(projectsString => {
+      if (!projectsString) {
+        return [];
+      }
       try {
-        return JSON.parse(projectsString);
+        const result = JSON.parse(projectsString);
+        return result;
       } catch (e) {
         return [];
       }
     });
+  }
+
+  static archiveProject(project) {
+    return blockstack.putFile(
+      `${project.id}/project.json`,
+      JSON.stringify(project)
+    );
+  }
+
+  static unarchiveProject(projectId) {
+    return blockstack
+      .getFile(`${projectId}/project.json`)
+      .then(projectString => {
+        if (projectString) {
+          return JSON.parse(projectString);
+        } else {
+          // TODO inspect the folder for possible timesheet files
+          return { id: projectId, title: "Unnamed", filename: "times.json" };
+        }
+      });
   }
 
   static allFiles() {
@@ -311,7 +349,7 @@ export class SyncHelper {
       });
   }
 
-  static requestApproval(filename, username) {
+  static requestApproval(filename, username, project) {
     return () => {
       const options = {
         decrypt: false,
@@ -323,10 +361,11 @@ export class SyncHelper {
           file => {
             const publicKey = JSON.parse(file);
             const sharedFilename = `shared/${username}/${filename}`;
+            const times = StoreHelper.loadTimes().filter(t => t.projectId === project.id)
             return blockstack.putFile(
               sharedFilename,
               blockstack.encryptContent(
-                JSON.stringify(StoreHelper.loadTimes()),
+                JSON.stringify({ times, project }),
                 { publicKey }
               ),
               { encrypt: false }

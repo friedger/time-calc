@@ -15,10 +15,7 @@ import "moment-duration-format";
 
 import autoBind from "react-autobind";
 import { connect } from "react-redux";
-import {
-  clearTimes,
-  downloadTimes
-} from "../../logic/actions/actions";
+import { clearTimes, downloadTimes } from "../../logic/actions/actions";
 import withDialog from "../Dialog/Dialog";
 import Button from "../Button/Button";
 import Timeset from "../Timeset/Timeset";
@@ -50,6 +47,7 @@ export class TimeList extends React.PureComponent {
   static propTypes = {
     toggleDialog: PropTypes.func,
     times: PropTypes.array,
+    sharedTimes: PropTypes.array,
     projects: PropTypes.array,
     download: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
@@ -64,9 +62,9 @@ export class TimeList extends React.PureComponent {
     autoBind(this);
   }
 
-  calculateSum() {
+  calculateSum(times) {
     let durationSum = Moment.duration("00:00");
-    this.props.times
+    times
       .filter(t => t != null && t.start && t.end)
       .map(t => durationSum.add(t.duration));
     return durationSum.format("HH:mm", { trim: false });
@@ -74,15 +72,14 @@ export class TimeList extends React.PureComponent {
 
   render() {
     // eslint-disable-next-line no-console
-    console.log("props", this.props)
-    if (!this.props.times || !this.props.times.length) {
-      return (
-      <div />
-      );
+    console.log("props", this.props);
+    const { classes, readOnly } = this.props;
+    const times = readOnly ? this.props.sharedTimes : this.props.times;
+    if (!times || !times.length) {
+      return <div />;
     }
 
-    const sum = this.calculateSum();
-    const { classes, readOnly } = this.props;
+    const sum = this.calculateSum(times);
 
     return (
       <Table className={classes.table} id="times">
@@ -102,33 +99,33 @@ export class TimeList extends React.PureComponent {
             <TableCell className={classes.important} align="right">
               Duration
             </TableCell>
-            {!readOnly  && (
-            <TableCell>
-              <Button
-                invoke={() => this.props.download(this.props.times)}
-                label="Download"
-                icon="cloud_download"
-              />
-              <Button
-                color="secondary"
-                invoke={() =>
-                  this.props.toggleDialog(
-                    this.props.times,
-                    this.props.deleteAllTitle,
-                    this.props.deleteAllHelp
-                  )
-                }
-                label="Delete"
-                icon="delete"
-              />
-            </TableCell>
+            {!readOnly && (
+              <TableCell>
+                <Button
+                  invoke={() => this.props.download(times)}
+                  label="Download"
+                  icon="cloud_download"
+                />
+                <Button
+                  color="secondary"
+                  invoke={() =>
+                    this.props.toggleDialog(
+                      times,
+                      this.props.deleteAllTitle,
+                      this.props.deleteAllHelp
+                    )
+                  }
+                  label="Delete"
+                  icon="delete"
+                />
+              </TableCell>
             )}
           </TableRow>
         </TableHead>
 
         <TableBody>
-          {Object.keys(this.props.times).map(k => (
-            <Timeset key={k} time={this.props.times[k]} readOnly={readOnly}/>
+          {Object.keys(times).map(k => (
+            <Timeset key={k} time={times[k]} readOnly={readOnly} />
           ))}
         </TableBody>
         <TableFooter>
@@ -141,9 +138,7 @@ export class TimeList extends React.PureComponent {
             <TableCell className={classes.important} align="right">
               {sum}
             </TableCell>
-            {!readOnly  && (
-            <TableCell className={classes.hideMobile} />
-            )}
+            {!readOnly && <TableCell className={classes.hideMobile} />}
           </TableRow>
         </TableFooter>
       </Table>
@@ -156,6 +151,7 @@ export const StyledTimeList = withStyles(styles)(TimeList);
 const mapStateToProps = state => {
   return {
     times: state.timelist.times,
+    sharedTimes: state.sharedTimesheet.times
   };
 };
 

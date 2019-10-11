@@ -41,7 +41,10 @@ import {
   approvalStarted,
   approvalDone,
   approvalFailed,
-  LOAD_SHARED_TIMES
+  LOAD_SHARED_TIMES,
+  ARCHIVE_PROJECT,
+  UNARCHIVE_PROJECT,
+  sharedTimesheetLoaded
 } from "../actions/actions";
 
 function* calculations(action) {
@@ -122,10 +125,11 @@ function* userSignOut() {
 
 function afterLogin(user) {
   return function*() {
-    user.gaiaUrl = yield UserHelper.getAppBucketUrl(
+    const gaiaUrl = yield UserHelper.getAppBucketUrl(
       user.hubUrl,
       user.appPrivateKey
     );
+    user.gaiaUrl = gaiaUrl;
     yield put(userConnected(user));
     yield call(SyncHelper.savePubKey);
     yield call(loadTimesRemotely);
@@ -176,18 +180,22 @@ function* startSyncing() {
 function* loadSharedTimesRemotely(action) {
   try {
     yield put(syncStarted());
-
-    let times = yield call(() =>
-      SyncHelper.load(action.projectId + "/" + action.filename, action.user)
+    console.log(action);
+    let sharedTimesheet = yield call(() =>
+      SyncHelper.loadSharedTimes(
+        action.projectId + "/" + action.filename,
+        action.user
+      )
     );
-    if (!times || times.length === 0) {
+    console.log(sharedTimesheet)
+    if (!sharedTimesheet || sharedTimesheet.times.length === 0) {
       yield put(syncFailed("times not found"));
     } else {
       yield put(syncDone());
-      yield put(timesLoaded(times, action.projectId));
+      yield put(sharedTimesheetLoaded(sharedTimesheet, action.projectId));
     }
   } catch (e) {
-    yield put(syncFailed("sync error" + e));
+    yield put(syncFailed("sync error shared times" + e));
   }
 }
 
@@ -203,7 +211,7 @@ function* loadTimesRemotely() {
     if (oldProjects.length === projects.length) {
       // project already existed
       times = yield call(() =>
-        SyncHelper.load(project.id + "/" + project.filename, project.owner)
+        SyncHelper.loadTimes(project.id + "/" + project.filename)
       );
       if (!times) {
         StoreHelper.saveTimes([]);
@@ -220,7 +228,7 @@ function* loadTimesRemotely() {
     yield put(syncDone());
     yield put(timesLoaded(times, project.id));
   } catch (e) {
-    yield put(syncFailed("sync error" + e));
+    yield put(syncFailed("sync error times" + e));
     yield call(loadTimesFromStore);
   }
 }
@@ -228,7 +236,7 @@ function* loadTimesRemotely() {
 function* requestApproval(action) {
   yield put(approvalStarted());
   const project = yield call(ProjectHelper.loadCurrentProject);
-  var username = action.username;
+  let username = action.username;
   if (!username) {
     if (project.customer) {
       username = project.customer;
@@ -236,7 +244,11 @@ function* requestApproval(action) {
   }
   if (username) {
     const url = yield call(
-      SyncHelper.requestApproval(project.id + "/" + project.filename, username)
+      SyncHelper.requestApproval(
+        project.id + "/" + project.filename,
+        username,
+        project
+      )
     );
     yield put(approvalDone(url));
   } else {
@@ -267,6 +279,7 @@ function mergedProject(p1, p2) {
 const sameId = project => p => {
   return p.id === project.id;
 };
+
 function* loadProjectsRemotely() {
   try {
     yield put(syncStarted());
@@ -328,6 +341,37 @@ function* createProject(action) {
   yield put(currentProjectChanged(project, projects));
 }
 
+function* archiveProject(action) {
+  yield put(syncStarted());
+  const projects = yield SyncHelper.loadProjects();
+  const { project } = action;
+  yield SyncHelper.archiveProject(action.project);
+  const index = projects.findIndex(sameId(project));
+  if (index >= 0) {
+    projects.splice(index, 1);
+    ProjectHelper.saveProjects(projects);
+    yield SyncHelper.syncProjects();
+    yield put(projectsLoaded(projects));
+  }
+  yield put(syncDone());
+}
+
+function* unarchiveProject(action) {
+  yield put(syncStarted());
+  let projects = yield SyncHelper.loadProjects();
+  const project = yield SyncHelper.unarchiveProject(action.projectId);
+  const index = projects.findIndex(sameId(project));
+  console.log(index, project, projects);
+  if (index < 0) {
+    projects.push(project);
+    ProjectHelper.saveProjects(projects);
+    yield SyncHelper.syncProjects();
+    console.log(index, projects);
+    yield put(projectsLoaded(projects));
+  }
+  yield put(syncDone());
+}
+
 export default function* rootSaga() {
   yield fork(checkLogin);
   yield takeLatest(CALCULATE, calculations);
@@ -346,4 +390,6 @@ export default function* rootSaga() {
   yield takeLatest(LOAD_PROJECTS, loadProjectsRemotely);
   yield takeLatest(SAVE_PROJECT, saveProject);
   yield takeLatest(CREATE_PROJECT, createProject);
+  yield takeEvery(ARCHIVE_PROJECT, archiveProject);
+  yield takeEvery(UNARCHIVE_PROJECT, unarchiveProject);
 }

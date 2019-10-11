@@ -10,6 +10,7 @@ export const EDIT_TIME = "@@redux-form/INITIALIZE";
 export const CALCULATION_FETCHED = "@@redux-form/CHANGE";
 export const TIMES_CLEANED = "TIMES_CLEANED";
 export const TIMES_LOADED = "TIMES_LOADED";
+export const SHARED_TIMESHEET_LOADED = "SHARED_TIMESHEET_LOADED";
 export const SET_FIELD = "@@redux-form/CHANGE";
 export const SAVE_PROJECT = "SAVE_PROJECT";
 export const PROJECT_SAVED = "PROJECT_SAVED";
@@ -22,6 +23,8 @@ export const USER_DISCONNECTED = "USER_DISCONNECTED";
 export const SYNC_STARTED = "SYNC_STARTED";
 export const SYNC_DONE = "SYNC_DONE";
 export const SYNC_FAILED = "SYNC_FAILED";
+export const ARCHIVE_PROJECT = "ARCHIVE_PROJECT";
+export const UNARCHIVE_PROJECT = "UNARCHIVE_PROJECT";
 export const APPROVAL_STARTED = "APPROVAL_STARTED";
 export const APPROVAL_DONE = "APPROVAL_DONE";
 export const APPROVAL_FAILED = "APPROVAL_FAILED";
@@ -40,6 +43,14 @@ export function timesLoaded(times, currentProjectId) {
     type: TIMES_LOADED,
     times,
     currentProjectId
+  };
+}
+
+export function sharedTimesheetLoaded(timesheet, projectId) {
+  return {
+    type: SHARED_TIMESHEET_LOADED,
+    timesheet,
+    projectId
   };
 }
 
@@ -207,6 +218,18 @@ export function syncFailed(error) {
   };
 }
 
+export function archiveProject(project) {
+  return {
+    type: ARCHIVE_PROJECT,
+    project
+  };
+}
+export function unarchiveProject(projectId) {
+  return {
+    type: UNARCHIVE_PROJECT,
+    projectId
+  };
+}
 export function approvalStarted() {
   return {
     type: APPROVAL_STARTED

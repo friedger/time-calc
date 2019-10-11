@@ -17,14 +17,17 @@ import {
   saveProject,
   createProject,
   navigateToApp,
-  loadProjects
+  loadProjects,
+  archiveProject,
+  unarchiveProject
 } from "../../logic/actions/actions";
 import { withRouter } from "react-router-dom";
 
 import TextField from "../TextField/TextField";
 import GenericButton from "../Button/Button";
 import RefreshIcon from "@material-ui/icons/Refresh";
-
+import ArchiveIcon from "@material-ui/icons/Archive";
+import UnarchiveIcon from "@material-ui/icons/Unarchive";
 import { uuid } from "../../logic/helpers";
 
 const uuidPrefix = new RegExp("^........-....-4...-....-............[.]*");
@@ -129,49 +132,92 @@ class ProjectForm extends Component {
           </Button>
           <Typography variant="h5">Timesheet Files</Typography>
           <Grid container spacing={2} justify="center">
-            {Object.keys(timesheetFiles).map(k => (
-              <Grid container key={k} item xs={12} md={6}>
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    Project {this.titleFor(k)}
-                  </Typography>
-                </Grid>
-                {Object.keys(timesheetFiles[k]).map(i => (
-                  <React.Fragment key={i}>
-                    <Grid item xs={2} md={1}>
-                      {" "}
-                    </Grid>
-                    <Grid container item xs={10} md={5}>
-                      <Grid item xs={12}>
-                        <Typography
-                          variant="body1"
-                          style={{ fontWeight: "bold" }}
+            {Object.keys(timesheetFiles).map(projectId => {
+              const project = this.props.projects.find(p => p.id === projectId);
+              return (
+                <Grid container key={projectId} item xs={12} md={6}>
+                  <Grid item xs={12}>
+                    <Typography variant="body1">
+                      Project <b>{this.titleFor(projectId)}</b>
+                      <br />
+                      {!project && (
+                        <Button
+                          onClick={() => props.unarchiveProject(projectId)}
+                          variant="contained"
+                          size="small"
+                          className={props.classes.button}
                         >
-                          File {i}
-                        </Typography>
+                          <UnarchiveIcon
+                            className={classNames(
+                              props.classes.leftIcon,
+                              props.classes.iconSmall
+                            )}
+                          />
+                          Unarchive
+                        </Button>
+                      )}
+                      {project && (
+                        <Button
+                          onClick={() => props.archiveProject(project)}
+                          variant="contained"
+                          size="small"
+                          className={props.classes.button}
+                        >
+                          <ArchiveIcon
+                            className={classNames(
+                              props.classes.leftIcon,
+                              props.classes.iconSmall
+                            )}
+                          />
+                          Archive
+                        </Button>
+                      )}
+                    </Typography>
+                  </Grid>
+                  {Object.keys(timesheetFiles[projectId]).map(filename => (
+                    <React.Fragment key={filename}>
+                      <Grid item xs={2} md={1}>
+                        {" "}
                       </Grid>
-                      {Object.keys(timesheetFiles[k][i]).map(j => (
-                        <Grid key={j} item xs={12}>
-                          <Typography variant="body2">
-                            <a href={timesheetFiles[k][i][j].file}>
-                              {timesheetFiles[k][i][j].user && (
-                                <span>
-                                  shared with {timesheetFiles[k][i][j].user} in
-                                  private
-                                </span>
-                              )}
-                              {!timesheetFiles[k][i][j].user && (
-                                <span>your private version</span>
-                              )}
-                            </a>
+                      <Grid container item xs={10} md={5}>
+                        <Grid item xs={12}>
+                          <Typography variant="body1">
+                            File <em>{filename}</em>
                           </Typography>
                         </Grid>
-                      ))}
-                    </Grid>
-                  </React.Fragment>
-                ))}
-              </Grid>
-            ))}
+                        {Object.keys(timesheetFiles[projectId][filename]).map(
+                          j => (
+                            <Grid key={j} item xs={12}>
+                              <Typography variant="body2">
+                                <a
+                                  href={
+                                    timesheetFiles[projectId][filename][j].file
+                                  }
+                                >
+                                  {timesheetFiles[projectId][filename][j]
+                                    .user && (
+                                    <span>
+                                      shared with{" "}
+                                      {
+                                        timesheetFiles[projectId][filename][j]
+                                          .user
+                                      }{" "}
+                                      in private
+                                    </span>
+                                  )}
+                                  {!timesheetFiles[projectId][filename][j]
+                                    .user && <span>your private version</span>}
+                                </a>
+                              </Typography>
+                            </Grid>
+                          )
+                        )}
+                      </Grid>
+                    </React.Fragment>
+                  ))}
+                </Grid>
+              );
+            })}
           </Grid>
           <Typography variant="h5">Other Files</Typography>
           <Grid container spacing={2} justify="center">
@@ -408,6 +454,12 @@ const mapDispatchToProps = dispatch => {
     setCurrentProject: (history, project) => {
       dispatch(saveProject(project));
       dispatch(navigateToApp(history, true));
+    },
+    archiveProject: project => {
+      dispatch(archiveProject(project));
+    },
+    unarchiveProject: projectId => {
+      dispatch(unarchiveProject(projectId));
     }
   };
 };
@@ -421,6 +473,8 @@ ProjectForm.propTypes = {
   addProject: PropTypes.func,
   exportProjects: PropTypes.func,
   setCurrentProject: PropTypes.func,
+  archiveProject: PropTypes.func,
+  unarchiveProject: PropTypes.func,
   history: PropTypes.any.isRequired,
   projects: PropTypes.array,
   timesheetFiles: PropTypes.object,

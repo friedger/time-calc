@@ -15,29 +15,41 @@ class SharedTimeListContainer extends Component {
     loadTimes: PropTypes.func,
     timesLoaded: PropTypes.bool,
     message: PropTypes.string,
+    project: PropTypes.object,
+    owner: PropTypes.string,
     signedIn: PropTypes.bool
   };
 
   componentDidMount() {
     // eslint-disable-next-line no-console
-    console.log(this.props);
     if (this.props.signedIn) {
       this.props.loadTimes();
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (!prevProps.signedIn && this.props.signedIn) {
+      this.props.loadTimes();
+    }
+  }
+
   render() {
-    const { match, timesLoaded, message } = this.props;
+    const { match, timesLoaded, message, project, owner } = this.props;
 
     // eslint-disable-next-line no-console
     console.log("params", match.params);
     return (
-      <div>
+      <div style={{ margin: 8 }}>
         <Grid container>
-          <Typography variant="h3">Shared Timesheet</Typography>
+          <Grid item xs={12}>
+            <Typography variant="h3">
+              Shared Timesheet {owner && <>by {owner}</>}
+            </Typography>
+            <Typography variant="h4">{project.title || project.id}</Typography>
+          </Grid>
           <Grid item xs={12}>
             <Paper>
-              {timesLoaded && <TimeList readOnly="true"/>}
+              {timesLoaded && <TimeList readOnly="true" />}
               {!timesLoaded && (
                 <Typography variant="body1">{message}</Typography>
               )}
@@ -60,7 +72,10 @@ export default connect(
     }
     return {
       signedIn,
-      timesLoaded: !!state.timelist.times && state.timelist.times.length > 0,
+      timesLoaded:
+        !!state.sharedTimesheet.times && state.sharedTimesheet.times.length > 0,
+      project: state.sharedTimesheet.project || {},
+      owner: state.sharedTimesheet.owner,
       message
     };
   },

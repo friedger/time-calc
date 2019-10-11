@@ -147,7 +147,6 @@ class AppMenu extends React.Component {
             </ListItemIcon>
             <ListItemText
               classes={{ primary: classes.primary }}
-              inset
               primary="Project settings"
             />
           </MenuItem>
@@ -163,8 +162,7 @@ class AppMenu extends React.Component {
               </ListItemIcon>
               <ListItemText
                 classes={{ primary: classes.primary }}
-                inset
-                primary="Share with customer"
+                primary="Share (read-only)"
               />
             </MenuItem>
           )}
@@ -180,7 +178,6 @@ class AppMenu extends React.Component {
               </ListItemIcon>
               <ListItemText
                 classes={{ primary: classes.primary }}
-                inset
                 primary="Share app"
               />
             </MenuItem>
@@ -198,11 +195,11 @@ class AppMenu extends React.Component {
           {customerCopySaved && (
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
-                A copy has been stored for your customer/reviewer.                
+                A copy has been stored for your customer/reviewer.
               </DialogContentText>
               <DialogContentText id="alert-dialog-description">
                 Please share with <b>{this.props.currentProject.customer}</b> the link below <br/>
-                <a href={shareUrl}>{shareUrl}</a>               
+                <a href={shareUrl}>{shareUrl}</a>
               </DialogContentText>
             </DialogContent>
           )}
