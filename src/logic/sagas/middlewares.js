@@ -129,8 +129,8 @@ function afterLogin(user) {
       user.hubUrl,
       user.appPrivateKey
     );
-    user.gaiaUrl = gaiaUrl;
-    yield put(userConnected(user));
+    const updatedUser = {...user, gaiaUrl}
+    yield put(userConnected(updatedUser));
     yield call(SyncHelper.savePubKey);
     yield call(loadTimesRemotely);
     yield call(loadProjectsRemotely);

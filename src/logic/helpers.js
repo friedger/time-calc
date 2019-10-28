@@ -3,7 +3,7 @@ import Moment from "moment";
 import "moment-duration-format";
 import { parse } from "json2csv";
 
-const blockstack = require("blockstack");
+import { UserSession, AppConfig, getAppBucketUrl } from "blockstack";
 
 const STORE_CURRENT_PROJECT_ID = "currentProjectId";
 const STORE_PROJECTS = "projects";
@@ -172,10 +172,13 @@ export class ProjectHelper {
   }
 }
 
+const appConfig = new AppConfig(["write_store", "publish_data"]);
+const userSession = new UserSession({ appConfig });
+
 export class UserHelper {
   static signIn() {
     try {
-      blockstack.redirectToSignIn(
+      userSession.redirectToSignIn(
         `${window.location.origin}/`,
         `${window.location.origin}/manifest.json`,
         ["store_write", "publish_data"]
@@ -187,27 +190,27 @@ export class UserHelper {
   }
 
   static signOut() {
-    blockstack.signUserOut();
+    userSession.signUserOut();
   }
 
   static isSignInPending() {
-    return blockstack.isSignInPending();
+    return userSession.isSignInPending();
   }
 
   static handlePendingSignIn() {
-    return blockstack.handlePendingSignIn();
+    return userSession.handlePendingSignIn();
   }
 
   static isUserSignedIn() {
-    return blockstack.isUserSignedIn();
+    return userSession.isUserSignedIn();
   }
 
   static loadUserData() {
-    return blockstack.loadUserData();
+    return userSession.loadUserData();
   }
 
   static getAppBucketUrl(hubUrl, appPrivateKey) {
-    return blockstack.getAppBucketUrl(hubUrl, appPrivateKey);
+    return getAppBucketUrl(hubUrl, appPrivateKey);
   }
 }
 
@@ -217,14 +220,14 @@ export class SyncHelper {
     if (store.get(STORE_PK_SAVED)) {
       return;
     }
-    let userData = blockstack.loadUserData();
+    let userData = userSession.loadUserData();
     if (!userData) {
       return;
     }
-    const publicKey = blockstack.getPublicKeyFromPrivate(
+    const publicKey = userSession.getPublicKeyFromPrivate(
       userData.appPrivateKey
     );
-    blockstack
+    userSession
       .putFile("key.json", JSON.stringify(publicKey), { encrypt: false })
       .then(() => {
         store.set(STORE_PK_SAVED, true);
@@ -236,14 +239,14 @@ export class SyncHelper {
   }
 
   static sync(filename) {
-    return blockstack.putFile(
+    return userSession.putFile(
       filename,
       JSON.stringify(StoreHelper.loadTimes())
     );
   }
 
   static loadTimes(filename) {
-    return blockstack.getFile(filename).then(
+    return userSession.getFile(filename).then(
       function(timesString) {
         if (timesString) {
           return JSON.parse(timesString).filter(t => t != null);
@@ -260,15 +263,15 @@ export class SyncHelper {
   }
 
   static loadSharedTimes(filename, username) {
-    const profile = blockstack.loadUserData();
+    const profile = userSession.loadUserData();
     const options = { decrypt: false, username };
     const sharedFilename = `shared/${profile.username}/${filename}`;
-    return blockstack.getFile(sharedFilename, options).then(
+    return userSession.getFile(sharedFilename, options).then(
       fileString => {
         if (fileString) {
-          const plainContent = blockstack.decryptContent(fileString);
+          const plainContent = userSession.decryptContent(fileString);
           const contentJSON = JSON.parse(plainContent);
-          console.log(contentJSON)
+          console.log(contentJSON);
           if (Object.prototype.hasOwnProperty.call(contentJSON, "times")) {
             return { ...contentJSON, owner: username };
           } else if (Array.isArray(contentJSON)) {
@@ -291,14 +294,14 @@ export class SyncHelper {
   }
 
   static syncProjects() {
-    blockstack.putFile(
+    userSession.putFile(
       "projects.json",
       JSON.stringify(ProjectHelper.loadProjects())
     );
   }
 
   static loadProjects() {
-    return blockstack.getFile("projects.json").then(projectsString => {
+    return userSession.getFile("projects.json").then(projectsString => {
       if (!projectsString) {
         return [];
       }
@@ -312,14 +315,14 @@ export class SyncHelper {
   }
 
   static archiveProject(project) {
-    return blockstack.putFile(
+    return userSession.putFile(
       `${project.id}/project.json`,
       JSON.stringify(project)
     );
   }
 
   static unarchiveProject(projectId) {
-    return blockstack
+    return userSession
       .getFile(`${projectId}/project.json`)
       .then(projectString => {
         if (projectString) {
@@ -333,12 +336,11 @@ export class SyncHelper {
 
   static allFiles() {
     const files = [];
-    let profile = blockstack.loadUserData();
+    let profile = userSession.loadUserData();
 
-    return blockstack
-      .getAppBucketUrl(profile.hubUrl, profile.appPrivateKey)
+    return getAppBucketUrl(profile.hubUrl, profile.appPrivateKey)
       .then(bucketUrl => {
-        return blockstack
+        return userSession
           .listFiles(f => {
             files.push(bucketUrl + f);
             return true;
@@ -357,17 +359,18 @@ export class SyncHelper {
         zoneFileLookupURL: "https://core.blockstack.org/v1/names"
       };
       try {
-        return blockstack.getFile("key.json", options).then(
+        return userSession.getFile("key.json", options).then(
           file => {
             const publicKey = JSON.parse(file);
             const sharedFilename = `shared/${username}/${filename}`;
-            const times = StoreHelper.loadTimes().filter(t => t.projectId === project.id)
-            return blockstack.putFile(
+            const times = StoreHelper.loadTimes().filter(
+              t => t.projectId === project.id
+            );
+            return userSession.putFile(
               sharedFilename,
-              blockstack.encryptContent(
-                JSON.stringify({ times, project }),
-                { publicKey }
-              ),
+              userSession.encryptContent(JSON.stringify({ times, project }), {
+                publicKey
+              }),
               { encrypt: false }
             );
           },
