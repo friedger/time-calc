@@ -45,8 +45,7 @@ import {
   ARCHIVE_PROJECT,
   UNARCHIVE_PROJECT,
   sharedTimesheetLoaded,
-  PROJECT_SETTINGS_CHANGED,
-  projectSettingsChanged
+  PROJECT_SETTINGS_CHANGED
 } from "../actions/actions";
 
 function* calculations(action) {
@@ -282,7 +281,7 @@ function* navigateToApp(action) {
 }
 
 function mergedProject(p1, p2) {
-  console.log ("merging", p1, p2, Object.assign(p1, p2))
+  console.log("merging", p1, p2, Object.assign(p1, p2));
   return Object.assign(p1, p2);
 }
 
@@ -340,7 +339,7 @@ function* saveCurrentProjectRemotely(action) {
   try {
     yield put(syncStarted());
     yield call(() => ProjectHelper.saveCurrentProject(action.project));
-    yield SyncHelper.syncProjects()
+    yield SyncHelper.syncProjects();
     let projects = yield ProjectHelper.loadProjects();
     yield put(syncDone());
     yield put(currentProjectChanged(action.project, projects));
