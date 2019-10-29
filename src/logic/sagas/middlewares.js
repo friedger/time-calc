@@ -31,7 +31,7 @@ import {
   dataChanged,
   projectsLoaded,
   REQUEST_APPROVAL,
-  NAVIGATE_TO_PROJECTS,
+  NAVIGATE_TO_PROJECT,
   NAVIGATE_TO_APP,
   currentProjectChanged,
   SAVE_PROJECT,
@@ -66,25 +66,32 @@ function* loadTimesFromStore() {
 
 function* addTime(action) {
   let times = yield call(StoreHelper.loadTimes);
+
+  var timeId;
   if (!action.time.id) {
     action.time.id = uuid();
+  } else {
+    timeId = action.time.id;
   }
-
+  let projectId;
   if (!action.time.projectId) {
     let project = yield call(ProjectHelper.loadCurrentProject);
-    action.time.projectId = project.id;
+    projectId = project.id;
+  } else {
+    projectId = action.time.projectId;
   }
+  const updatedTime = { ...action.time, id: timeId, projectId };
 
   let index = times.findIndex(value => {
-    return action.time.id === value.id;
+    return updatedTime.id === value.id;
   });
 
   if (index >= 0) {
     // update
-    times[index] = action.time;
+    times[index] = updatedTime;
   } else {
     // create
-    times.push(action.time);
+    times.push(updatedTime);
   }
   try {
     times = TimeHelper.sortTimes(times.filter(t => t != null));
@@ -129,7 +136,7 @@ function afterLogin(user) {
       user.hubUrl,
       user.appPrivateKey
     );
-    const updatedUser = {...user, gaiaUrl}
+    const updatedUser = { ...user, gaiaUrl };
     yield put(userConnected(updatedUser));
     yield call(SyncHelper.savePubKey);
     yield call(loadTimesRemotely);
@@ -187,7 +194,7 @@ function* loadSharedTimesRemotely(action) {
         action.user
       )
     );
-    console.log(sharedTimesheet)
+    console.log(sharedTimesheet);
     if (!sharedTimesheet || sharedTimesheet.times.length === 0) {
       yield put(syncFailed("times not found"));
     } else {
@@ -256,8 +263,8 @@ function* requestApproval(action) {
   }
 }
 
-function* navigateToProjects(action) {
-  yield action.history.push("/projects");
+function* navigateToProject(action) {
+  yield action.history.push(`/project/${action.projectId}`);
 }
 
 function* navigateToApp(action) {
@@ -310,10 +317,7 @@ function* saveProject(action) {
     yield call(() => ProjectHelper.saveCurrentProject(action.project));
 
     const project = action.project;
-    let times = yield SyncHelper.load(
-      project.id + "/" + project.filename,
-      project.owner
-    );
+    let times = yield SyncHelper.loadTimes(project.id + "/" + project.filename);
     if (!times) {
       times = [];
     }
@@ -385,7 +389,7 @@ export default function* rootSaga() {
   yield takeLatest(USER_SIGN_OUT, userSignOut);
   yield takeLatest(DATA_CHANGED, startSyncing);
   yield takeEvery(REQUEST_APPROVAL, requestApproval);
-  yield takeLatest(NAVIGATE_TO_PROJECTS, navigateToProjects);
+  yield takeLatest(NAVIGATE_TO_PROJECT, navigateToProject);
   yield takeLatest(NAVIGATE_TO_APP, navigateToApp);
   yield takeLatest(LOAD_PROJECTS, loadProjectsRemotely);
   yield takeLatest(SAVE_PROJECT, saveProject);

@@ -18,7 +18,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import {
   requestApproval,
-  navigateToProjects
+  navigateToProject
 } from "../../logic/actions/actions";
 import { withRouter } from "react-router-dom";
 
@@ -80,7 +80,8 @@ class AppMenu extends React.Component {
         this.props.onRequestApproval(currentProject.customer);
       }
     } else if (item === MENU_PROJECTS) {
-      this.props.onProjectSettings(this.props.history);
+      const projectId = currentProject ? currentProject.id : undefined
+      this.props.onProjectSettings(this.props.history, projectId);
     }
     this.handleClose();
   };
@@ -244,7 +245,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     onRequestApproval: userId => dispatch(requestApproval(userId)),
-    onProjectSettings: history => dispatch(navigateToProjects(history))
+    onProjectSettings: (history, projectId) => dispatch(navigateToProject(history, projectId))
   };
 };
 

@@ -59,7 +59,7 @@ const BareOIAppBar = ({
 }) => {
   let title;
   let app = location.pathname !== "/";
-  let projects = location.pathname === "/projects";
+  let projectDetails = location.pathname.startsWith("/project");
   if (app && !!currentProject && !!currentProject.title && !sharedSheet) {
     title = <div>OI Timesheet - {currentProject.title}</div>;
   } else {
@@ -68,13 +68,13 @@ const BareOIAppBar = ({
   return (
     <AppBar position="static" color="primary">
       <Toolbar>
-        {projects && <AppHomeMenu />}
+        {projectDetails && <AppHomeMenu />}
         <Typography variant="h3" color="inherit" className={classes.title}>
           {title}
         </Typography>
         <UserProfile />
         {app && !signedOut && <Syncer />}
-        {app && !projects && <AppMenu />}
+        {app && !projectDetails && <AppMenu />}
       </Toolbar>
     </AppBar>
   );
@@ -92,8 +92,6 @@ BareOIAppBar.propTypes = {
 
 const OIAppBar = withRouter(
   connect((state, ownProps) => {
-    // eslint-disable-next-line no-console
-    console.log("ownProps", ownProps);
     const sharedSheet =
       ownProps.location &&
       ownProps.location.pathname &&
@@ -114,7 +112,7 @@ const App = ({ classes }) => (
         <Grid container className={classes.root} spacing={2}>
           <OIAppBar />
           <Route path="/app" component={TimeListContainer} />
-          <Route path="/projects" component={ProjectsContainer} />
+          <Route path="/project/:project" component={ProjectsContainer} />
           <Route
             path="/shared/:user/:project/:file"
             component={SharedTimeListContainer}

@@ -30,7 +30,7 @@ export const APPROVAL_DONE = "APPROVAL_DONE";
 export const APPROVAL_FAILED = "APPROVAL_FAILED";
 export const DATA_CHANGED = "DATA_CHANGED";
 export const REQUEST_APPROVAL = "REQUEST_APPROVAL";
-export const NAVIGATE_TO_PROJECTS = "NAVIGATE_TO_PROJECTS";
+export const NAVIGATE_TO_PROJECT = "NAVIGATE_TO_PROJECT";
 export const NAVIGATE_TO_APP = "NAVIGATE_TO_APP";
 export const LOAD_PROJECTS = "LOAD_PROJECTS";
 export const PROJECTS_LOADED = "PROJECTS_LOADED";
@@ -264,10 +264,11 @@ export function requestApproval(username) {
   };
 }
 
-export function navigateToProjects(history) {
+export function navigateToProject(history, projectId) {
   return {
-    type: NAVIGATE_TO_PROJECTS,
-    history
+    type: NAVIGATE_TO_PROJECT,
+    history,
+    projectId
   };
 }
 

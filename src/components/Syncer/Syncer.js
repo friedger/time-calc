@@ -63,8 +63,6 @@ Syncer.propTypes = {
 };
 
 const mapStateToProps = state => {
-  // eslint-disable-next-line no-console
-  console.log("state:" + state);
   return {
     hasChanges: state.syncState.hasChanges,
     isSyncing: state.syncState.isSyncing,
