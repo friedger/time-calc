@@ -9,7 +9,8 @@ import Typography from "@material-ui/core/Typography";
 import {
   MuiThemeProvider,
   createMuiTheme,
-  withStyles
+  withStyles,
+  responsiveFontSizes
 } from "@material-ui/core/styles";
 import blue from "@material-ui/core/colors/blue";
 
@@ -27,6 +28,17 @@ import ProjectsContainer from "./ProjectsContainer";
 import SharedTimeListContainer from "./SharedTimeListContainer";
 import AppHomeMenu from "./AppHomeMenu";
 
+const theme = responsiveFontSizes(
+  createMuiTheme({
+    palette: {
+      primary: blue
+    },
+    typography: {
+      fontDisplay: "swap"
+    }
+  })
+);
+
 const styles = () => ({
   root: {
     flexGrow: 1
@@ -38,15 +50,6 @@ const styles = () => ({
     backgroundColor: theme.palette.background.paper,
     marginTop: theme.spacing(8),
     padding: `${theme.spacing(6)}px 0`
-  }
-});
-
-const theme = createMuiTheme({
-  palette: {
-    primary: blue
-  },
-  typography: {
-    fontDisplay: "swap"
   }
 });
 
@@ -137,10 +140,16 @@ const App = ({ classes }) => (
           <Typography align="center">
             Version {process.env.REACT_APP_APPVERSION}
           </Typography>
-          <Typography align="center"><a href="https://github.com/friedger/time-calc/releases">
-          What is new</a></Typography>
-          <Typography align="center"><a href='https://github.com/friedger/time-calc/issues?q=is%3Aissue+is%3Aopen+label%3A"bug"'>
-          Known issues</a></Typography>
+          <Typography align="center">
+            <a href="https://github.com/friedger/time-calc/releases">
+              What is new
+            </a>
+          </Typography>
+          <Typography align="center">
+            <a href='https://github.com/friedger/time-calc/issues?q=is%3Aissue+is%3Aopen+label%3A"bug"'>
+              Known issues
+            </a>
+          </Typography>
         </footer>
         {/* End footer */}
       </MuiThemeProvider>

@@ -44,7 +44,9 @@ import {
   LOAD_SHARED_TIMES,
   ARCHIVE_PROJECT,
   UNARCHIVE_PROJECT,
-  sharedTimesheetLoaded
+  sharedTimesheetLoaded,
+  PROJECT_SETTINGS_CHANGED,
+  projectSettingsChanged
 } from "../actions/actions";
 
 function* calculations(action) {
@@ -280,6 +282,7 @@ function* navigateToApp(action) {
 }
 
 function mergedProject(p1, p2) {
+  console.log ("merging", p1, p2, Object.assign(p1, p2))
   return Object.assign(p1, p2);
 }
 
@@ -330,6 +333,19 @@ function* saveProject(action) {
     yield put(currentProjectChanged(action.project, projects));
   } catch (e) {
     yield put(syncFailed("save project failed" + e));
+  }
+}
+
+function* saveCurrentProjectRemotely(action) {
+  try {
+    yield put(syncStarted());
+    yield call(() => ProjectHelper.saveCurrentProject(action.project));
+    yield SyncHelper.syncProjects()
+    let projects = yield ProjectHelper.loadProjects();
+    yield put(syncDone());
+    yield put(currentProjectChanged(action.project, projects));
+  } catch (e) {
+    yield put(syncFailed("save project remotely failed" + e));
   }
 }
 
@@ -393,6 +409,7 @@ export default function* rootSaga() {
   yield takeLatest(NAVIGATE_TO_APP, navigateToApp);
   yield takeLatest(LOAD_PROJECTS, loadProjectsRemotely);
   yield takeLatest(SAVE_PROJECT, saveProject);
+  yield takeLatest(PROJECT_SETTINGS_CHANGED, saveCurrentProjectRemotely);
   yield takeLatest(CREATE_PROJECT, createProject);
   yield takeEvery(ARCHIVE_PROJECT, archiveProject);
   yield takeEvery(UNARCHIVE_PROJECT, unarchiveProject);

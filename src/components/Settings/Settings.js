@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
+import { Add } from "@material-ui/icons";
 import { withStyles } from "@material-ui/core/styles";
 import {
   Paper,
@@ -119,7 +120,7 @@ class Settings extends Component {
                 <GenericButton
                   invoke={() => addProject(history, this.state.newTitle)}
                   context={this.props}
-                  icon={"add"}
+                  icon={<Add />}
                 />
               </Paper>
             </Grid>

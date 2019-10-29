@@ -1,22 +1,23 @@
-import React from 'react'
+import React from "react";
 // import './Button.css'
 // import 'material-design-lite/src/button/button'
-import PropTypes from 'prop-types'
+import PropTypes from "prop-types";
 
-import IconButton from '@material-ui/core/IconButton'
+import IconButton from "@material-ui/core/IconButton";
+import { Icon } from "@material-ui/core";
 
 const GenericButton = ({ invoke, context, classes, icon, type, color }) => (
   <IconButton
     disabled={!invoke}
-    variant='raised'
-    color={color || 'primary'}
+    variant="raised"
+    color={color || "primary"}
     className={classes}
-    type={type || 'button'}
-    onClick={() => type ? true : invoke(context)}
+    type={type || "button"}
+    onClick={() => (type ? true : invoke(context))}
   >
-    <i className='material-icons'>{icon}</i>
+    <Icon className="material-icons">{icon}</Icon>
   </IconButton>
-)
+);
 
 GenericButton.propTypes = {
   invoke: PropTypes.func,
@@ -25,6 +26,6 @@ GenericButton.propTypes = {
   icon: PropTypes.string,
   type: PropTypes.string,
   color: PropTypes.string
-}
+};
 
-export default GenericButton
+export default GenericButton;

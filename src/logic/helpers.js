@@ -164,11 +164,11 @@ export class ProjectHelper {
   }
 
   static loadProjects() {
-    return store.get(STORE_PROJECTS) || [];
+    return (store.get(STORE_PROJECTS) || []).filter(p => p != null);
   }
 
   static saveProjects(projects) {
-    store.set(STORE_PROJECTS, projects);
+    store.set(STORE_PROJECTS, projects.filter(p => p != null));
   }
 }
 
@@ -177,11 +177,12 @@ const userSession = new UserSession({ appConfig });
 
 export class UserHelper {
   static signIn() {
+    const scopes = ["write_store", "publish_data"];
     try {
       userSession.redirectToSignIn(
         `${window.location.origin}/`,
         `${window.location.origin}/manifest.json`,
-        ["store_write", "publish_data"]
+        scopes
       );
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -294,7 +295,7 @@ export class SyncHelper {
   }
 
   static syncProjects() {
-    userSession.putFile(
+    return userSession.putFile(
       "projects.json",
       JSON.stringify(ProjectHelper.loadProjects())
     );
@@ -338,8 +339,8 @@ export class SyncHelper {
     const files = [];
     let profile = userSession.loadUserData();
 
-    return getAppBucketUrl(profile.hubUrl, profile.appPrivateKey)
-      .then(bucketUrl => {
+    return getAppBucketUrl(profile.hubUrl, profile.appPrivateKey).then(
+      bucketUrl => {
         return userSession
           .listFiles(f => {
             files.push(bucketUrl + f);
@@ -348,7 +349,8 @@ export class SyncHelper {
           .then(function() {
             return files;
           });
-      });
+      }
+    );
   }
 
   static requestApproval(filename, username, project) {

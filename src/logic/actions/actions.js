@@ -29,6 +29,7 @@ export const APPROVAL_STARTED = "APPROVAL_STARTED";
 export const APPROVAL_DONE = "APPROVAL_DONE";
 export const APPROVAL_FAILED = "APPROVAL_FAILED";
 export const DATA_CHANGED = "DATA_CHANGED";
+export const PROJECT_SETTINGS_CHANGED = "PROJECT_SETTINGS_CHANGED";
 export const REQUEST_APPROVAL = "REQUEST_APPROVAL";
 export const NAVIGATE_TO_PROJECT = "NAVIGATE_TO_PROJECT";
 export const NAVIGATE_TO_APP = "NAVIGATE_TO_APP";
@@ -254,6 +255,13 @@ export function dataChanged(filename) {
   return {
     type: DATA_CHANGED,
     filename
+  };
+}
+
+export function projectSettingsChanged(project) {
+  return {
+    type: PROJECT_SETTINGS_CHANGED,
+    project
   };
 }
 

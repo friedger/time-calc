@@ -2,10 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core/styles";
-import { Paper, Typography } from "@material-ui/core";
+import { Paper, Typography, CircularProgress } from "@material-ui/core";
+import { Save, Edit } from "@material-ui/icons";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
-import { saveProject } from "../../logic/actions/actions";
+import { projectSettingsChanged } from "../../logic/actions/actions";
 
 import TextField from "../TextField/TextField";
 import GenericButton from "../Button/Button";
@@ -36,7 +37,7 @@ const readOnlyText = field => {
 
 class ProjectForm extends Component {
   render() {
-    const { handleSubmit, save, classes, valid, edit } = this.props;
+    const { handleSubmit, save, classes, valid, edit, isSyncing } = this.props;
     return (
       <form onSubmit={handleSubmit(save)}>
         <Paper className={classes.control} style={{ margin: "10px" }}>
@@ -75,17 +76,21 @@ class ProjectForm extends Component {
               />
             </Grid>
             <Grid item xs={12} sm={6} md={2}>
-              {valid && (
+              {valid && !isSyncing && (
                 <GenericButton
                   invoke={() => null}
                   context={this.props}
                   type="submit"
-                  icon={edit ? "save" : "add"}
+                  icon={edit ? <Save /> : <Edit />}
                 />
               )}
-              {!valid && (
-                <GenericButton type="submit" icon={edit ? "save" : "add"} />
+              {!valid && !isSyncing && (
+                <GenericButton
+                  type="submit"
+                  icon={edit ? <Save /> : <Edit />}
+                />
               )}
+              {isSyncing && <CircularProgress />}
             </Grid>
           </Grid>
         </Paper>
@@ -96,8 +101,10 @@ class ProjectForm extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   const currentProject = ownProps.currentProject;
+
   return {
     edit: !!currentProject,
+    isSyncing: state.syncState.isSyncing,
     currentProject,
     initialValues:
       currentProject && currentProject.id
@@ -114,7 +121,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => {
   return {
     save: project => {
-      dispatch(saveProject(project));
+      dispatch(projectSettingsChanged(project));
     }
   };
 };
@@ -122,6 +129,7 @@ const mapDispatchToProps = dispatch => {
 ProjectForm.propTypes = {
   edit: PropTypes.bool,
   valid: PropTypes.bool,
+  isSyncing: PropTypes.bool,
   save: PropTypes.func,
   handleSubmit: PropTypes.func,
   classes: PropTypes.object,
