@@ -1,9 +1,14 @@
 import { Collection } from "blockstack-collections";
-import { Contact } from "blockstack-collections";
+import { CustomerProject } from "./customerProject"
 
-export class CustomerProject extends Collection {
+export class Denomination {
+  unit
+  value
+}
+
+export class WorkEntry extends Collection {
   static get collectionName() {
-    return "customerProject";
+    return "workEntry";
   }
 
   static schemaVersion = "1.0";
@@ -11,8 +16,12 @@ export class CustomerProject extends Collection {
   static schema = {
     schemaVersion: String,
     identifier: String,
-    title: String,
-    customer: Contact,
+    project: CustomerProject,
+    startDate: Number, // as minutes since 1/1/1970
+    endDate: Number, // as minutes since 1/1/1970
+    break: Number, // in minutes
+    duration: Number, // in minutes
+    hourlyRate: Denomination,
     description: String
   };
 

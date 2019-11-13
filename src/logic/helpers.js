@@ -4,6 +4,7 @@ import "moment-duration-format";
 import { parse } from "json2csv";
 
 import { UserSession, AppConfig, getAppBucketUrl } from "blockstack";
+import { CustomerProject } from "./models/customerProject";
 
 const STORE_CURRENT_PROJECT_ID = "currentProjectId";
 const STORE_PROJECTS = "projects";
@@ -215,6 +216,10 @@ export class UserHelper {
   }
 }
 
+function merge(remoteProjects, customerProjects) {
+  return remoteProjects
+}
+
 export class SyncHelper {
   static savePubKey() {
     store.set(STORE_PK_SAVED, true);
@@ -295,13 +300,20 @@ export class SyncHelper {
   }
 
   static syncProjects() {
+    const projects = ProjectHelper.loadProjects()
+
+    //CustomerProject.save
+
     return userSession.putFile(
       "projects.json",
-      JSON.stringify(ProjectHelper.loadProjects())
+      JSON.stringify(projects)
     );
   }
 
   static loadProjects() {
+    const customerProjects = CustomerProject.list()
+
+
     return userSession.getFile("projects.json").then(projectsString => {
       if (!projectsString) {
         return [];
@@ -312,7 +324,7 @@ export class SyncHelper {
       } catch (e) {
         return [];
       }
-    });
+    }).then(remoteProjects => merge(remoteProjects, customerProjects))
   }
 
   static archiveProject(project) {
