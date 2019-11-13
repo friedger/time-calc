@@ -2,7 +2,8 @@ SetEnv PHP_VER 5_3
 SetEnv REGISTER_GLOBALS 0
 
 Header add Access-Control-Allow-Origin "*"
-Header add Access-Control-Allow-Methods: "GET,POST,OPTIONS,DELETE,PUT"
+Header add Access-Control-Allow-Methods "GET,POST,OPTIONS,DELETE,PUT"
+Header add can't-be-evil true
 
 RewriteEngine On
 RewriteCond %{HTTPS} off
