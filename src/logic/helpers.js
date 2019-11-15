@@ -172,12 +172,12 @@ export class ProjectHelper {
   }
 }
 
-const appConfig = new AppConfig(["write_store", "publish_data"]);
+const appConfig = new AppConfig(["store_write", "publish_data"]);
 const userSession = new UserSession({ appConfig });
 
 export class UserHelper {
   static signIn() {
-    const scopes = ["write_store", "publish_data"];
+    const scopes = ["store_write", "publish_data"];
     try {
       userSession.redirectToSignIn(
         `${window.location.origin}/`,
