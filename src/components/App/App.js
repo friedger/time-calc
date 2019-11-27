@@ -123,33 +123,60 @@ const App = ({ classes }) => (
           <Route path="/" exact component={PublicHomePage} />
         </Grid>
         {/* Footer */}
-        <footer className={classes.footer}>
-          <Typography variant="body2" align="center" gutterBottom>
-            made by OpenIntents.org
-          </Typography>
-          <Typography
-            variant="body2"
-            align="center"
-            color="textSecondary"
-            component="p"
-          >
-            <a href="https://github.com/friedger/time-calc">
-              Open Source And Free!
-            </a>
-          </Typography>
-          <Typography align="center">
-            Version {process.env.REACT_APP_APPVERSION}
-          </Typography>
-          <Typography align="center">
-            <a href="https://github.com/friedger/time-calc/releases">
-              What is new
-            </a>
-          </Typography>
-          <Typography align="center">
-            <a href='https://github.com/friedger/time-calc/issues?q=is%3Aissue+is%3Aopen+label%3A"bug"'>
-              Known issues
-            </a>
-          </Typography>
+        <footer className={classes.footer} align="center">
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Typography
+                variant="body"
+                align="center"
+                color="textSecondary"
+                component="p"
+              >
+                About
+              </Typography>
+              <Typography variant="body2" align="center" gutterBottom>
+                made by OpenIntents.org
+              </Typography>
+              <Typography variant="body2" align="center" color="textSecondary">
+                <a href="https://github.com/friedger/time-calc">
+                  Open Source And Free!
+                </a>
+                <br />
+                Version {process.env.REACT_APP_VERSION}
+                <br />
+                <a href="https://github.com/friedger/time-calc/releases">
+                  What is new
+                </a>
+                <br />
+                <a href='https://github.com/friedger/time-calc/issues?q=is%3Aissue+is%3Aopen+label%3A"bug"'>
+                  Known issues
+                </a>
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Typography
+                variant="body"
+                align="center"
+                color="textSecondary"
+                component="p"
+              >
+                Contact
+              </Typography>
+              <Typography
+                variant="body2"
+                align="center"
+                color="textSecondary"
+                component="p"
+              >
+                <a href="https://app.trymumble.com/join/public/7df9971ea843-4c96-a86c-9acd67647c97">
+                  Mumble
+                </a>
+                <br />
+                <a href="mailto:support@openintents.org">Email</a>
+              </Typography>
+            </Grid>
+          </Grid>
         </footer>
         {/* End footer */}
       </MuiThemeProvider>
