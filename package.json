@@ -1,6 +1,6 @@
 {
   "name": "time-calc",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "homepage": "https://oi-timesheet.com",
   "private": true,
   "dependencies": {
