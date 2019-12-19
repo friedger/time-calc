@@ -1,0 +1,14 @@
+{
+  "@type": "SoftwareApplication",
+  "@context": "http://schema.org",
+  "url": "https://oi-timesheet.com/manifest.json",
+  "name": "OI Timesheet",
+  "description": "Track your time spent on projects and clients.",
+  "image": [
+    {
+      "@type": "ImageObject",
+      "name": "icon",
+      "contentUrl": "https://oi-timesheet.com/android-chrome-512x512.png"
+    }
+  ]
+}

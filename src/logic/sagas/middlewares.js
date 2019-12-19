@@ -71,9 +71,9 @@ function* addTime(action) {
   var timeId;
   if (!action.time.id) {
     action.time.id = uuid();
-  } else {
-    timeId = action.time.id;
   }
+  timeId = action.time.id;
+
   let projectId;
   if (!action.time.projectId) {
     let project = yield call(ProjectHelper.loadCurrentProject);

@@ -1,0 +1,8 @@
+{
+  "entries": [
+    {
+      "did": "did:stack:v0:Shg38jEXsw93s1JayTeHjFfzv2G38kZzWc-0",
+      "jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpc3MiOiJkaWQ6c3RhY2s6djA6U2hnMzhqRVhzdzkzczFKYXlUZUhqRmZ6djJHMzhrWnpXYy0wIiwiZG9tYWluIjoib2ktdGltZXNoZWV0LmNvbSIsImV4cCI6IjIwMjAtMTItMTlUMTM6NDY6MjYuOTgxWiJ9.VzodBGp_Mon55lDaJXD2DxtI_CO8oDvO8_sYdVHHOcIkOFDiPcxYpl9aElCFFQm8bkRqz9R6adtng_e_piwyKw"
+    }
+  ]
+}

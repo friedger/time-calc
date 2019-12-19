@@ -127,7 +127,7 @@ const App = ({ classes }) => (
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <Typography
-                variant="body"
+                variant="body1"
                 align="center"
                 color="textSecondary"
                 component="p"
@@ -156,7 +156,7 @@ const App = ({ classes }) => (
 
             <Grid item xs={12} sm={6}>
               <Typography
-                variant="body"
+                variant="body1"
                 align="center"
                 color="textSecondary"
                 component="p"

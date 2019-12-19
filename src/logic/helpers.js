@@ -3,7 +3,11 @@ import Moment from "moment";
 import "moment-duration-format";
 import { parse } from "json2csv";
 
-import { UserSession, AppConfig, getAppBucketUrl } from "blockstack";
+import blockstack, {
+  UserSession,
+  AppConfig,
+  getAppBucketUrl
+} from "blockstack";
 
 const STORE_CURRENT_PROJECT_ID = "currentProjectId";
 const STORE_PROJECTS = "projects";
@@ -20,10 +24,10 @@ export class CalculationHelper {
     const startDate = new Moment(form.start, "HH:mm");
     const endDate = new Moment(form.end, "HH:mm");
     const milliseconds = endDate.subtract(breakDuration).diff(startDate);
-    const duration = Moment.duration(milliseconds / 1000, "seconds").format(
-      "HH:mm",
-      { trim: false }
-    );
+    const duration = Moment.duration(
+      milliseconds / 1000,
+      "seconds"
+    ).format("HH:mm", { trim: false });
 
     return {
       start: form.start,
@@ -168,7 +172,10 @@ export class ProjectHelper {
   }
 
   static saveProjects(projects) {
-    store.set(STORE_PROJECTS, projects.filter(p => p != null));
+    store.set(
+      STORE_PROJECTS,
+      projects.filter(p => p != null)
+    );
   }
 }
 
@@ -217,7 +224,6 @@ export class UserHelper {
 
 export class SyncHelper {
   static savePubKey() {
-    store.set(STORE_PK_SAVED, true);
     if (store.get(STORE_PK_SAVED)) {
       return;
     }
@@ -225,7 +231,7 @@ export class SyncHelper {
     if (!userData) {
       return;
     }
-    const publicKey = userSession.getPublicKeyFromPrivate(
+    const publicKey = blockstack.getPublicKeyFromPrivate(
       userData.appPrivateKey
     );
     userSession
