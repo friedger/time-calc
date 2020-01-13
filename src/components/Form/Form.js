@@ -4,6 +4,9 @@ import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
+import Save from "@material-ui/icons/Save";
+import Add from "@material-ui/icons/Add";
+import Cancel from "@material-ui/icons/Cancel";
 
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
@@ -16,7 +19,7 @@ import {
 import TimeField from "../TimeField/TimeField";
 import DateField from "../DateField/DateField";
 import TextField from "../TextField/TextField";
-import Button from "../Button/Button";
+import GenericButton from "../Button/Button";
 import { TimeHelper } from "../../logic/helpers";
 
 const styles = theme => ({
@@ -93,26 +96,26 @@ const Form = props => (
         </Grid>
         <Grid item xs={12} sm={6} md={2}>
           {props.valid && (
-            <Button
+            <GenericButton
               invoke={() => null}
               context={props}
               type="submit"
-              icon={props.edit ? "save" : "add"}
+              icon={props.edit ? <Save /> : <Add />}
             />
           )}
           {!props.valid && (
-            <Button
+            <GenericButton
               context={props}
               type="submit"
-              icon={props.edit ? "save" : "add"}
+              icon={props.edit ? <Save /> : <Add />}
             />
           )}
           {props.edit && (
-            <Button
+            <GenericButton
               color="secondary"
               invoke={props.reset}
               context={props}
-              icon={"cancel"}
+              icon={<Cancel />}
             />
           )}
         </Grid>

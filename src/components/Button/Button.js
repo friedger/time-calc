@@ -4,7 +4,6 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import IconButton from "@material-ui/core/IconButton";
-import { Icon } from "@material-ui/core";
 
 const GenericButton = ({ invoke, context, classes, icon, type, color }) => (
   <IconButton
@@ -15,7 +14,7 @@ const GenericButton = ({ invoke, context, classes, icon, type, color }) => (
     type={type || "button"}
     onClick={() => (type ? true : invoke(context))}
   >
-    <Icon className="material-icons">{icon}</Icon>
+    {icon}
   </IconButton>
 );
 
@@ -23,7 +22,7 @@ GenericButton.propTypes = {
   invoke: PropTypes.func,
   context: PropTypes.any,
   classes: PropTypes.string,
-  icon: PropTypes.string,
+  icon: PropTypes.object,
   type: PropTypes.string,
   color: PropTypes.string
 };

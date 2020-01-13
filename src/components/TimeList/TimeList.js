@@ -9,7 +9,8 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableFooter from "@material-ui/core/TableFooter";
 import TableRow from "@material-ui/core/TableRow";
-
+import Delete from "@material-ui/icons/Delete";
+import CloudDownload from "@material-ui/icons/CloudDownload";
 import Moment from "moment";
 import "moment-duration-format";
 
@@ -17,7 +18,7 @@ import autoBind from "react-autobind";
 import { connect } from "react-redux";
 import { clearTimes, downloadTimes } from "../../logic/actions/actions";
 import withDialog from "../Dialog/Dialog";
-import Button from "../Button/Button";
+import GenericButton from "../Button/Button";
 import Timeset from "../Timeset/Timeset";
 
 const styles = theme => ({
@@ -101,12 +102,12 @@ export class TimeList extends React.PureComponent {
             </TableCell>
             {!readOnly && (
               <TableCell>
-                <Button
+                <GenericButton
                   invoke={() => this.props.download(times)}
                   label="Download"
-                  icon="cloud_download"
+                  icon={<CloudDownload />}
                 />
-                <Button
+                <GenericButton
                   color="secondary"
                   invoke={() =>
                     this.props.toggleDialog(
@@ -116,7 +117,7 @@ export class TimeList extends React.PureComponent {
                     )
                   }
                   label="Delete"
-                  icon="delete"
+                  icon={<Delete />}
                 />
               </TableCell>
             )}

@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import { withStyles } from "@material-ui/core/styles";
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/Delete";
 
 import { batchActions } from "redux-batched-actions";
 
@@ -11,7 +13,7 @@ import Moment from "moment";
 import { connect } from "react-redux";
 
 import withDialog from "../Dialog/Dialog";
-import Button from "../Button/Button";
+import GenericButton from "../Button/Button";
 
 import { deleteTime, setField } from "../../logic/actions/actions";
 
@@ -74,12 +76,12 @@ export const Timeset = ({
       </TableCell>
       {!readOnly && (
         <TableCell>
-          <Button
+          <GenericButton
             invoke={() => onEditTime({ time: time })}
             label="Edit"
-            icon="edit"
+            icon={<Edit />}
           />
-          <Button
+          <GenericButton
             color="secondary"
             invoke={() =>
               toggleDialog(
@@ -89,7 +91,7 @@ export const Timeset = ({
               )
             }
             label="Delete"
-            icon="delete"
+            icon={<Delete />}
           />
         </TableCell>
       )}
@@ -126,7 +128,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  null,
-  mapDispatchToProps
-)(withDialog(StyledTimeset));
+export default connect(null, mapDispatchToProps)(withDialog(StyledTimeset));
