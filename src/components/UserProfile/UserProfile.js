@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import BlockstackSignInButton from "./BlockstackSignInButton";
 
 import { connect } from "react-redux";
@@ -19,16 +19,11 @@ const styles = () => ({
 });
 
 const UserProfile = props => {
-  const { isSignedIn, isConnecting, name, avatarUrl, message, classes } = props;
-  const [imgSrc, setImgSrc] = useState("/blockstack.png");
+  const { isSignedIn, isConnecting, name, message, classes } = props;
   if (isSignedIn) {
-    const image = <img src={imgSrc} alt={name} className={classes.avatar} />;
-    fetch(avatarUrl)
-      .then(r => r.blob())
-      .then(content => {
-        const imgData = URL.createObjectURL(content);
-        setImgSrc(imgData);
-      });
+    const image = (
+      <img src="/blockstack.png" alt={name} className={classes.avatar} />
+    );
     return (
       <div className={classes.root}>
         <BlockstackSignInButton
