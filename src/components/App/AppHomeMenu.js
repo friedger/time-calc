@@ -1,17 +1,17 @@
-import React from "react";
-import autoBind from "react-autobind";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
+import React from 'react';
+import autoBind from 'react-autobind';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import { withStyles } from "@material-ui/core";
-import { navigateToApp } from "../../logic/actions/actions";
-import { withRouter } from "react-router-dom";
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import { withStyles } from '@material-ui/core';
+import { navigateToApp } from '../../logic/actions/actions';
+import { withRouter } from 'react-router-dom';
 
 const styles = () => ({
   icon: {},
-  primary: {}
+  primary: {},
 });
 
 class AppHomeMenu extends React.Component {
@@ -20,7 +20,7 @@ class AppHomeMenu extends React.Component {
   static propTypes = {
     classes: PropTypes.object.isRequired,
     onHome: PropTypes.any,
-    history: PropTypes.any
+    history: PropTypes.any,
   };
 
   constructor(props) {
@@ -43,13 +43,8 @@ class AppHomeMenu extends React.Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onHome: history => dispatch(navigateToApp(history))
+    onHome: history => dispatch(navigateToApp(history)),
   };
 };
 
-export default withRouter(
-  connect(
-    null,
-    mapDispatchToProps
-  )(withStyles(styles)(AppHomeMenu))
-);
+export default withRouter(connect(null, mapDispatchToProps)(withStyles(styles)(AppHomeMenu)));

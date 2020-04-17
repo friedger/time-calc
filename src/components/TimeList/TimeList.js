@@ -1,48 +1,48 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles } from '@material-ui/core/styles';
 
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableFooter from "@material-ui/core/TableFooter";
-import TableRow from "@material-ui/core/TableRow";
-import Delete from "@material-ui/icons/Delete";
-import CloudDownload from "@material-ui/icons/CloudDownload";
-import Moment from "moment";
-import "moment-duration-format";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableFooter from '@material-ui/core/TableFooter';
+import TableRow from '@material-ui/core/TableRow';
+import Delete from '@material-ui/icons/Delete';
+import CloudDownload from '@material-ui/icons/CloudDownload';
+import Moment from 'moment';
+import 'moment-duration-format';
 
-import autoBind from "react-autobind";
-import { connect } from "react-redux";
-import { clearTimes, downloadTimes } from "../../logic/actions/actions";
-import withDialog from "../Dialog/Dialog";
-import GenericButton from "../Button/Button";
-import Timeset from "../Timeset/Timeset";
+import autoBind from 'react-autobind';
+import { connect } from 'react-redux';
+import { clearTimes, downloadTimes } from '../../logic/actions/actions';
+import withDialog from '../Dialog/Dialog';
+import GenericButton from '../Button/Button';
+import Timeset from '../Timeset/Timeset';
 
 const styles = theme => ({
   root: {
-    width: "100%",
+    width: '100%',
     marginTop: theme.spacing(3),
-    overflowX: "auto"
+    overflowX: 'auto',
   },
   important: {
     // fontWeight: 'bold',
   },
 
   hideMobile: {
-    [theme.breakpoints.down("xs")]: {
-      display: "none !important"
-    }
-  }
+    [theme.breakpoints.down('xs')]: {
+      display: 'none !important',
+    },
+  },
 });
 
 export class TimeList extends React.PureComponent {
   static defaultProps = {
     times: {},
-    deleteAllTitle: "Delete all TimeRecords?",
-    deleteAllHelp: "Do you really want to wipe out all Data?"
+    deleteAllTitle: 'Delete all TimeRecords?',
+    deleteAllHelp: 'Do you really want to wipe out all Data?',
   };
 
   static propTypes = {
@@ -54,7 +54,7 @@ export class TimeList extends React.PureComponent {
     classes: PropTypes.object.isRequired,
     deleteAllHelp: PropTypes.string,
     deleteAllTitle: PropTypes.string,
-    readOnly: PropTypes.string
+    readOnly: PropTypes.string,
   };
 
   constructor(props) {
@@ -64,16 +64,14 @@ export class TimeList extends React.PureComponent {
   }
 
   calculateSum(times) {
-    let durationSum = Moment.duration("00:00");
-    times
-      .filter(t => t != null && t.start && t.end)
-      .map(t => durationSum.add(t.duration));
-    return durationSum.format("HH:mm", { trim: false });
+    let durationSum = Moment.duration('00:00');
+    times.filter(t => t != null && t.start && t.end).map(t => durationSum.add(t.duration));
+    return durationSum.format('HH:mm', { trim: false });
   }
 
   render() {
     // eslint-disable-next-line no-console
-    console.log("props", this.props);
+    console.log('props', this.props);
     const { classes, readOnly } = this.props;
     const times = readOnly ? this.props.sharedTimes : this.props.times;
     if (!times || !times.length) {
@@ -152,18 +150,15 @@ export const StyledTimeList = withStyles(styles)(TimeList);
 const mapStateToProps = state => {
   return {
     times: state.timelist.times,
-    sharedTimes: state.sharedTimesheet.times
+    sharedTimes: state.sharedTimesheet.times,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     onOk: () => dispatch(clearTimes()),
-    download: times => dispatch(downloadTimes(times))
+    download: times => dispatch(downloadTimes(times)),
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withDialog(StyledTimeList));
+export default connect(mapStateToProps, mapDispatchToProps)(withDialog(StyledTimeList));

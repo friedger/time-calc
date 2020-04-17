@@ -1,42 +1,38 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import classNames from "classnames";
-import Grid from "@material-ui/core/Grid";
-import { withStyles } from "@material-ui/core/styles";
-import { Paper, Typography, Button } from "@material-ui/core";
-import { connect } from "react-redux";
-import {
-  loadProjects,
-  archiveProject,
-  unarchiveProject
-} from "../../logic/actions/actions";
-import { withRouter } from "react-router-dom";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
+import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
+import { Paper, Typography, Button } from '@material-ui/core';
+import { connect } from 'react-redux';
+import { loadProjects, archiveProject, unarchiveProject } from '../../logic/actions/actions';
+import { withRouter } from 'react-router-dom';
 
-import RefreshIcon from "@material-ui/icons/Refresh";
-import ArchiveIcon from "@material-ui/icons/Archive";
-import UnarchiveIcon from "@material-ui/icons/Unarchive";
+import RefreshIcon from '@material-ui/icons/Refresh';
+import ArchiveIcon from '@material-ui/icons/Archive';
+import UnarchiveIcon from '@material-ui/icons/Unarchive';
 
-const uuidPrefix = new RegExp("^........-....-4...-....-............[.]*");
-const startsWithProjectId = function(path) {
+const uuidPrefix = new RegExp('^........-....-4...-....-............[.]*');
+const startsWithProjectId = function (path) {
   return uuidPrefix.test(path);
 };
 
 const styles = theme => ({
   control: {
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
   },
   button: {
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
   },
   leftIcon: {
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
   },
   rightIcon: {
-    marginLeft: theme.spacing(1)
+    marginLeft: theme.spacing(1),
   },
   iconSmall: {
-    fontSize: 20
-  }
+    fontSize: 20,
+  },
 });
 
 class GaiaFiles extends Component {
@@ -60,11 +56,11 @@ class GaiaFiles extends Component {
       projects,
       exportProjects,
       unarchiveProject,
-      archiveProject
+      archiveProject,
     } = this.props;
     return (
       <Grid item xs={12}>
-        <Paper className={classes.control} style={{ margin: "10px" }}>
+        <Paper className={classes.control} style={{ margin: '10px' }}>
           <Typography variant="h3">Your remote files</Typography>
           <Button
             onClick={() => exportProjects(history)}
@@ -72,9 +68,7 @@ class GaiaFiles extends Component {
             size="small"
             className={classes.button}
           >
-            <RefreshIcon
-              className={classNames(classes.leftIcon, classes.iconSmall)}
-            />
+            <RefreshIcon className={classNames(classes.leftIcon, classes.iconSmall)} />
             Refresh
           </Button>
           <Typography variant="h5">Timesheet Files</Typography>
@@ -95,10 +89,7 @@ class GaiaFiles extends Component {
                           className={classes.button}
                         >
                           <UnarchiveIcon
-                            className={classNames(
-                              classes.leftIcon,
-                              classes.iconSmall
-                            )}
+                            className={classNames(classes.leftIcon, classes.iconSmall)}
                           />
                           Unarchive
                         </Button>
@@ -111,10 +102,7 @@ class GaiaFiles extends Component {
                           className={classes.button}
                         >
                           <ArchiveIcon
-                            className={classNames(
-                              classes.leftIcon,
-                              classes.iconSmall
-                            )}
+                            className={classNames(classes.leftIcon, classes.iconSmall)}
                           />
                           Archive
                         </Button>
@@ -124,7 +112,7 @@ class GaiaFiles extends Component {
                   {Object.keys(timesheetFiles[projectId]).map(filename => (
                     <React.Fragment key={filename}>
                       <Grid item xs={2} md={1}>
-                        {" "}
+                        {' '}
                       </Grid>
                       <Grid container item xs={10} md={5}>
                         <Grid item xs={12}>
@@ -132,33 +120,23 @@ class GaiaFiles extends Component {
                             File <em>{filename}</em>
                           </Typography>
                         </Grid>
-                        {Object.keys(timesheetFiles[projectId][filename]).map(
-                          j => (
-                            <Grid key={j} item xs={12}>
-                              <Typography variant="body2">
-                                <a
-                                  href={
-                                    timesheetFiles[projectId][filename][j].file
-                                  }
-                                >
-                                  {timesheetFiles[projectId][filename][j]
-                                    .user && (
-                                    <span>
-                                      shared with{" "}
-                                      {
-                                        timesheetFiles[projectId][filename][j]
-                                          .user
-                                      }{" "}
-                                      privately
-                                    </span>
-                                  )}
-                                  {!timesheetFiles[projectId][filename][j]
-                                    .user && <span>your private version</span>}
-                                </a>
-                              </Typography>
-                            </Grid>
-                          )
-                        )}
+                        {Object.keys(timesheetFiles[projectId][filename]).map(j => (
+                          <Grid key={j} item xs={12}>
+                            <Typography variant="body2">
+                              <a href={timesheetFiles[projectId][filename][j].file}>
+                                {timesheetFiles[projectId][filename][j].user && (
+                                  <span>
+                                    shared with {timesheetFiles[projectId][filename][j].user}{' '}
+                                    privately
+                                  </span>
+                                )}
+                                {!timesheetFiles[projectId][filename][j].user && (
+                                  <span>your private version</span>
+                                )}
+                              </a>
+                            </Typography>
+                          </Grid>
+                        ))}
                       </Grid>
                     </React.Fragment>
                   ))}
@@ -182,15 +160,7 @@ class GaiaFiles extends Component {
   }
 }
 
-const pushTimesheetFile = (
-  timesheetFiles,
-  projectsById,
-  projectId,
-  file,
-  path,
-  user,
-  filename
-) => {
+const pushTimesheetFile = (timesheetFiles, projectsById, projectId, file, path, user, filename) => {
   if (!timesheetFiles[projectId]) {
     timesheetFiles[projectId] = {};
   }
@@ -217,8 +187,8 @@ const mapStateToProps = state => {
 
     files.forEach(file => {
       const path = file.substring(gaiaPrefix.length);
-      if (path.startsWith("shared")) {
-        const pathParts = path.split("/");
+      if (path.startsWith('shared')) {
+        const pathParts = path.split('/');
         let user;
         let projectId;
         let filename;
@@ -227,30 +197,14 @@ const mapStateToProps = state => {
           projectId = pathParts[2];
           filename = pathParts[3];
 
-          pushTimesheetFile(
-            timesheetFiles,
-            projectsById,
-            projectId,
-            file,
-            path,
-            user,
-            filename
-          );
+          pushTimesheetFile(timesheetFiles, projectsById, projectId, file, path, user, filename);
         } else {
           otherFiles.push({ file, path });
         }
       } else if (startsWithProjectId(path)) {
         const projectId = path.substring(0, 36);
         const filename = path.substring(37);
-        pushTimesheetFile(
-          timesheetFiles,
-          projectsById,
-          projectId,
-          file,
-          path,
-          null,
-          filename
-        );
+        pushTimesheetFile(timesheetFiles, projectsById, projectId, file, path, null, filename);
       } else {
         otherFiles.push({ file, path });
       }
@@ -261,7 +215,7 @@ const mapStateToProps = state => {
     timesheetFiles,
     otherFiles,
     currentProject,
-    projectsById
+    projectsById,
   };
 };
 
@@ -275,7 +229,7 @@ const mapDispatchToProps = dispatch => {
     },
     unarchiveProject: projectId => {
       dispatch(unarchiveProject(projectId));
-    }
+    },
   };
 };
 
@@ -289,12 +243,9 @@ GaiaFiles.propTypes = {
   timesheetFiles: PropTypes.object,
   sharedFiles: PropTypes.array,
   otherFiles: PropTypes.array,
-  projectsById: PropTypes.object
+  projectsById: PropTypes.object,
 };
 
 export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(withStyles(styles)(GaiaFiles))
+  connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(GaiaFiles))
 );

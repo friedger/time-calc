@@ -1,9 +1,9 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { KeyboardDatePicker, DatePicker } from "@material-ui/pickers";
+import { KeyboardDatePicker, DatePicker } from '@material-ui/pickers';
 
-import { TimeHelper } from "../../logic/helpers";
+import { TimeHelper } from '../../logic/helpers';
 
 const DateField = ({ input, label, showPicker }) => {
   if (showPicker !== false) {
@@ -18,7 +18,7 @@ const DateField = ({ input, label, showPicker }) => {
         fullWidth
         showTodayButton
         InputLabelProps={{
-          shrink: true
+          shrink: true,
         }}
       />
     );
@@ -34,7 +34,7 @@ const DateField = ({ input, label, showPicker }) => {
         fullWidth
         showTodayButton
         InputLabelProps={{
-          shrink: true
+          shrink: true,
         }}
       />
     );
@@ -44,7 +44,7 @@ const DateField = ({ input, label, showPicker }) => {
 DateField.propTypes = {
   input: PropTypes.object,
   label: PropTypes.string,
-  showPicker: PropTypes.bool
+  showPicker: PropTypes.bool,
 };
 
 export default DateField;

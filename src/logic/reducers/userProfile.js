@@ -1,47 +1,51 @@
-import {USER_CONNECTING, USER_CONNECTED, USER_DISCONNECTED} from '../actions/actions'
+import { USER_CONNECTING, USER_CONNECTED, USER_DISCONNECTED } from '../actions/actions';
 
 export default class UserProfile {
-  static dispatch (state = { user: null, userMessage: null }, action) {
+  static dispatch(state = { user: null, userMessage: null }, action) {
     if (!UserProfile.instance) {
-      UserProfile.instance = new UserProfile()
+      UserProfile.instance = new UserProfile();
     }
 
-    return UserProfile.instance.process(state, action)
+    return UserProfile.instance.process(state, action);
   }
 
-  process (state, action) {
-    this.state = state
-    this.user = state.user || null
-    this.action = action
+  process(state, action) {
+    this.state = state;
+    this.user = state.user || null;
+    this.action = action;
 
     switch (action.type) {
-      case USER_CONNECTING: return this.userConnecting()
-      case USER_CONNECTED: return this.userConnected()
-      case USER_DISCONNECTED: return this.userDisconnected()
-      default: return state
+      case USER_CONNECTING:
+        return this.userConnecting();
+      case USER_CONNECTED:
+        return this.userConnected();
+      case USER_DISCONNECTED:
+        return this.userDisconnected();
+      default:
+        return state;
     }
   }
 
-  userConnecting () {
+  userConnecting() {
     return {
       ...this.state,
       user: null,
-      userMessage: "Connecting"
-    }
+      userMessage: 'Connecting',
+    };
   }
-  userConnected () {
+  userConnected() {
     return {
       ...this.state,
       user: this.action.user,
-      userMessage: null
-    }
+      userMessage: null,
+    };
   }
 
-  userDisconnected () {
+  userDisconnected() {
     return {
       ...this.state,
       user: null,
-      userMessage: this.action.error ? this.action.error : null
-    }
+      userMessage: this.action.error ? this.action.error : null,
+    };
   }
 }

@@ -1,55 +1,49 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
-import { withStyles } from "@material-ui/core/styles";
-import Edit from "@material-ui/icons/Edit";
-import Delete from "@material-ui/icons/Delete";
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
+import { withStyles } from '@material-ui/core/styles';
+import Edit from '@material-ui/icons/Edit';
+import Delete from '@material-ui/icons/Delete';
 
-import { batchActions } from "redux-batched-actions";
+import { batchActions } from 'redux-batched-actions';
 
-import Moment from "moment";
-import { connect } from "react-redux";
+import Moment from 'moment';
+import { connect } from 'react-redux';
 
-import withDialog from "../Dialog/Dialog";
-import GenericButton from "../Button/Button";
+import withDialog from '../Dialog/Dialog';
+import GenericButton from '../Button/Button';
 
-import { deleteTime, setField } from "../../logic/actions/actions";
+import { deleteTime, setField } from '../../logic/actions/actions';
 
 const styles = theme => ({
   hideMobile: {
-    [theme.breakpoints.down("xs")]: {
-      display: "none !important"
-    }
+    [theme.breakpoints.down('xs')]: {
+      display: 'none !important',
+    },
   },
 
   row: {
-    "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.background.default
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.background.default,
     },
-    "& button": {
-      opacity: 0
+    '& button': {
+      opacity: 0,
     },
-    "&:hover": {
-      "& button": {
-        opacity: 1
-      }
-    }
+    '&:hover': {
+      '& button': {
+        opacity: 1,
+      },
+    },
   },
 
   important: {
     // fontWeight: 'bold',
-  }
+  },
 });
 
-export const Timeset = ({
-  classes,
-  time,
-  onEditTime,
-  toggleDialog,
-  readOnly
-}) => {
+export const Timeset = ({ classes, time, onEditTime, toggleDialog, readOnly }) => {
   if (time == null) {
     return (
       <TableRow className={classes.row}>
@@ -57,7 +51,7 @@ export const Timeset = ({
       </TableRow>
     );
   }
-  const date = new Moment(time.date, "L").format("LL"); // TODO should be refactored out into time utils
+  const date = new Moment(time.date, 'L').format('LL'); // TODO should be refactored out into time utils
   return (
     <TableRow className={classes.row}>
       <TableCell className={classes.important}>{date}</TableCell>
@@ -76,20 +70,10 @@ export const Timeset = ({
       </TableCell>
       {!readOnly && (
         <TableCell>
-          <GenericButton
-            invoke={() => onEditTime({ time: time })}
-            label="Edit"
-            icon={<Edit />}
-          />
+          <GenericButton invoke={() => onEditTime({ time: time })} label="Edit" icon={<Edit />} />
           <GenericButton
             color="secondary"
-            invoke={() =>
-              toggleDialog(
-                time,
-                "Delete Time?",
-                "really delete this TimeRecord?"
-              )
-            }
+            invoke={() => toggleDialog(time, 'Delete Time?', 'really delete this TimeRecord?')}
             label="Delete"
             icon={<Delete />}
           />
@@ -104,7 +88,7 @@ Timeset.propTypes = {
   time: PropTypes.object.isRequired,
   onEditTime: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
-  readOnly: PropTypes.string
+  readOnly: PropTypes.string,
 };
 
 export const StyledTimeset = withStyles(styles)(Timeset);
@@ -115,16 +99,16 @@ const mapDispatchToProps = dispatch => {
     onEditTime: time =>
       dispatch(
         batchActions([
-          setField("start", time.time.start),
-          setField("end", time.time.end),
-          setField("date", time.time.date),
-          setField("break", time.time.break),
-          setField("duration", time.time.duration),
-          setField("id", time.time.id),
-          setField("projectId", time.time.projectId),
-          setField("description", time.time.description)
+          setField('start', time.time.start),
+          setField('end', time.time.end),
+          setField('date', time.time.date),
+          setField('break', time.time.break),
+          setField('duration', time.time.duration),
+          setField('id', time.time.id),
+          setField('projectId', time.time.projectId),
+          setField('description', time.time.description),
         ])
-      )
+      ),
   };
 };
 

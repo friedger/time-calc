@@ -1,4 +1,4 @@
-import { takeLatest, takeEvery, call, put, fork } from "redux-saga/effects";
+import { takeLatest, takeEvery, take, call, put, fork } from 'redux-saga/effects';
 import {
   CalculationHelper,
   TimeHelper,
@@ -6,8 +6,8 @@ import {
   UserHelper,
   SyncHelper,
   ProjectHelper,
-  uuid
-} from "../helpers";
+  uuid,
+} from '../helpers';
 import {
   CALCULATE,
   CLEAR_TIMES,
@@ -45,8 +45,11 @@ import {
   ARCHIVE_PROJECT,
   UNARCHIVE_PROJECT,
   sharedTimesheetLoaded,
-  PROJECT_SETTINGS_CHANGED
-} from "../actions/actions";
+  PROJECT_SETTINGS_CHANGED,
+  CHECK_LOGIN,
+  checkLogin as actionsCheckLogin,
+} from '../actions/actions';
+import { eventChannel } from 'redux-saga';
 
 function* calculations(action) {
   const calc = yield call(CalculationHelper.fetchCalculation, action.form);
@@ -121,9 +124,21 @@ function* downloadTimes() {
   yield TimeHelper.downloadTimes(times);
 }
 
+function signInViaConnect() {
+  return eventChannel(emitter => {
+    UserHelper.signIn(userSession => {
+      console.log(userSession);
+      emitter(actionsCheckLogin());
+    });
+    return () => {};
+  });
+}
+
 function* userSignIn() {
   yield put(userConnecting());
-  yield call(UserHelper.signIn);
+  const chan = yield call(signInViaConnect);
+  const signInResult = yield take(chan);
+  yield put(signInResult);
 }
 
 function* userSignOut() {
@@ -132,11 +147,8 @@ function* userSignOut() {
 }
 
 function afterLogin(user) {
-  return function*() {
-    const gaiaUrl = yield UserHelper.getAppBucketUrl(
-      user.hubUrl,
-      user.appPrivateKey
-    );
+  return function* () {
+    const gaiaUrl = yield UserHelper.getAppBucketUrl(user.hubUrl, user.appPrivateKey);
     const updatedUser = { ...user, gaiaUrl };
     yield put(userConnected(updatedUser));
     yield call(SyncHelper.savePubKey);
@@ -146,6 +158,7 @@ function afterLogin(user) {
 }
 
 function* checkLogin() {
+  console.log('checkLogin');
   if (UserHelper.isUserSignedIn()) {
     try {
       const user = UserHelper.loadUserData();
@@ -178,10 +191,10 @@ function* startSyncing() {
   try {
     yield put(syncStarted());
     const project = yield call(ProjectHelper.loadCurrentProject);
-    yield call(() => SyncHelper.sync(project.id + "/" + project.filename));
+    yield call(() => SyncHelper.sync(project.id + '/' + project.filename));
     yield put(syncDone());
   } catch (e) {
-    yield put(syncFailed("sync error" + e));
+    yield put(syncFailed('sync error' + e));
   }
 }
 
@@ -190,20 +203,17 @@ function* loadSharedTimesRemotely(action) {
     yield put(syncStarted());
     console.log(action);
     let sharedTimesheet = yield call(() =>
-      SyncHelper.loadSharedTimes(
-        action.projectId + "/" + action.filename,
-        action.user
-      )
+      SyncHelper.loadSharedTimes(action.projectId + '/' + action.filename, action.user)
     );
     console.log(sharedTimesheet);
     if (!sharedTimesheet || sharedTimesheet.times.length === 0) {
-      yield put(syncFailed("times not found"));
+      yield put(syncFailed('times not found'));
     } else {
       yield put(syncDone());
       yield put(sharedTimesheetLoaded(sharedTimesheet, action.projectId));
     }
   } catch (e) {
-    yield put(syncFailed("sync error shared times" + e));
+    yield put(syncFailed('sync error shared times' + e));
   }
 }
 
@@ -218,25 +228,23 @@ function* loadTimesRemotely() {
     let times;
     if (oldProjects.length === projects.length) {
       // project already existed
-      times = yield call(() =>
-        SyncHelper.loadTimes(project.id + "/" + project.filename)
-      );
+      times = yield call(() => SyncHelper.loadTimes(project.id + '/' + project.filename));
       if (!times) {
         StoreHelper.saveTimes([]);
-        yield put(syncFailed("no remote file"));
+        yield put(syncFailed('no remote file'));
         return;
       } else {
         StoreHelper.saveTimes(times);
       }
     } else {
       // new project
-      SyncHelper.sync(project.id + "/" + project.filename);
+      SyncHelper.sync(project.id + '/' + project.filename);
       times = [];
     }
     yield put(syncDone());
     yield put(timesLoaded(times, project.id));
   } catch (e) {
-    yield put(syncFailed("sync error times" + e));
+    yield put(syncFailed('sync error times' + e));
     yield call(loadTimesFromStore);
   }
 }
@@ -252,15 +260,11 @@ function* requestApproval(action) {
   }
   if (username) {
     const url = yield call(
-      SyncHelper.requestApproval(
-        project.id + "/" + project.filename,
-        username,
-        project
-      )
+      SyncHelper.requestApproval(project.id + '/' + project.filename, username, project)
     );
     yield put(approvalDone(url));
   } else {
-    yield put(approvalFailed("no username"));
+    yield put(approvalFailed('no username'));
   }
 }
 
@@ -273,7 +277,7 @@ function* navigateToApp(action) {
     yield put(syncStarted());
   }
   try {
-    yield action.history.push("/app");
+    yield action.history.push('/app');
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -281,7 +285,7 @@ function* navigateToApp(action) {
 }
 
 function mergedProject(p1, p2) {
-  console.log("merging", p1, p2, Object.assign(p1, p2));
+  console.log('merging', p1, p2, Object.assign(p1, p2));
   return Object.assign(p1, p2);
 }
 
@@ -309,7 +313,7 @@ function* loadProjectsRemotely() {
     const files = yield call(SyncHelper.allFiles);
     yield put(filesLoaded(files));
   } catch (e) {
-    yield put(syncFailed("projects sync error" + e));
+    yield put(syncFailed('projects sync error' + e));
   }
 }
 
@@ -319,7 +323,7 @@ function* saveProject(action) {
     yield call(() => ProjectHelper.saveCurrentProject(action.project));
 
     const project = action.project;
-    let times = yield SyncHelper.loadTimes(project.id + "/" + project.filename);
+    let times = yield SyncHelper.loadTimes(project.id + '/' + project.filename);
     if (!times) {
       times = [];
     }
@@ -331,7 +335,7 @@ function* saveProject(action) {
     let projects = yield ProjectHelper.loadProjects();
     yield put(currentProjectChanged(action.project, projects));
   } catch (e) {
-    yield put(syncFailed("save project failed" + e));
+    yield put(syncFailed('save project failed' + e));
   }
 }
 
@@ -344,7 +348,7 @@ function* saveCurrentProjectRemotely(action) {
     yield put(syncDone());
     yield put(currentProjectChanged(action.project, projects));
   } catch (e) {
-    yield put(syncFailed("save project remotely failed" + e));
+    yield put(syncFailed('save project remotely failed' + e));
   }
 }
 
@@ -412,4 +416,5 @@ export default function* rootSaga() {
   yield takeLatest(CREATE_PROJECT, createProject);
   yield takeEvery(ARCHIVE_PROJECT, archiveProject);
   yield takeEvery(UNARCHIVE_PROJECT, unarchiveProject);
+  yield takeLatest(CHECK_LOGIN, checkLogin);
 }

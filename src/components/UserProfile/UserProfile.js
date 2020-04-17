@@ -1,29 +1,27 @@
-import React from "react";
-import BlockstackSignInButton from "./BlockstackSignInButton";
+import React from 'react';
+import BlockstackSignInButton from './BlockstackSignInButton';
 
-import { connect } from "react-redux";
-import { userSignIn, userSignOut } from "../../logic/actions/actions";
+import { connect } from 'react-redux';
+import { userSignIn, userSignOut } from '../../logic/actions/actions';
 
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core";
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core';
 
 const styles = () => ({
   root: {
-    textAlign: "center"
+    textAlign: 'center',
   },
   avatar: {
-    borderRadius: "50%",
-    height: "20px",
-    width: "20px"
-  }
+    borderRadius: '50%',
+    height: '20px',
+    width: '20px',
+  },
 });
 
 const UserProfile = props => {
   const { isSignedIn, isConnecting, name, message, classes } = props;
   if (isSignedIn) {
-    const image = (
-      <img src="/blockstack.png" alt={name} className={classes.avatar} />
-    );
+    const image = <img src="/blockstack.png" alt={name} className={classes.avatar} />;
     return (
       <div className={classes.root}>
         <BlockstackSignInButton
@@ -56,7 +54,7 @@ UserProfile.propTypes = {
   message: PropTypes.string,
   userSignIn: PropTypes.func,
   userSignOut: PropTypes.func,
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => {
@@ -64,25 +62,21 @@ const mapStateToProps = state => {
   const profile = user != null ? state.userProfile.user.profile : null;
   return {
     isSignedIn: user != null,
-    isConnecting:
-      user == null && state.userProfile.userMessage === "Connecting",
+    isConnecting: user == null && state.userProfile.userMessage === 'Connecting',
     name: profile != null ? profile.name : null,
     avatarUrl:
-      profile != null && "image" in profile && profile.image.length > 0
+      profile != null && 'image' in profile && profile.image.length > 0
         ? profile.image[0].contentUrl
         : null,
-    message: state.userProfile.userMessage
+    message: state.userProfile.userMessage,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     userSignIn: () => dispatch(userSignIn()),
-    userSignOut: () => dispatch(userSignOut())
+    userSignOut: () => dispatch(userSignOut()),
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(UserProfile));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(UserProfile));

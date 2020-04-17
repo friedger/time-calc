@@ -1,4 +1,4 @@
-import { TIMES_LOADED, TIMES_CLEANED } from "../actions/actions";
+import { TIMES_LOADED, TIMES_CLEANED } from '../actions/actions';
 
 export default class Timelist {
   static dispatch(state = { times: [] }, action) {
@@ -12,7 +12,7 @@ export default class Timelist {
   process(state, action) {
     this.state = state;
     this.times = state.times || [];
-    this.action = action;    
+    this.action = action;
 
     switch (action.type) {
       case TIMES_LOADED:
@@ -35,14 +35,14 @@ export default class Timelist {
 
     return {
       ...this.state,
-      times
+      times,
     };
   }
 
   clearTimes() {
     return {
       ...this.state,
-      times: []
+      times: [],
     };
   }
 }

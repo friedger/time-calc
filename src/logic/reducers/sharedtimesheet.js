@@ -1,4 +1,4 @@
-import { SHARED_TIMESHEET_LOADED } from "../actions/actions";
+import { SHARED_TIMESHEET_LOADED } from '../actions/actions';
 
 export default class SharedTimesheet {
   static dispatch(state = { times: [] }, action) {
@@ -22,7 +22,7 @@ export default class SharedTimesheet {
   }
 
   setTimesheet() {
-    const timesheet = this.action.timesheet
+    const timesheet = this.action.timesheet;
     let times = timesheet.times.filter(t => t != null);
     let owner = timesheet.owner;
     let project;
@@ -31,16 +31,16 @@ export default class SharedTimesheet {
     } else {
       if (this.action.projectId) {
         let id = this.action.projectId;
-        project = { id, title: "Unnamed" };
+        project = { id, title: 'Unnamed' };
       } else {
-        project = { title: "Unnamed" };
+        project = { title: 'Unnamed' };
       }
     }
     return {
       ...this.state,
       project,
       times,
-      owner
+      owner,
     };
   }
 }

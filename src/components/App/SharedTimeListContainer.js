@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import TimeList from "../TimeList/TimeList";
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import TimeList from '../TimeList/TimeList';
 
-import { loadSharedTimes } from "../../logic/actions/actions";
+import { loadSharedTimes } from '../../logic/actions/actions';
 
 class SharedTimeListContainer extends Component {
   static propTypes = {
@@ -17,7 +17,7 @@ class SharedTimeListContainer extends Component {
     message: PropTypes.string,
     project: PropTypes.object,
     owner: PropTypes.string,
-    signedIn: PropTypes.bool
+    signedIn: PropTypes.bool,
   };
 
   componentDidMount() {
@@ -37,22 +37,18 @@ class SharedTimeListContainer extends Component {
     const { match, timesLoaded, message, project, owner } = this.props;
 
     // eslint-disable-next-line no-console
-    console.log("params", match.params);
+    console.log('params', match.params);
     return (
       <div style={{ margin: 8 }}>
         <Grid container>
           <Grid item xs={12}>
-            <Typography variant="h3">
-              Shared Timesheet {owner && <>by {owner}</>}
-            </Typography>
+            <Typography variant="h3">Shared Timesheet {owner && <>by {owner}</>}</Typography>
             <Typography variant="h4">{project.title || project.id}</Typography>
           </Grid>
           <Grid item xs={12}>
             <Paper>
               {timesLoaded && <TimeList readOnly="true" />}
-              {!timesLoaded && (
-                <Typography variant="body1">{message}</Typography>
-              )}
+              {!timesLoaded && <Typography variant="body1">{message}</Typography>}
             </Paper>
           </Grid>
         </Grid>
@@ -66,17 +62,16 @@ export default connect(
     let signedIn = !!state.userProfile.user && !state.userProfile.userMessage;
     let message;
     if (!signedIn) {
-      message = "Please sign in to see shared timesheet.";
+      message = 'Please sign in to see shared timesheet.';
     } else {
-      message = state.syncState.error || "Loading ...";
+      message = state.syncState.error || 'Loading ...';
     }
     return {
       signedIn,
-      timesLoaded:
-        !!state.sharedTimesheet.times && state.sharedTimesheet.times.length > 0,
+      timesLoaded: !!state.sharedTimesheet.times && state.sharedTimesheet.times.length > 0,
       project: state.sharedTimesheet.project || {},
       owner: state.sharedTimesheet.owner,
-      message
+      message,
     };
   },
   (dispatch, ownProps) => {
@@ -84,7 +79,7 @@ export default connect(
     const projectId = ownProps.match.params.project;
     const filename = ownProps.match.params.file;
     return {
-      loadTimes: () => dispatch(loadSharedTimes(user, projectId, filename))
+      loadTimes: () => dispatch(loadSharedTimes(user, projectId, filename)),
     };
   }
 )(SharedTimeListContainer);

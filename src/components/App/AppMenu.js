@@ -1,42 +1,39 @@
-import React from "react";
-import autoBind from "react-autobind";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
+import React from 'react';
+import autoBind from 'react-autobind';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
-import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import ShareIcon from "@material-ui/icons/Share";
-import SettingsIcon from "@material-ui/icons/Settings";
-import { withStyles, Dialog, DialogTitle } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import {
-  requestApproval,
-  navigateToProject
-} from "../../logic/actions/actions";
-import { withRouter } from "react-router-dom";
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ShareIcon from '@material-ui/icons/Share';
+import SettingsIcon from '@material-ui/icons/Settings';
+import { withStyles, Dialog, DialogTitle } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import { requestApproval, navigateToProject } from '../../logic/actions/actions';
+import { withRouter } from 'react-router-dom';
 
 const ITEM_HEIGHT = 48;
-const MENU_PROJECTS = "projects";
-const MENU_REQUEST_APPROVAL = "request_approval";
-const MENU_SHARE = "share";
+const MENU_PROJECTS = 'projects';
+const MENU_REQUEST_APPROVAL = 'request_approval';
+const MENU_SHARE = 'share';
 
 const styles = () => ({
   icon: {},
-  primary: {}
+  primary: {},
 });
 
 class AppMenu extends React.Component {
   state = {
     anchorEl: null,
     pickContact: false,
-    customerCopyDialogOpen: false
+    customerCopyDialogOpen: false,
   };
 
   static propTypes = {
@@ -49,7 +46,7 @@ class AppMenu extends React.Component {
     currentProject: PropTypes.object,
     customerCopySaved: PropTypes.bool,
     customerCopyUrl: PropTypes.string,
-    shareUrl: PropTypes.string
+    shareUrl: PropTypes.string,
   };
 
   constructor(props) {
@@ -67,12 +64,12 @@ class AppMenu extends React.Component {
     if (item === MENU_SHARE) {
       try {
         // eslint-disable-next-line no-console
-        console.log("nav.share " + navigator.share);
-        navigator.share({ title: "OI Timesheet", url: "" });
+        console.log('nav.share ' + navigator.share);
+        navigator.share({ title: 'OI Timesheet', url: '' });
       } catch (err) {
         // eslint-disable-next-line no-console
-        console.error("Share failed:", err.message);
-        alert("Couldn't share (" + err + ")");
+        console.error('Share failed:', err.message);
+        alert("Couldn't share (" + err + ')');
       }
     } else if (item === MENU_REQUEST_APPROVAL) {
       if (currentProject && currentProject.customer) {
@@ -80,7 +77,7 @@ class AppMenu extends React.Component {
         this.props.onRequestApproval(currentProject.customer);
       }
     } else if (item === MENU_PROJECTS) {
-      const projectId = currentProject ? currentProject.id : undefined
+      const projectId = currentProject ? currentProject.id : undefined;
       this.props.onProjectSettings(this.props.history, projectId);
     }
     this.handleClose();
@@ -99,13 +96,7 @@ class AppMenu extends React.Component {
   };
 
   render() {
-    const {
-      classes,
-      signedIn,
-      hasCustomer,
-      customerCopySaved,
-      shareUrl
-    } = this.props;
+    const { classes, signedIn, hasCustomer, customerCopySaved, shareUrl } = this.props;
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
 
@@ -119,7 +110,7 @@ class AppMenu extends React.Component {
       <div>
         <IconButton
           aria-label="More"
-          aria-owns={open ? "app-menu" : undefined}
+          aria-owns={open ? 'app-menu' : undefined}
           aria-haspopup="true"
           onClick={this.handleClick}
         >
@@ -133,8 +124,8 @@ class AppMenu extends React.Component {
           PaperProps={{
             style: {
               maxHeight: ITEM_HEIGHT * 4.5,
-              width: 200
-            }
+              width: 200,
+            },
           }}
         >
           <MenuItem
@@ -146,10 +137,7 @@ class AppMenu extends React.Component {
             <ListItemIcon className={classes.icon}>
               <SettingsIcon />
             </ListItemIcon>
-            <ListItemText
-              classes={{ primary: classes.primary }}
-              primary="Project settings"
-            />
+            <ListItemText classes={{ primary: classes.primary }} primary="Project settings" />
           </MenuItem>
           {signedIn && hasCustomer && (
             <MenuItem
@@ -161,10 +149,7 @@ class AppMenu extends React.Component {
               <ListItemIcon className={classes.icon}>
                 <ShareIcon />
               </ListItemIcon>
-              <ListItemText
-                classes={{ primary: classes.primary }}
-                primary="Share (read-only)"
-              />
+              <ListItemText classes={{ primary: classes.primary }} primary="Share (read-only)" />
             </MenuItem>
           )}
           {navigator.share && (
@@ -177,10 +162,7 @@ class AppMenu extends React.Component {
               <ListItemIcon className={classes.icon}>
                 <ShareIcon />
               </ListItemIcon>
-              <ListItemText
-                classes={{ primary: classes.primary }}
-                primary="Share app"
-              />
+              <ListItemText classes={{ primary: classes.primary }} primary="Share app" />
             </MenuItem>
           )}
         </Menu>
@@ -190,16 +172,14 @@ class AppMenu extends React.Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">
-            {"Customer Copy"}
-          </DialogTitle>
+          <DialogTitle id="alert-dialog-title">{'Customer Copy'}</DialogTitle>
           {customerCopySaved && (
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
                 A copy has been stored for your customer/reviewer.
               </DialogContentText>
               <DialogContentText id="alert-dialog-description">
-                Please share with <b>{this.props.currentProject.customer}</b> the link below <br/>
+                Please share with <b>{this.props.currentProject.customer}</b> the link below <br />
                 <a href={shareUrl}>{shareUrl}</a>
               </DialogContentText>
             </DialogContent>
@@ -213,11 +193,7 @@ class AppMenu extends React.Component {
           )}
           {customerCopySaved && (
             <DialogActions>
-              <Button
-                onClick={this.handleDialogClose}
-                color="primary"
-                autoFocus
-              >
+              <Button onClick={this.handleDialogClose} color="primary" autoFocus>
                 Ok
               </Button>
             </DialogActions>
@@ -231,7 +207,14 @@ class AppMenu extends React.Component {
 const mapStateToProps = state => {
   let shareUrl;
   if (state.projectlist.currentProject && state.userProfile.user) {
-    shareUrl = window.origin + "/#/shared/" + state.userProfile.user.username + "/" + state.projectlist.currentProject.id + "/" + state.projectlist.currentProject.filename;
+    shareUrl =
+      window.origin +
+      '/#/shared/' +
+      state.userProfile.user.username +
+      '/' +
+      state.projectlist.currentProject.id +
+      '/' +
+      state.projectlist.currentProject.filename;
   }
   return {
     currentProject: state.projectlist.currentProject,
@@ -239,19 +222,16 @@ const mapStateToProps = state => {
     hasCustomer: !!state.projectlist.currentProject.customer,
     customerCopySaved: !!state.syncState.customerCopySaved,
     customerCopyUrl: state.syncState.customerCopyUrl,
-    shareUrl
+    shareUrl,
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
     onRequestApproval: userId => dispatch(requestApproval(userId)),
-    onProjectSettings: (history, projectId) => dispatch(navigateToProject(history, projectId))
+    onProjectSettings: (history, projectId) => dispatch(navigateToProject(history, projectId)),
   };
 };
 
 export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(withStyles(styles)(AppMenu))
+  connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(AppMenu))
 );

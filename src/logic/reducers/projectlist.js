@@ -2,8 +2,8 @@ import {
   PROJECTS_LOADED,
   CURRENT_PROJECT_CHANGED,
   PROJECT_SAVED,
-  FILES_LOADED
-} from "../actions/actions";
+  FILES_LOADED,
+} from '../actions/actions';
 
 export default class ProjectList {
   static dispatch(state = { projects: [], currentProject: {} }, action) {
@@ -36,7 +36,7 @@ export default class ProjectList {
   setProjects() {
     return {
       ...this.state,
-      projects: this.action.projects
+      projects: this.action.projects,
     };
   }
 
@@ -44,7 +44,7 @@ export default class ProjectList {
     return {
       ...this.state,
       currentProject: this.action.project,
-      projects: this.action.projects
+      projects: this.action.projects,
     };
   }
 
@@ -57,10 +57,7 @@ export default class ProjectList {
       this.state.projects[index] = project;
     }
     let currentProject;
-    if (
-      this.state.currentProject &&
-      this.state.currentProject.id === project.id
-    ) {
+    if (this.state.currentProject && this.state.currentProject.id === project.id) {
       currentProject = project;
     } else {
       currentProject = this.state.currentProject;
@@ -68,14 +65,14 @@ export default class ProjectList {
     return {
       ...this.state,
       projects: this.state.projects,
-      currentProject
+      currentProject,
     };
   }
 
   setFiles() {
     return {
       ...this.state,
-      files: this.action.files
-    }
+      files: this.action.files,
+    };
   }
 }
