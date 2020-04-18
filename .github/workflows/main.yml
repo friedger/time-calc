@@ -17,10 +17,10 @@ jobs:
       - run: yarn install
       - run: yarn build
       - run: mv build www
+      - run: rm www/static/js/*.map
       - uses: SamKirkland/FTP-Deploy-Action@3.0.0
         with:
           ftp-server: ${{ secrets.FTP_SERVER }}
           ftp-username: ${{ secrets.FTP_USER }}
           ftp-password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./www
-          git-ftp-args: --remote-root /www
