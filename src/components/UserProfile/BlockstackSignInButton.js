@@ -108,7 +108,7 @@ BlockstackSignInButton.propTypes = {
 BlockstackSignInButton.defaultProps = {
   renderNothing: false,
   signOutBtnText: 'Sign Out',
-  signInBtnText: 'Sign In with Blockstack',
+  signInBtnText: 'Get Started',
   includeBlockstackLogo: true,
   defaultStyle: null,
   style: {},

@@ -19,16 +19,14 @@ const styles = () => ({
 });
 
 const UserProfile = props => {
-  const { isSignedIn, isConnecting, name, message, classes } = props;
+  const { isSignedIn, isConnecting, message, classes } = props;
   if (isSignedIn) {
-    const image = <img src="/blockstack.png" alt={name} className={classes.avatar} />;
     return (
       <div className={classes.root}>
         <BlockstackSignInButton
           signIn={props.userSignIn}
           signOut={props.userSignOut}
           isSignedIn={props.isSignedIn}
-          img={image}
           includeBlockstackLogo={false}
         />
       </div>
