@@ -3,7 +3,6 @@ name: Publish Website
 on:
   push:
     branches: [master]
-
 jobs:
   FTP-Deploy-Action:
     name: FTP-Deploy-Action
@@ -23,3 +22,4 @@ jobs:
           ftp-username: ${{ secrets.FTP_USER }}
           ftp-password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./build
+          git-ftp-args: --remote-root /www
