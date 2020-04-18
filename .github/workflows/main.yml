@@ -12,11 +12,12 @@ jobs:
       - uses: actions/checkout@master
         with:
           fetch-depth: 2
-      - uses: borales/actions-yarn@v2.0.0
+      - uses: actions/setup-node@v1
         with:
-          cmd: build
-      - name: FTP-Deploy-Action
-        uses: SamKirkland/FTP-Deploy-Action@3.0.0
+          node-version: '10.x'
+      - run: yarn install
+      - run: yarn build
+      - uses: SamKirkland/FTP-Deploy-Action@3.0.0
         with:
           ftp-server: ${{ secrets.FTP_SERVER }}
           ftp-username: ${{ secrets.FTP_USER }}
