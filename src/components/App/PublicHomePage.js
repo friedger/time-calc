@@ -39,6 +39,8 @@ const PublicHomePage = () => {
         <div>
           <a href="/#/app">
             <img alt="Launch as Web App" src="pwa.png" height="64vh" />
+            <br />
+            Get Started
           </a>
         </div>
       </div>
