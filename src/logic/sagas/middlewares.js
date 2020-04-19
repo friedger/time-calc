@@ -148,6 +148,7 @@ function* userSignOut() {
 
 function afterLogin(user) {
   return function* () {
+    window.location.assign(window.location.origin + '/#/app');
     const gaiaUrl = yield UserHelper.getAppBucketUrl(user.hubUrl, user.appPrivateKey);
     const updatedUser = { ...user, gaiaUrl };
     yield put(userConnected(updatedUser));

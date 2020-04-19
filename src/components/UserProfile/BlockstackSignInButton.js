@@ -109,7 +109,7 @@ BlockstackSignInButton.defaultProps = {
   renderNothing: false,
   signOutBtnText: 'Sign Out',
   signInBtnText: 'Get Started',
-  includeBlockstackLogo: true,
+  includeBlockstackLogo: false,
   defaultStyle: null,
   style: {},
   signInStyle: {},
