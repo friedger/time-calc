@@ -1,6 +1,6 @@
 {
   "name": "time-calc",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "homepage": "https://oi-timesheet.com",
   "description": "Track your time spent on projects and clients.",
   "private": true,
