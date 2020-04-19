@@ -12,6 +12,7 @@ const TimeField = ({ input, label, showPicker, disabled, defaultValue }) => (
     value={input && input.value ? TimeHelper.time(input.value) : null}
     onChange={date => input.onChange(TimeHelper.time(date))}
     label={label}
+    format="hh:ss"
     autoOk
     placeholder={defaultValue || TimeHelper.now()}
     fullWidth
